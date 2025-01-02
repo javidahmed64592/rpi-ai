@@ -63,4 +63,4 @@ jobs:
         run: |
           INSTALL_SCRIPT=$(ls ./artifact/RPi-AI-*-Linux-x86_64.sh)
           chmod +x ${INSTALL_SCRIPT}
-          ${INSTALL_SCRIPT}
+          ${INSTALL_SCRIPT} -b -p /home/runner/rpi-ai
