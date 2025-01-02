@@ -9,14 +9,13 @@ name = "rpi-ai"
 version = "1.0.0"
 description = "AI written in Python to control a companion bot hosted on a Raspberry Pi."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 license = { file = "LICENSE" }
 authors = [
     { name = "Javid Ahmed", email = "javidahmed@icloud.com" }
 ]
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
@@ -27,12 +26,12 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ruff",
-]
-
-test = [
     "pytest",
     "pytest-cov",
 ]
+
+[project.scripts]
+run_rpi_ai = "rpi_ai.main:run"
 
 [project.urls]
 repository = "https://github.com/javidahmed64592/rpi-ai"
@@ -77,7 +76,6 @@ exclude = [
     "site-packages",
     "venv",
 ]
-
 
 [tool.ruff.lint]
 select = [

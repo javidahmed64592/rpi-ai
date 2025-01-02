@@ -6,7 +6,7 @@ register_python: False
 channels:
   - conda-forge
 specs:
-  - python 3.12.*
+  - python >=3.11
   - exec-wrappers
   - pip
 extra_files:
