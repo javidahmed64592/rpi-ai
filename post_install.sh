@@ -4,6 +4,7 @@
 set -eu
 
 BIN_DIR="${PREFIX}/app"
+mkdir -p "${BIN_DIR}"
 
 echo "Installing from wheel..."
 WHEEL_FILE=$(ls rpi_ai-*-py3-none-any.whl)
