@@ -60,6 +60,6 @@ jobs:
           name: build
           path: ./artifact
       - name: Run installation script
-        env:
-          VERSION: ${{ env.VERSION }}
-        run: ./artifact/RPi-AI-${{ env.VERSION }}-Linux-x86_64.sh
+        run: |
+          INSTALL_SCRIPT=$(ls ./artifact/RPi-AI-*-Linux-x86_64.sh)
+          ./${INSTALL_SCRIPT}
