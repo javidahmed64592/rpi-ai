@@ -28,12 +28,8 @@ jobs:
       - name: Build wheel
         run: |
           python -m build --wheel
-          WHEEL_FILE=$(ls dist/*.whl)
+          WHEEL_FILE=$(ls dist/rpi-ai-*-py3-none-any.whl)
           echo "VERSION=$(echo $WHEEL_FILE | sed -n 's/.*-\([0-9]*\.[0-9]*\.[0-9]*\)-.*/\1/p')" >> $GITHUB_ENV
-      - name: Create dist tarball
-        run: |
-          mv dist rpi-ai
-          tar -czf rpi-ai.tar.gz rpi-ai
       - uses: mamba-org/setup-micromamba@v2
         with:
           init-shell: >-

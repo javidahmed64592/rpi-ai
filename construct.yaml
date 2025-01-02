@@ -10,5 +10,5 @@ specs:
   - exec-wrappers
   - pip
 extra_files:
-  - rpi-ai.tar.gz
+  - rpi-ai-{{ environ["VERSION"] }}-py3-none-any.whl
 post_install: "post_install.sh"
