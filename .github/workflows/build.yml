@@ -31,7 +31,9 @@ jobs:
           WHEEL_FILE=$(ls dist/*.whl)
           echo "VERSION=$(echo $WHEEL_FILE | sed -n 's/.*-\([0-9]*\.[0-9]*\.[0-9]*\)-.*/\1/p')" >> $GITHUB_ENV
       - name: Create dist tarball
-        run: tar -czf rpi-ai.tar.gz dist
+        run: |
+          mv dist rpi-ai
+          tar -czf rpi-ai.tar.gz rpi-ai
       - uses: mamba-org/setup-micromamba@v2
         with:
           init-shell: >-

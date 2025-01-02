@@ -7,9 +7,6 @@ BIN_DIR="${PREFIX}/app"
 
 echo "Unpacking RPi-AI..."
 tar -xzf "${PREFIX}/rpi-ai.tar.gz" --directory="${PREFIX}"
-
-echo "ROOT DIRECTORY:"
-ls -la "${PREFIX}"
 mv "${PREFIX}/rpi-ai" "${BIN_DIR}"
 rm "${PREFIX}/rpi-ai.tar.gz"
 
