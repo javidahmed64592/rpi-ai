@@ -36,7 +36,6 @@ jobs:
         with:
           init-shell: >-
             bash
-          cache-environment: true
           post-cleanup: 'all'
       - name: Install constructor
         run: micromamba install -y constructor
