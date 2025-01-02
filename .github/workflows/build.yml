@@ -33,6 +33,11 @@ jobs:
       - name: Create dist tarball
         run: tar -czf rpi-ai.tar.gz dist
       - uses: mamba-org/setup-micromamba@v2
+        with:
+          init-shell: >-
+            bash
+          cache-environment: true
+          post-cleanup: 'all'
       - name: Install constructor
         run: micromamba install -y constructor
         shell: micromamba-shell {0}
