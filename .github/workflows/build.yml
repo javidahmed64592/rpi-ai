@@ -30,6 +30,7 @@ jobs:
           python -m build --wheel
           WHEEL_FILE=$(ls dist/*.whl)
           VERSION=$(echo $WHEEL_FILE | sed -n 's/.*-\([0-9]*\.[0-9]*\.[0-9]*\)-.*/\1/p')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Create dist tarball
         run: tar -czf rpi-ai.tar.gz dist
       - uses: mamba-org/setup-micromamba@v2
@@ -42,7 +43,9 @@ jobs:
           micromamba install -y -n base -c conda-forge constructor
           micromamba run -n base constructor .
       - name: Upload artifact
+        env:
+          VERSION: ${{ env.VERSION }}
         uses: actions/upload-artifact@v4
         with:
-          name: python-wheel
-          path: RPi-AI-${VERSION}-Linux-x86_64.sh
+          name: build
+          path: RPi-AI-${{ env.VERSION }}-Linux-x86_64.sh
