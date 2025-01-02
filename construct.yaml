@@ -1,0 +1,14 @@
+name: RPi-AI
+version: {{ environ["VERSION"] }}
+installer_type: sh
+initialize_by_default: false
+register_python: False
+channels:
+  - conda-forge
+specs:
+  - python 3.12.*
+  - exec-wrappers
+  - pip
+extra_files:
+  - rpi-ai.tar.gz
+post_install: "post_install.sh"

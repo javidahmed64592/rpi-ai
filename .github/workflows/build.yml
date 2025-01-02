@@ -1,31 +1,45 @@
-name: Build and Publish Python Wheel
+name: Build and Publish Constructor Package
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v4
-          - name: Set up Python
-            uses: actions/setup-python@v5
-            with:
-              python-version: '3.12'
-
-          - name: Install build dependencies
-            run: python -m pip install --upgrade pip build
-
-          - name: Build wheel
-            run: python -m build --wheel
-
-          - name: Upload artifact
-            uses: actions/upload-artifact@v4
-            with:
-              name: python-wheel
-              path: dist/*.whl
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: mambaorg/micromamba:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install constructor
+        run: micromamba install -y constructor
+      - name: Install build dependencies
+        run: python -m pip install --upgrade pip build
+      - name: Build wheel
+        run: |
+          python -m build --wheel
+          WHEEL_FILE=$(ls dist/*.whl)
+          VERSION=$(echo $WHEEL_FILE | sed -n 's/.*-\([0-9]*\.[0-9]*\.[0-9]*\)-.*/\1/p')
+      - name: Create dist tarball
+        run: tar -czf rpi-ai.tar.gz dist
+      - name: Run constructor
+        run: constructor .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-wheel
+          path: RPi-AI-${VERSION}-Linux-x86_64.sh
