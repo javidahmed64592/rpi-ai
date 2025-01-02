@@ -37,6 +37,8 @@ jobs:
           init-shell: >-
             bash
           post-cleanup: 'all'
+        env:
+          MICROMAMBA_ROOT_PREFIX: ~/micromamba
       - name: Install constructor
         run: micromamba install -y constructor
         shell: bash
