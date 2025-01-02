@@ -39,7 +39,7 @@ jobs:
           post-cleanup: 'all'
       - name: Install constructor
         run: micromamba install -y constructor
-        shell: micromamba-shell {0}
+        shell: bash
       - name: Run constructor
         run: constructor .
         shell: micromamba-shell {0}
