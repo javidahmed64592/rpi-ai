@@ -23,6 +23,7 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+      - uses: mamba-org/setup-micromamba@v2
       - name: Install constructor
         run: micromamba install -y constructor
       - name: Install build dependencies
