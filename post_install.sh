@@ -25,9 +25,14 @@ cat > $EXEC_FILE << EOF
 EOF
 chmod +x $EXEC_FILE
 
+echo "Creating .env file..."
+ENV_FILE="${BIN_DIR}/.env"
+cat > $ENV_FILE << EOF
+GEMINI_API_KEY=<Insert your Gemini API key here>
+EOF
+
 echo "==================================================================================================="
 echo "RPi-AI has been installed successfully at: '${PREFIX}'"
 echo "The launchers are located at: '${BIN_DIR}'"
-echo
-echo "To use the virtual environment, activate the following path with Conda or similar: '${PREFIX}'"
+echo "Add your Gemini API key to '${ENV_FILE}' before running the application."
 echo "==================================================================================================="
