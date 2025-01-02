@@ -28,7 +28,8 @@ GEMINI_API_KEY=<Insert your Gemini API key here>
 EOF
 
 echo "==================================================================================================="
-echo "RPi-AI has been installed successfully at: '${PREFIX}'"
-echo "The launchers are located at: '${BIN_DIR}'"
-echo "Add your Gemini API key to '${ENV_FILE}' before running the application."
+echo "Installation complete!"
+echo "RPi-AI has been installed at: '${PREFIX}'"
+echo "Add your Gemini API key to: '${ENV_FILE}'"
+echo "Run RPi-AI using: '${EXEC_FILE}'"
 echo "==================================================================================================="
