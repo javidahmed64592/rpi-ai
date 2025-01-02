@@ -11,8 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: mambaorg/micromamba:latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
