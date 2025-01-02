@@ -48,3 +48,18 @@ jobs:
         with:
           name: build
           path: RPi-AI-${{ env.VERSION }}-Linux-x86_64.sh
+
+  install:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: ./artifact
+      - name: Run installation script
+        env:
+          VERSION: ${{ env.VERSION }}
+        run: ./artifact/RPi-AI-${{ env.VERSION }}-Linux-x86_64.sh
