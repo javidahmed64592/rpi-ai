@@ -11,6 +11,9 @@ mv "${PREFIX}/rpi-ai" "${BIN_DIR}"
 rm "${PREFIX}/rpi-ai.tar.gz"
 
 echo "Installing from wheel..."
+
+echo "BIN_DIR:"
+ls -la ${BIN_DIR}
 PACKAGE_WHEEL=$(find ${BIN_DIR} -name 'rpi-ai-*-py3-none-any.whl')
 "${PREFIX}/bin/pip" install "${PACKAGE_WHEEL}"
 rm "${PACKAGE_WHEEL}"
