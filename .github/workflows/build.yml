@@ -37,16 +37,10 @@ jobs:
           init-shell: >-
             bash
           post-cleanup: 'all'
-        env:
-          MICROMAMBA_ROOT_PREFIX: ~/micromamba
-      - name: Install constructor
-        run:
-          micromamba activate base
-          micromamba install -y constructor
-        shell: bash
-      - name: Run constructor
-        run: constructor .
-        shell: micromamba-shell {0}
+      - name: Install and run constructor
+        run: |
+          micromamba install -y -n base -c conda-forge constructor
+          constructor .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
