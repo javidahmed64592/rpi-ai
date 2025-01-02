@@ -28,9 +28,7 @@ jobs:
       - name: Build wheel
         run: |
           python -m build --wheel
-          echo "ROOT"
-          ls -la dist
-          WHEEL_FILE=$(ls dist/rpi-ai-*-py3-none-any.whl)
+          WHEEL_FILE=$(ls dist/rpi_ai-*-py3-none-any.whl)
           echo "VERSION=$(echo $WHEEL_FILE | sed -n 's/.*-\([0-9]*\.[0-9]*\.[0-9]*\)-.*/\1/p')" >> $GITHUB_ENV
       - uses: mamba-org/setup-micromamba@v2
         with:
