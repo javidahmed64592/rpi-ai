@@ -62,4 +62,4 @@ jobs:
       - name: Run installation script
         run: |
           INSTALL_SCRIPT=$(ls ./artifact/RPi-AI-*-Linux-x86_64.sh)
-          ./${INSTALL_SCRIPT}
+          ${INSTALL_SCRIPT}
