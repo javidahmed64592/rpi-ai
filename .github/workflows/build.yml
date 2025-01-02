@@ -40,7 +40,9 @@ jobs:
         env:
           MICROMAMBA_ROOT_PREFIX: ~/micromamba
       - name: Install constructor
-        run: micromamba install -y constructor
+        run:
+          micromamba activate base
+          micromamba install -y constructor
         shell: bash
       - name: Run constructor
         run: constructor .
