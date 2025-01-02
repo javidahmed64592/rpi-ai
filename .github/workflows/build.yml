@@ -40,7 +40,7 @@ jobs:
       - name: Install and run constructor
         run: |
           micromamba install -y -n base -c conda-forge constructor
-          constructor .
+          micromamba run -n base constructor .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
