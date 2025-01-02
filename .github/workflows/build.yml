@@ -38,12 +38,9 @@ jobs:
             bash
           post-cleanup: 'all'
       - name: Install and run constructor
-        env:
-          VERSION: ${{ env.VERSION }}
         run: |
           micromamba install -y -n base -c conda-forge constructor
           micromamba run -n base constructor .
-          chmod +x RPi-AI-${{ env.VERSION }}-Linux-x86_64.sh
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
@@ -65,4 +62,5 @@ jobs:
       - name: Run installation script
         run: |
           INSTALL_SCRIPT=$(ls ./artifact/RPi-AI-*-Linux-x86_64.sh)
+          chmod +x ${INSTALL_SCRIPT}
           ${INSTALL_SCRIPT}
