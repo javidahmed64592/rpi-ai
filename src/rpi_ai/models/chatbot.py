@@ -11,7 +11,7 @@ class Chatbot:
             max_output_tokens=max_output_tokens,
             temperature=temperature,
         )
-        self._model = genai.GenerativeModel(model)
+        self._model = genai.GenerativeModel(model, generation_config=self._gen_config)
         self._chat = self._model.start_chat(
             history=[
                 {"role": "user", "parts": "Hello there!"},
