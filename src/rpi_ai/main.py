@@ -1,13 +1,24 @@
 import os
 
 from dotenv import load_dotenv
+from flask import Flask, Response, jsonify, request
 
 from rpi_ai.models.chatbot import Chatbot
 from rpi_ai.models.logger import Logger
 
+app = Flask(__name__)
+logger = Logger(__name__)
 
-def run() -> None:
-    logger = Logger(__name__)
+
+@app.route("/chat", methods=["POST"])
+def chat() -> Response:
+    user_message = request.json.get("message")
+    response = chatbot.chat(user_message)
+    logger.info(response)
+    return jsonify({"response": response})
+
+
+if __name__ == "__main__":
     logger.debug("Loading environment variables...")
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -21,6 +32,4 @@ def run() -> None:
         raise ValueError(msg)
 
     chatbot = Chatbot(api_key, model)
-
-    response = chatbot.chat(str(input("User: ")))
-    logger.info(response)
+    app.run(host="0.0.0.0", port=5000)
