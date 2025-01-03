@@ -39,7 +39,7 @@ jobs:
       - name: Install and run constructor
         run: |
           micromamba install -y -n base -c conda-forge constructor
-          micromamba run -n base constructor . --platform linux-aarch64
+          micromamba run -n base constructor . --platform linux-aarch64 --conda-exe $(which micromamba)
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
