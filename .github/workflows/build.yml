@@ -1,7 +1,12 @@
 name: Build and Publish Constructor Package
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -34,7 +39,7 @@ jobs:
       - name: Install and run constructor
         run: |
           micromamba install -y -n base -c conda-forge constructor
-          micromamba run -n base constructor .
+          micromamba run -n base constructor . --platform linux-aarch64
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
