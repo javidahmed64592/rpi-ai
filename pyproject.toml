@@ -19,8 +19,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
+    "flask",
     "google-generativeai",
     "python-dotenv",
+    "pydantic",
 ]
 
 [project.optional-dependencies]
