@@ -1,5 +1,4 @@
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../app_state.dart';
@@ -37,8 +36,9 @@ class HttpHelper {
     }
   }
 
-  static Future<Response> _sendMessage(String uri, String message) async {
-    return await http.post(
+  static Future<List<Map<String, dynamic>>> _sendMessage(
+      String uri, String message) async {
+    final response = await http.post(
       Uri.parse(uri),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -47,23 +47,33 @@ class HttpHelper {
         'message': message,
       }),
     );
+
+    if (response.statusCode == 200) {
+      print('Message sent successfully: ${response.body}');
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      final List<dynamic> messagesList = body['messages'];
+      return messagesList
+          .map((message) => {
+                'text': message['message'],
+                'isUserMessage': message['is_user_message']
+              })
+          .toList();
+    }
+
+    throw Exception('Failed to send message: ${response.statusCode}');
   }
 
   static Future<bool> sendMessage(BuildContext context, String message) async {
     final appState = Provider.of<AppState>(context, listen: false);
     try {
-      final response =
+      final messages =
           await _sendMessage('${appState.getFullUrl()}/chat', message);
-
-      if (response.statusCode == 200) {
-        print('Message sent successfully: ${response.body}');
-        await getHistory(context);
-        return true;
-      } else {
-        print('Failed to send message: ${response.statusCode}');
-        return false;
-      }
+      appState.setMessages(messages);
+      return true;
     } on SocketException catch (e) {
+      print('Failed to send message: $e');
+      return false;
+    } catch (e) {
       print('Failed to send message: $e');
       return false;
     }
