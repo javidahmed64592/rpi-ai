@@ -36,4 +36,6 @@ jobs:
           cd ui
           flutter pub get
       - name: Test with flutter test
-        run: flutter test
+        run: |
+          cd ui
+          flutter test
