@@ -19,33 +19,32 @@ class _HomePageState extends State<HomePage> {
 
   Widget messageInterface() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Enter Message',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        const SizedBox(height: 20),
-        TextField(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Message',
-          ),
-          onChanged: (String value) {
-            setState(() {
-              message = value;
-            });
-          },
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            sendMessage(message);
-          },
-          child: const Text('Send Message'),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                maxLines: null,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Message',
+                ),
+                onChanged: (String value) {
+                  setState(() {
+                    message = value;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 10),
+            IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: () {
+                sendMessage(message);
+              },
+            ),
+          ],
         ),
       ],
     );
@@ -63,8 +62,10 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Expanded(
+                child: Container(),
+              ),
               messageInterface(),
             ],
           ),
