@@ -31,7 +31,11 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setMessages(List<Map<String, dynamic>> newMessages) {
+  void setMessages(List<Map<String, dynamic>>? newMessages) {
+    if (newMessages == null) {
+      return;
+    }
+
     _messages
       ..clear()
       ..addAll(newMessages);
