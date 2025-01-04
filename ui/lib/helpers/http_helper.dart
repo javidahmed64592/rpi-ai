@@ -31,7 +31,7 @@ class HttpHelper {
     }
   }
 
-  static Future<void> sendMessage(BuildContext context, String message) async {
+  static Future<bool> sendMessage(BuildContext context, String message) async {
     final appState = Provider.of<AppState>(context, listen: false);
     final Uri uri = Uri.parse('${appState.getFullUrl()}/chat');
     try {
@@ -48,13 +48,16 @@ class HttpHelper {
       if (response.statusCode == 200) {
         print('Message sent successfully: ${response.body}');
         await getHistory(context);
+        return true;
       } else {
         print('Failed to send message: ${response.statusCode}');
+        return false;
       }
     } on SocketException catch (e) {
       print('Failed to send message: $e');
       print('Message: $message');
       print('URI: $uri');
+      return false;
     }
   }
 }

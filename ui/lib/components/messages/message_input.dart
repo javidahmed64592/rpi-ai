@@ -9,10 +9,19 @@ class MessageInput extends StatefulWidget {
 }
 
 class _MessageInputState extends State<MessageInput> {
-  String message = '';
+  final TextEditingController textController = TextEditingController();
 
-  void sendMessage(String message) async {
-    await HttpHelper.sendMessage(context, message);
+  void sendMessage() async {
+    bool success = await HttpHelper.sendMessage(context, textController.text);
+    if (success) {
+      textController.clear();
+    }
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
   }
 
   @override
@@ -21,23 +30,19 @@ class _MessageInputState extends State<MessageInput> {
       children: [
         Expanded(
           child: TextField(
+            controller: textController,
             maxLines: null,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Message',
             ),
-            onChanged: (String value) {
-              setState(() {
-                message = value;
-              });
-            },
           ),
         ),
         const SizedBox(width: 10),
         IconButton(
           icon: const Icon(Icons.send),
           onPressed: () {
-            sendMessage(message);
+            sendMessage();
           },
         ),
       ],
