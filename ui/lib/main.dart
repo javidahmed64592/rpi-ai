@@ -7,13 +7,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppState(),
-      child: MyApp(),
+      child: const AIApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AIApp extends StatelessWidget {
+  const AIApp({super.key});
 
   @override
   Widget build(BuildContext context) {
