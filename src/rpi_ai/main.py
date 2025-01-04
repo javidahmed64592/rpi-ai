@@ -11,6 +11,11 @@ app = Flask(__name__)
 logger = Logger(__name__)
 
 
+@app.route("/history", methods=["GET"])
+def history() -> Response:
+    return jsonify(chatbot.chat_history)
+
+
 @app.route("/chat", methods=["POST"])
 def chat() -> Response:
     user_message = request.json.get("message")
