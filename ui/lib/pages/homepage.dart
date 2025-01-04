@@ -36,6 +36,61 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _showSettingsDialog() {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final TextEditingController ipController =
+        TextEditingController(text: appState.ip);
+    final TextEditingController portController =
+        TextEditingController(text: appState.port.toString());
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Settings'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                controller: ipController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'IP',
+                ),
+                onChanged: appState.setIp,
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: portController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Port',
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+                onChanged: (String value) {
+                  if (value.isNotEmpty) {
+                    appState.setPort(int.parse(value));
+                  }
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget ipText() {
     return Consumer<AppState>(
       builder: (context, appState, child) {
@@ -69,36 +124,6 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         );
       },
-    );
-  }
-
-  Widget urlBuilder() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Enter IP and Port',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              flex: 3,
-              child: ipText(),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              flex: 1,
-              child: portText(),
-            ),
-          ],
-        ),
-      ],
     );
   }
 
@@ -142,6 +167,10 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        leading: IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: _showSettingsDialog,
+        ),
       ),
       body: Center(
         child: Padding(
@@ -149,7 +178,6 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              urlBuilder(),
               messageInterface(),
             ],
           ),
