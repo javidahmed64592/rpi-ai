@@ -33,4 +33,4 @@ if __name__ == "__main__":
     config = AIConfigType.load("config/ai_config.json")
 
     chatbot = Chatbot(api_key, config)
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=8080)
