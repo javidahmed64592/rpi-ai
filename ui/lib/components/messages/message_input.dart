@@ -37,7 +37,7 @@ class _MessageInputState extends State<MessageInput> {
             maxLines: null,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              labelText: 'Message',
+              hintText: 'Type a message...',
             ),
           ),
         ),
