@@ -38,6 +38,14 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         leading: const SettingsButton(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              HttpHelper.getHistory(context).then((_) => scrollToBottom());
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Padding(

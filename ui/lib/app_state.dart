@@ -5,8 +5,10 @@ class AppState extends ChangeNotifier {
   int _port = 5000;
 
   final List<Map<String, dynamic>> _messages = [
-    {'text': 'Hello there!', 'isUserMessage': true},
-    {'text': 'Hi! How can I help you?', 'isUserMessage': false},
+    {
+      'text': 'Failed to retrieve messages! Please check IP and port.',
+      'isUserMessage': false
+    },
   ];
 
   String get ip => _ip;
