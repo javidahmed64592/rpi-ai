@@ -21,7 +21,7 @@ def chat() -> Response:
     user_message = request.json.get("message")
     response = chatbot.chat(user_message)
     logger.info(response)
-    return jsonify({"response": response})
+    return jsonify(chatbot.chat_history)
 
 
 if __name__ == "__main__":
