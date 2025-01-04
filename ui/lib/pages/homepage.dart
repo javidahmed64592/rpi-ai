@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../app_state.dart';
+import '../helpers/http_helper.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -17,23 +16,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String message = '';
 
   void sendMessage(String message) async {
-    final appState = Provider.of<AppState>(context, listen: false);
-    final Uri uri = Uri.parse('${appState.getFullUrl()}/chat');
-    final response = await http.post(
-      uri,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'message': message,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      print('Message sent successfully: ${response.body}');
-    } else {
-      print('Failed to send message: ${response.statusCode}');
-    }
+    await HttpHelper.sendMessage(context, message);
   }
 
   void _showSettingsDialog() {
