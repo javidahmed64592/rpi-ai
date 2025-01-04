@@ -24,7 +24,7 @@ class AIApp extends StatelessWidget {
             seedColor: const Color.fromARGB(255, 92, 60, 151)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Home Page'),
+      home: const HomePage(title: 'Home Page'),
     );
   }
 }
