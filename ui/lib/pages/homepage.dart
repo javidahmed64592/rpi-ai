@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:ui/helpers/http_helper.dart';
 import '../components/settings_dialog.dart';
 import '../components/messages/message_input.dart';
 import '../components/messages/message_list.dart';
@@ -14,6 +15,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    HttpHelper.getHistory(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

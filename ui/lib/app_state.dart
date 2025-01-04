@@ -5,18 +5,8 @@ class AppState extends ChangeNotifier {
   int _port = 5000;
 
   final List<Map<String, dynamic>> _messages = [
-    {'text': 'Hello!', 'isUserMessage': true},
-    {'text': 'Hi there!', 'isUserMessage': false},
-    {'text': 'How are you?', 'isUserMessage': true},
-    {'text': 'I am good, thanks!', 'isUserMessage': false},
-    {'text': 'What are you doing?', 'isUserMessage': true},
-    {'text': 'Just working on a project.', 'isUserMessage': false},
-    {'text': 'That sounds interesting!', 'isUserMessage': true},
-    {'text': 'Yes, it is!', 'isUserMessage': false},
-    {'text': 'Can you tell me more about it?', 'isUserMessage': true},
-    {'text': 'Sure, it is about AI and Flutter.', 'isUserMessage': false},
-    {'text': 'Wow, that is cool!', 'isUserMessage': true},
-    {'text': 'Thank you!', 'isUserMessage': false},
+    {'text': 'Hello there!', 'isUserMessage': true},
+    {'text': 'Hi! How can I help you?', 'isUserMessage': false},
   ];
 
   String get ip => _ip;
@@ -36,6 +26,13 @@ class AppState extends ChangeNotifier {
 
   void addMessage(Map<String, dynamic> message) {
     _messages.add(message);
+    notifyListeners();
+  }
+
+  void setMessages(List<Map<String, dynamic>> newMessages) {
+    _messages
+      ..clear()
+      ..addAll(newMessages);
     notifyListeners();
   }
 
