@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/settings_dialog.dart';
 import '../components/messages/message_input.dart';
+import '../components/messages/message_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: <Widget>[
               Expanded(
-                child: Container(),
+                child: MessageList(messages: _messages),
               ),
               const MessageInput(),
             ],
