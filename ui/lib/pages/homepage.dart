@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/helpers/http_helper.dart';
+import 'package:http/http.dart' as http;
 import '../components/settings_dialog.dart';
 import '../components/messages/message_input.dart';
 import '../components/messages/message_list.dart';
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ScrollController scrollController = ScrollController();
+  late HttpHelper httpHelper;
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -28,7 +30,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    HttpHelper.getHistory(context).then((_) => scrollToBottom());
+    httpHelper = HttpHelper(client: http.Client());
+    httpHelper.getHistory(context).then((_) => scrollToBottom());
   }
 
   @override
@@ -42,7 +45,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              HttpHelper.getHistory(context).then((_) => scrollToBottom());
+              httpHelper.getHistory(context).then((_) => scrollToBottom());
             },
           ),
         ],
@@ -62,7 +65,7 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ),
-              MessageInput(onSend: scrollToBottom),
+              MessageInput(onSend: scrollToBottom, httpHelper: httpHelper),
             ],
           ),
         ),

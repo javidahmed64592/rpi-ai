@@ -3,8 +3,10 @@ import '../../helpers/http_helper.dart';
 
 class MessageInput extends StatefulWidget {
   final VoidCallback onSend;
+  final HttpHelper httpHelper;
 
-  const MessageInput({Key? key, required this.onSend}) : super(key: key);
+  const MessageInput({Key? key, required this.onSend, required this.httpHelper})
+      : super(key: key);
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -14,7 +16,8 @@ class _MessageInputState extends State<MessageInput> {
   final TextEditingController textController = TextEditingController();
 
   void sendMessage() async {
-    bool success = await HttpHelper.sendMessage(context, textController.text);
+    bool success =
+        await widget.httpHelper.sendMessage(context, textController.text);
     if (success) {
       textController.clear();
       widget.onSend();
