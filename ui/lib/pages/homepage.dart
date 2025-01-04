@@ -15,10 +15,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ScrollController scrollController = ScrollController();
+
+  void scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.jumpTo(scrollController.position.maxScrollExtent);
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    HttpHelper.getHistory(context);
+    HttpHelper.getHistory(context).then((_) => scrollToBottom());
   }
 
   @override
@@ -37,11 +47,14 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: Consumer<AppState>(
                   builder: (context, appState, child) {
-                    return MessageList(messages: appState.messages);
+                    return MessageList(
+                      messages: appState.messages,
+                      scrollController: scrollController,
+                    );
                   },
                 ),
               ),
-              const MessageInput(),
+              MessageInput(onSend: scrollToBottom),
             ],
           ),
         ),

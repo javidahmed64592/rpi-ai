@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../../helpers/http_helper.dart';
 
 class MessageInput extends StatefulWidget {
-  const MessageInput({Key? key}) : super(key: key);
+  final VoidCallback onSend;
+
+  const MessageInput({Key? key, required this.onSend}) : super(key: key);
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -15,6 +17,7 @@ class _MessageInputState extends State<MessageInput> {
     bool success = await HttpHelper.sendMessage(context, textController.text);
     if (success) {
       textController.clear();
+      widget.onSend();
     }
   }
 
