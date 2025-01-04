@@ -21,7 +21,9 @@ class AIApp extends StatelessWidget {
       title: 'Raspberry Pi AI',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 92, 60, 151)),
+          seedColor: const Color.fromARGB(255, 46, 172, 73),
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
       home: const HomePage(title: 'Home Page'),
