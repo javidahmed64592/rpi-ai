@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../components/settings_dialog.dart';
 import '../components/messages/message_input.dart';
 import '../components/messages/message_list.dart';
+import '../app_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -12,8 +14,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String message = '';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,11 +24,15 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: <Widget>[
               Expanded(
-                child: MessageList(messages: _messages),
+                child: Consumer<AppState>(
+                  builder: (context, appState, child) {
+                    return MessageList(messages: appState.messages);
+                  },
+                ),
               ),
               const MessageInput(),
             ],
