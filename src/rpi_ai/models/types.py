@@ -10,9 +10,17 @@ class Message:
 
     @classmethod
     def from_dict(cls, data: dict[str, str]) -> Message:
-        parts = "".join([part.text for part in data["parts"]])
-        print(parts)
-        return cls(parts, data["role"] == "user")
+        parts = Message.extract_parts(data)
+        is_user = Message.is_user(data)
+        return cls(parts, is_user)
+
+    @staticmethod
+    def extract_parts(data: dict[str, str]) -> str:
+        return "".join([part.text for part in data["parts"]])
+
+    @staticmethod
+    def is_user(data: dict[str, str]) -> bool:
+        return data["role"] == "user"
 
 
 @dataclass
