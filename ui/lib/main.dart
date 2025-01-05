@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'app_state.dart';
 import 'package:ui/pages/homepage.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AppState(),
+      child: const AIApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AIApp extends StatelessWidget {
+  const AIApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +21,12 @@ class MyApp extends StatelessWidget {
       title: 'Raspberry Pi AI',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 92, 60, 151)),
+          seedColor: const Color.fromARGB(255, 46, 172, 73),
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Home Page'),
+      home: const HomePage(title: 'Gemini'),
     );
   }
 }
