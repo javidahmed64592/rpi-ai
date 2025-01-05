@@ -70,6 +70,7 @@ jobs:
         with:
           python-version: 3.12
           conda-remove-defaults: true
+          activate-environment: test
       - name: Run constructor
         run: |
           conda activate test
