@@ -77,7 +77,7 @@ jobs:
           cd release
 
           $ENV_LOCATION=$(conda info --base)/envs/test
-          conda run -n test constructor --platform linux-aarch64 --conda-exe $ENV_LOCATION/bin/conda .
+          conda run -n test constructor --platform linux-aarch64 --conda-exe "${ENV_LOCATION}/bin/conda" .
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
