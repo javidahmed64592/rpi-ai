@@ -75,7 +75,7 @@ jobs:
         run: |
           conda run -n test conda install -y constructor
           cd release
-          conda run -n test constructor --platform linux-aarch64 --conda-exe $HOME/miniconda/bin/conda .
+          conda run -n test constructor --platform linux-aarch64 --conda-exe $HOME/miniconda/envs/test/bin/conda .
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
