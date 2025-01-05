@@ -8,12 +8,6 @@ from rpi_ai.models.types import MessageList
 
 
 @pytest.fixture
-def mock_api_key() -> Generator[dict[str, str], None, None]:
-    with patch("rpi_ai.main.AIApp.get_api_key", "test_api_key") as mock:
-        yield mock
-
-
-@pytest.fixture
 def mock_jsonify() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.jsonify") as mock:
         yield mock

@@ -1,9 +1,16 @@
-from unittest.mock import MagicMock
+from collections.abc import Generator
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from rpi_ai.main import AIApp
 from rpi_ai.models.types import Message, MessageList
+
+
+@pytest.fixture
+def mock_api_key() -> Generator[str, None, None]:
+    with patch("rpi_ai.main.AIApp.get_api_key", "test_api_key") as mock:
+        yield mock
 
 
 @pytest.fixture
@@ -17,5 +24,5 @@ def mock_chat_history() -> MessageList:
 
 
 @pytest.fixture
-def mock_ai_app(mock_chatbot: MagicMock) -> AIApp:
+def mock_ai_app(mock_chatbot: MagicMock, mock_api_key: str) -> AIApp:
     return AIApp()
