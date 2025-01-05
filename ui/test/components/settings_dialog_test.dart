@@ -48,22 +48,4 @@ void main() {
     expect(appState.ip, '192.168.1.2');
     expect(appState.port, 9090);
   });
-
-  // testWidgets('SettingsButton opens SettingsDialog',
-  //     (WidgetTester tester) async {
-  //   final appState = AppState();
-  //   await tester.pumpWidget(
-  //     ChangeNotifierProvider<AppState>.value(
-  //       value: appState,
-  //       child: const MaterialApp(
-  //         home: HomePage(title: 'Home Page'),
-  //       ),
-  //     ),
-  //   );
-
-  //   await tester.tap(find.byType(SettingsButton));
-  //   await tester.pumpAndSettle();
-
-  //   expect(find.byType(SettingsDialog), findsOneWidget);
-  // });
 }

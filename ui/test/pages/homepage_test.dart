@@ -16,14 +16,14 @@ void main() {
     return ChangeNotifierProvider(
       create: (_) => AppState(),
       child: const MaterialApp(
-        home: HomePage(title: 'Home Page'),
+        home: HomePage(title: 'Gemini'),
       ),
     );
   }
 
   testWidgets('HomePage displays title', (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
-    expect(find.text('Home Page'), findsOneWidget);
+    expect(find.text('Gemini'), findsOneWidget);
   });
 
   testWidgets('HomePage displays SettingsButton', (WidgetTester tester) async {

@@ -26,7 +26,7 @@ class AIApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const HomePage(title: 'Home Page'),
+      home: const HomePage(title: 'Gemini'),
     );
   }
 }
