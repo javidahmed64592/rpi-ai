@@ -35,6 +35,7 @@ jobs:
           path: dist/rpi_ai-*-py3-none-any.whl
   package_constructor:
     runs-on: ubuntu-latest
+    needs: build_wheel
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
