@@ -1,14 +1,7 @@
 import json
 from unittest.mock import mock_open, patch
 
-import pytest
-
 from rpi_ai.config import AIConfigType
-
-
-@pytest.fixture
-def config_data() -> dict[str, str | float]:
-    return {"model": "test-model", "candidate_count": 2, "max_output_tokens": 50, "temperature": 0.7}
 
 
 class TestAIConfigType:

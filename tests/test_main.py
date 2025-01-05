@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from rpi_ai.main import AIApp
-from rpi_ai.models.types import Message, MessageList
+from rpi_ai.models.types import MessageList
 
 
 @pytest.fixture
@@ -20,20 +20,10 @@ def mock_request() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_chat_history() -> MessageList:
-    return MessageList([Message("Hello, World!")])
-
-
-@pytest.fixture
 def mock_chatbot(mock_chat_history: MessageList) -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.Chatbot") as mock:
         mock.chat_history = mock_chat_history
         yield mock
-
-
-@pytest.fixture
-def mock_ai_app(mock_chatbot: MagicMock) -> AIApp:
-    return AIApp()
 
 
 class TestAIApp:
