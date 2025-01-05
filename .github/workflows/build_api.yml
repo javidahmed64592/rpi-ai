@@ -73,8 +73,7 @@ jobs:
           source ~/.bashrc
       - name: Run constructor
         run: |
-          conda init bash
-          source ~/.bashrc
+          source ~/miniconda3/etc/profile.d/conda.sh
           conda activate base
           conda install -y constructor
           cd release
