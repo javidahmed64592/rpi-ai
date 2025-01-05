@@ -69,11 +69,9 @@ jobs:
       - name: Install conda
         run: |
           curl -O https://repo.anaconda.com/miniconda/Miniconda3-4.5.12-Linux-x86_64.sh
-          source $HOME/miniconda/bin/activate
-          conda init
       - name: Install and run constructor
         run: |
-          source $HOME/miniconda/bin/activate
+          conda activate base
           conda install -y constructor
           cd release
           constructor --platform linux-aarch64 --conda-exe $HOME/miniconda/bin/conda .
