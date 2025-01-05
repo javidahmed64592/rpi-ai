@@ -7,9 +7,6 @@ from rpi_ai.config import AIConfigType
 from rpi_ai.models.chatbot import Chatbot
 from rpi_ai.models.types import MessageList
 
-TEST_API_KEY = "test_api_key"
-TEST_CONFIG = AIConfigType("test_model")
-
 
 @pytest.fixture
 def mock_genai_configure() -> Generator[MagicMock, None, None]:
@@ -38,27 +35,19 @@ def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
     return mock_chat_instance
 
 
-@pytest.fixture
-def mock_chatbot(
-    mock_genai_configure: MagicMock,
-    mock_generative_model: MagicMock,
-    mock_start_chat_method: MagicMock,
-    mock_chat_instance: MagicMock,
-) -> Chatbot:
-    return Chatbot(TEST_API_KEY, TEST_CONFIG)
-
-
 class TestChatbot:
     def test_init(
         self,
         mock_chatbot: Chatbot,
+        mock_config: AIConfigType,
+        mock_api_key: MagicMock,
         mock_genai_configure: MagicMock,
         mock_generative_model: MagicMock,
         mock_start_chat_method: MagicMock,
     ) -> None:
-        mock_genai_configure.assert_called_once_with(api_key=TEST_API_KEY)
+        mock_genai_configure.assert_called_once_with(api_key=mock_api_key.return_value)
         mock_generative_model.assert_called_once_with(
-            TEST_CONFIG.model, generation_config=TEST_CONFIG.generation_config
+            mock_config.model, generation_config=mock_config.generation_config
         )
         mock_start_chat_method.assert_called_once_with(history=[mock_chatbot.first_message])
 
