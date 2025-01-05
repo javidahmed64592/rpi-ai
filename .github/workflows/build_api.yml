@@ -73,10 +73,9 @@ jobs:
           activate-environment: test
       - name: Run constructor
         run: |
-          conda activate test
-          conda install -y constructor
+          conda run -n test conda install -y constructor
           cd release
-          constructor --platform linux-aarch64 --conda-exe $HOME/miniconda/bin/conda .
+          conda run -n test constructor --platform linux-aarch64 --conda-exe $HOME/miniconda/bin/conda .
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
