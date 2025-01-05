@@ -25,6 +25,10 @@ class SettingsDialog extends StatelessWidget {
               border: OutlineInputBorder(),
               labelText: 'IP',
             ),
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly
+            ],
             onChanged: appState.setIp,
           ),
           const SizedBox(height: 10),
