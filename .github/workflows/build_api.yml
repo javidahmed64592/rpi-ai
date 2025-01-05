@@ -85,7 +85,7 @@ jobs:
           name: build
           path: release/RPi-AI-${{ env.VERSION }}-Linux-aarch64.sh
   install:
-    runs-on: debian:12
+    runs-on: ubuntu-latest
     needs: package_constructor
     steps:
       - name: Set up QEMU
