@@ -30,11 +30,14 @@ class AIApp:
         self.app.add_url_rule("/history", "history", self.history, methods=["GET"])
         self.app.add_url_rule("/chat", "chat", self.chat, methods=["POST"])
 
+    def get_request_json(self) -> dict[str, str]:
+        return request.json
+
     def history(self) -> Response:
         return jsonify(self.chatbot.chat_history)
 
     def chat(self) -> Response:
-        user_message = request.json.get("message")
+        user_message = self.get_request_json().get("message")
         logger.info(user_message)
         response = self.chatbot.chat(user_message)
         logger.info(response)
