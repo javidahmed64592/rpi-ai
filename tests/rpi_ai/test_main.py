@@ -8,8 +8,8 @@ from rpi_ai.models.types import MessageList
 
 
 @pytest.fixture
-def mock_os_environ() -> Generator[dict[str, str], None, None]:
-    with patch("os.environ", {"GEMINI_API_KEY": "test_api_key"}) as mock:
+def mock_api_key() -> Generator[dict[str, str], None, None]:
+    with patch("rpi_ai.main.AIApp.get_api_key", "test_api_key") as mock:
         yield mock
 
 
@@ -33,7 +33,7 @@ def mock_chatbot(mock_chat_history: MessageList) -> Generator[MagicMock, None, N
 
 
 class TestAIApp:
-    def test_history(self, mock_ai_app: AIApp, mock_os_environ: MagicMock, mock_jsonify: MagicMock) -> None:
+    def test_history(self, mock_ai_app: AIApp, mock_api_key: MagicMock, mock_jsonify: MagicMock) -> None:
         response = mock_ai_app.history()
         mock_jsonify.assert_called_once_with(mock_ai_app.chatbot.chat_history)
         assert response == mock_jsonify.return_value
@@ -41,7 +41,7 @@ class TestAIApp:
     def test_chat(
         self,
         mock_ai_app: AIApp,
-        mock_os_environ: MagicMock,
+        mock_api_key: MagicMock,
         mock_jsonify: MagicMock,
         mock_request: MagicMock,
         mock_chatbot: MagicMock,

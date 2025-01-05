@@ -14,7 +14,7 @@ class AIApp:
     def __init__(self) -> None:
         logger.debug("Loading environment variables...")
         load_dotenv()
-        api_key = os.environ.get("GEMINI_API_KEY")
+        api_key = self.get_api_key()
 
         if not api_key:
             msg = "GEMINI_API_KEY variable not set!"
@@ -29,6 +29,9 @@ class AIApp:
         self.app = Flask(__name__)
         self.app.add_url_rule("/history", "history", self.history, methods=["GET"])
         self.app.add_url_rule("/chat", "chat", self.chat, methods=["POST"])
+
+    def get_api_key(self) -> str:
+        return os.environ.get("GEMINI_API_KEY")
 
     def get_request_json(self) -> dict[str, str]:
         return request.json
