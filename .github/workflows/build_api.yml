@@ -69,9 +69,10 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: 3.12
-          auto-activate-base: true
+          conda-remove-defaults: true
       - name: Run constructor
         run: |
+          conda activate test
           conda install -y constructor
           cd release
           constructor --platform linux-aarch64 --conda-exe $HOME/miniconda/bin/conda .
