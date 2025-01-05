@@ -16,8 +16,11 @@ class _MessageInputState extends State<MessageInput> {
   final TextEditingController textController = TextEditingController();
 
   void sendMessage() async {
-    bool success =
-        await widget.httpHelper.sendMessage(context, textController.text);
+    final String message = textController.text.trim();
+    if (message.isEmpty) {
+      return;
+    }
+    bool success = await widget.httpHelper.sendMessage(context, message);
     if (success) {
       textController.clear();
       widget.onSend();

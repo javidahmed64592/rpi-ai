@@ -10,7 +10,7 @@ class Message:
 
     @classmethod
     def from_dict(cls, data: dict[str, str]) -> Message:
-        parts = Message.extract_parts(data)
+        parts = Message.extract_parts(data).strip()
         is_user = Message.is_user(data)
         return cls(parts, is_user)
 
