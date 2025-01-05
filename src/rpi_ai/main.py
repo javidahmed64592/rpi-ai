@@ -1,4 +1,5 @@
 import os
+import signal
 
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
@@ -47,6 +48,12 @@ class AIApp:
         return jsonify(self.chatbot.chat_history)
 
     def run(self, host: str, port: int) -> None:
+        def shutdown_handler(signum: int, frame: signal.FrameType) -> None:
+            logger.info("Shutting down AI...")
+            self.app.do_teardown_appcontext()
+            os._exit(0)
+
+        signal.signal(signal.SIGINT, shutdown_handler)
         self.app.run(host=host, port=port)
 
 
