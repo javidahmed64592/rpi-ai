@@ -21,6 +21,7 @@ classifiers = [
 dependencies = [
     "flask",
     "google-generativeai",
+    "grpcio==1.60.1",
     "python-dotenv",
     "pydantic",
 ]
