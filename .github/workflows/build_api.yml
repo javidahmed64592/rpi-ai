@@ -74,6 +74,7 @@ jobs:
       - name: Run constructor
         run: |
           conda init bash
+          source ~/.bashrc
           conda activate base
           conda install -y constructor
           cd release
