@@ -66,18 +66,16 @@ jobs:
 
           echo "release/:"
           ls release/
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          python-version: 3.12
-          conda-remove-defaults: true
-          activate-environment: test
+      - name: Install conda
+        uses: conda-incubator/setup-miniconda@v2
       - name: Run constructor
+        shell: bash -el {0}
         run: |
-          conda run -n test conda install -y constructor
+          conda install -y constructor
           cd release
 
-          $ENV_LOCATION=$(conda info --base)/envs/test
-          conda run -n test constructor --platform linux-aarch64 --conda-exe "${ENV_LOCATION}/bin/conda" .
+          $ENV_LOCATION=$(which conda)
+          constructor --platform linux-aarch64 --conda-exe "$ENV_LOCATION .
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
