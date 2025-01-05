@@ -76,7 +76,7 @@ jobs:
         shell: bash -el {0}
         run: |
           cd release
-          constructor --platform linux-aarch64 .
+          constructor --platform linux-aarch64 --conda-exe /usr/share/miniconda/bin/conda .
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
