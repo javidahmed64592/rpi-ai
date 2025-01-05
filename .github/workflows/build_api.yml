@@ -70,8 +70,6 @@ jobs:
         run: |
           curl -O https://repo.anaconda.com/miniconda/Miniconda3-4.5.12-Linux-x86_64.sh
           bash ./Miniconda3-4.5.12-Linux-x86_64.sh -y -b -p $HOME/miniconda
-          - name: Install and run constructor
-          run: |
           conda init bash
           source ~/.bashrc
       - name: Run constructor
