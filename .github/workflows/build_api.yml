@@ -68,14 +68,14 @@ jobs:
           ls release/
       - name: Install conda
         uses: conda-incubator/setup-miniconda@v2
-      - name: Run constructor
+      - name: Install constructor
         shell: bash -el {0}
         run: |
           conda install -y constructor
-          cd release
       - name: Run constructor
         shell: bash -el {0}
         run: |
+          cd release
           constructor --platform linux-aarch64 .
       - name: Upload artifact
         env:
