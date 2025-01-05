@@ -14,49 +14,61 @@ class SettingsDialog extends StatelessWidget {
     final TextEditingController portController =
         TextEditingController(text: appState.port.toString());
 
+    Widget ipTextField() {
+      return TextField(
+        controller: ipController,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'IP',
+        ),
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+        ],
+        onChanged: appState.setIp,
+      );
+    }
+
+    Widget portTextField() {
+      return TextField(
+        controller: portController,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Port',
+        ),
+        keyboardType: TextInputType.number,
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.digitsOnly
+        ],
+        onChanged: (String value) {
+          if (value.isNotEmpty) {
+            appState.setPort(int.parse(value));
+          }
+        },
+      );
+    }
+
+    Widget closeButton() {
+      return TextButton(
+        child: const Text('Close'),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      );
+    }
+
     return AlertDialog(
       title: const Text('Settings'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          TextField(
-            controller: ipController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'IP',
-            ),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
-            ],
-            onChanged: appState.setIp,
-          ),
+          ipTextField(),
           const SizedBox(height: 10),
-          TextField(
-            controller: portController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Port',
-            ),
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly
-            ],
-            onChanged: (String value) {
-              if (value.isNotEmpty) {
-                appState.setPort(int.parse(value));
-              }
-            },
-          ),
+          portTextField(),
         ],
       ),
       actions: <Widget>[
-        TextButton(
-          child: const Text('Close'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        closeButton(),
       ],
     );
   }
