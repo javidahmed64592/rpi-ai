@@ -75,7 +75,7 @@ jobs:
           cd release
 
           $ENV_LOCATION=$(which conda)
-          constructor --platform linux-aarch64 --conda-exe "$ENV_LOCATION .
+          constructor --platform linux-aarch64 --conda-exe $ENV_LOCATION .
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
