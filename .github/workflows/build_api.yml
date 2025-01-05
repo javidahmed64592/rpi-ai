@@ -61,8 +61,11 @@ jobs:
           echo "Application version: ${VERSION}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
-          echo "Moving wheel file to `release/` directory"
-          mv $WHEEL_FILE release/
+          echo "Moving wheel file to 'release/' directory"
+          mv $WHEEL_FILE release/$WHEEL_FILE
+
+          echo "release/:"
+          ls release/
       - uses: mamba-org/setup-micromamba@v2
         with:
           init-shell: >-
