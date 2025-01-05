@@ -52,7 +52,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rpi_ai_wheel
-      - name: Build wheel
+      - name: Process wheel
         run: |
           WHEEL_FILE=$(ls rpi_ai-*-py3-none-any.whl)
           echo "Found wheel: ${WHEEL_FILE}"
@@ -72,7 +72,7 @@ jobs:
         run: |
           cd release
           micromamba install -y -n base -c conda-forge constructor
-          micromamba run -n base constructor --platform linux-aarch64 --conda-exe micromamba construct.yaml
+          micromamba run -n base constructor --platform linux-aarch64 --conda-exe micromamba .
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
