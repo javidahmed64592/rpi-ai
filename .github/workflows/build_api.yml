@@ -66,21 +66,21 @@ jobs:
 
           echo "release/:"
           ls release/
-      - name: Install conda
-        uses: conda-incubator/setup-miniconda@v2
-      - name: Install constructor
-        shell: bash -el {0}
-        run: |
-          conda install -y constructor
-      - name: Run constructor
-        shell: bash -el {0}
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          init-shell: >-
+            bash
+          post-cleanup: 'all'
+      - name: Install and run constructor
         run: |
           cd release
-          constructor --platform linux-aarch64 --conda-exe /usr/share/miniconda/bin/conda .
+          MICROMAMBA_PATH=$(which micromamba)
+          micromamba install -y -n base -c conda-forge constructor
+          micromamba run -n base constructor --platform linux-aarch64 --conda-exe $MICROMAMBA_PATH .
       - name: Upload artifact
         env:
           VERSION: ${{ env.VERSION }}
         uses: actions/upload-artifact@v4
         with:
-          name: RPi-AI-${{ env.VERSION }}-Linux-aarch64_build
+          name: build
           path: release/RPi-AI-${{ env.VERSION }}-Linux-aarch64.sh
