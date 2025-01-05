@@ -19,6 +19,7 @@ def history() -> Response:
 @app.route("/chat", methods=["POST"])
 def chat() -> Response:
     user_message = request.json.get("message")
+    logger.info(user_message)
     response = chatbot.chat(user_message)
     logger.info(response)
     return jsonify(chatbot.chat_history)

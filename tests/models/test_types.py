@@ -1,15 +1,6 @@
-from collections.abc import Generator
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from rpi_ai.models.types import Message, MessageList
-
-
-@pytest.fixture
-def mock_extract_parts() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.models.types.Message.extract_parts") as mock:
-        yield mock
 
 
 class TestMessage:

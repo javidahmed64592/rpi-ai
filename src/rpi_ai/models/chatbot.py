@@ -8,12 +8,11 @@ class Chatbot:
     def __init__(self, api_key: str, config: AIConfigType) -> None:
         genai.configure(api_key=api_key)
         self._model = genai.GenerativeModel(config.model, generation_config=config.generation_config)
-        self._chat = self._model.start_chat(
-            history=[
-                {"role": "user", "parts": "Hello there!"},
-                {"role": "model", "parts": "Hi! How can I help you?"},
-            ]
-        )
+        self._chat = self._model.start_chat(history=[self.first_message])
+
+    @property
+    def first_message(self) -> dict[str, str]:
+        return {"role": "model", "parts": "What's on your mind today?"}
 
     @property
     def chat_history(self) -> MessageList:
