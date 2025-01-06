@@ -66,3 +66,23 @@ jobs:
         with:
           name: rpi_ai_release
           path: rpi_ai.tar.gz
+  check_installer:
+    runs-on: ubuntu-latest
+    needs: create_installer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download artifact from create_installer job
+        uses: actions/download-artifact@v4
+        with:
+          name: rpi_ai_release
+      - name: Extract release tarball
+        run: |
+          tar -xzf rpi_ai.tar.gz
+      - name: Run installer script
+        run: |
+          cd rpi_ai
+          ./install_rpi_ai.sh
