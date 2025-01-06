@@ -55,7 +55,7 @@ jobs:
       - name: Prepare release directory
         run: |
           mv rpi_ai-*.whl release/rpi_ai-*-py3-none-any.whl
-          cp config release/config
+          cp -r config release/config
       - name: Create release tarball
         run: |
           tar -czf rpi_ai.tar.gz release
