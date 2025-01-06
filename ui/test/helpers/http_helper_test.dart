@@ -4,7 +4,10 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'dart:convert';
 import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/app_state.dart';
 import 'http_helper_test.mocks.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/widgets.dart';
 
 // Generate a MockClient using the Mockito package.
 // Create new instances of this class in each test.
@@ -112,6 +115,34 @@ void main() {
 
       expect(httpHelper.sendMessageInternal(uri, message, authToken),
           throwsException);
+    });
+
+    testWidgets(
+        'checkApiConnection sets activePage to login if the http call completes with an error',
+        (WidgetTester tester) async {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      final appState = AppState();
+      const uri = '/';
+
+      when(client.get(Uri.parse(uri)))
+          .thenAnswer((_) async => http.Response('Not Found', 404));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<AppState>.value(
+          value: appState,
+          child: Builder(
+            builder: (context) {
+              Future.microtask(() => httpHelper.checkApiConnection(context));
+              return Container();
+            },
+          ),
+        ),
+      );
+
+      await tester.pump(); // Rebuild the widget tree
+
+      expect(appState.activePage, 'login');
     });
   });
 }

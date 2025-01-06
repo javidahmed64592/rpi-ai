@@ -10,6 +10,23 @@ class HttpHelper {
 
   HttpHelper({required this.client});
 
+  Future<void> checkApiConnection(BuildContext context) async {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final uri = '${appState.getFullUrl()}/';
+    try {
+      final response = await client.get(Uri.parse(uri));
+      if (response.statusCode != 200) {
+        appState.setActivePage('login');
+      }
+    } on SocketException catch (e) {
+      print('Failed to connect to API: $e');
+      appState.setActivePage('login');
+    } catch (e) {
+      print('Failed to connect to API: $e');
+      appState.setActivePage('login');
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getHistoryInternal(
       String uri, String authToken) async {
     final response = await client.get(

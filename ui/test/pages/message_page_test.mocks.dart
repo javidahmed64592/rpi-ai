@@ -75,6 +75,17 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i2.Client);
 
   @override
+  _i4.Future<void> checkApiConnection(_i5.BuildContext? context) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #checkApiConnection,
+          [context],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
   _i4.Future<List<Map<String, dynamic>>> getHistoryInternal(
     String? uri,
     String? authToken,
