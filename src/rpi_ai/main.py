@@ -29,6 +29,7 @@ class AIApp:
         self.chatbot = Chatbot(api_key, self.config)
 
         self.app = Flask(__name__)
+        self.app.add_url_rule("/", "is_alive", self.is_alive, methods=["GET"])
         self.app.add_url_rule("/history", "history", self.history, methods=["GET"])
         self.app.add_url_rule("/chat", "chat", self.chat, methods=["POST"])
 
@@ -37,6 +38,9 @@ class AIApp:
 
     def get_request_json(self) -> dict[str, str]:
         return request.json
+
+    def is_alive(self) -> Response:
+        return jsonify({"status": "alive"})
 
     def history(self) -> Response:
         return jsonify(self.chatbot.chat_history)

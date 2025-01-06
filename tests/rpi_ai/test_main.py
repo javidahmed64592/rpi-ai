@@ -27,6 +27,11 @@ def mock_chatbot(mock_chat_history: MessageList) -> Generator[MagicMock, None, N
 
 
 class TestAIApp:
+    def test_is_alive(self, mock_ai_app: AIApp, mock_jsonify: MagicMock) -> None:
+        response = mock_ai_app.is_alive()
+        mock_jsonify.assert_called_once_with({"status": "alive"})
+        assert response == mock_jsonify.return_value
+
     def test_history(self, mock_ai_app: AIApp, mock_api_key: MagicMock, mock_jsonify: MagicMock) -> None:
         response = mock_ai_app.history()
         mock_jsonify.assert_called_once_with(mock_ai_app.chatbot.chat_history)
