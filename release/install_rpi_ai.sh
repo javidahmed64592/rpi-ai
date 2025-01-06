@@ -1,11 +1,14 @@
 #!/bin/bash
+set -eu
+
 echo "Creating environment 'rpi_ai_venv'..."
 python -m venv rpi_ai_venv
 source rpi_ai_venv/bin/activate
 
 echo "Installing from wheel..."
-pip install rpi_ai-*-py3-none-any.whl
-rm rpi_ai-*-py3-none-any.whl
+WHEEL_FILE=$(find . -name 'rpi_ai-*-py3-none-any.whl')
+pip install $WHEEL_FILE
+rm $WHEEL_FILE
 
 echo "Creating API executable..."
 cat > rpi-ai << EOF
