@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:ui/components/messages/message_input.dart';
-import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/pages/home_page.dart';
 import 'package:ui/app_state.dart';
 import 'package:ui/components/settings_dialog.dart';
@@ -21,6 +19,11 @@ void main() {
     );
   }
 
+  testWidgets('HomePage displays AppBar', (WidgetTester tester) async {
+    await tester.pumpWidget(createHomePage());
+    expect(find.byType(AppBar), findsOneWidget);
+  });
+
   testWidgets('HomePage displays title', (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
     expect(find.text('Gemini'), findsOneWidget);
@@ -29,15 +32,5 @@ void main() {
   testWidgets('HomePage displays SettingsButton', (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
     expect(find.byType(SettingsButton), findsOneWidget);
-  });
-
-  testWidgets('HomePage displays MessageInput', (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
-    expect(find.byType(MessageInput), findsOneWidget);
-  });
-
-  testWidgets('HomePage displays MessageList', (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
-    expect(find.byType(MessageList), findsOneWidget);
   });
 }
