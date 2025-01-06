@@ -6,7 +6,7 @@ python -m venv venv
 
 echo "Installing from wheel..."
 WHEEL_FILE=$(find . -name 'rpi_ai-*-py3-none-any.whl')
-"venv/bin/pip" install -e $WHEEL_FILE
+"venv/bin/pip" install $WHEEL_FILE
 rm $WHEEL_FILE
 
 echo "Creating API executable..."

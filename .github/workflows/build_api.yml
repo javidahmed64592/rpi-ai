@@ -54,10 +54,14 @@ jobs:
           name: rpi_ai_wheel
       - name: Prepare release directory
         run: |
-          mv rpi_ai-*.whl release/rpi_ai-*-py3-none-any.whl
+          WHEEL_FILE=$(find . -name 'rpi_ai-*-py3-none-any.whl')
+          mv $WHEEL_FILE "release/${WHEEL_FILE}"
           cp -r config release/config
           chmod +x release/install_rpi_ai.sh
           mv release rpi_ai
+
+          echo "release/"
+          ls -l release/
       - name: Create release tarball
         run: |
           tar -czf rpi_ai.tar.gz rpi_ai
