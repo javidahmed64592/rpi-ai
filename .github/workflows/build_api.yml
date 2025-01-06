@@ -56,9 +56,11 @@ jobs:
         run: |
           mv rpi_ai-*.whl release/rpi_ai-*-py3-none-any.whl
           cp -r config release/config
+          chmod +x release/install_rpi_ai.sh
+          mv release rpi_ai
       - name: Create release tarball
         run: |
-          tar -czf rpi_ai.tar.gz release
+          tar -czf rpi_ai.tar.gz rpi_ai
       - name: Upload release tarball
         uses: actions/upload-artifact@v4
         with:
