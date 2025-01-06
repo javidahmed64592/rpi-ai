@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
-import 'package:ui/pages/homepage.dart';
+import 'package:ui/pages/home_page.dart';
 
 void main() {
   runApp(
@@ -26,7 +26,7 @@ class AIApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const HomePage(title: 'Gemini'),
+      home: const HomePage(),
     );
   }
 }

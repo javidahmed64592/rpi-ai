@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/components/messages/message_input.dart';
 import 'package:ui/components/messages/message_list.dart';
-import 'package:ui/pages/homepage.dart';
+import 'package:ui/pages/home_page.dart';
 import 'package:ui/app_state.dart';
 import 'package:ui/components/settings_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
@@ -16,7 +16,7 @@ void main() {
     return ChangeNotifierProvider(
       create: (_) => AppState(),
       child: const MaterialApp(
-        home: HomePage(title: 'Gemini'),
+        home: HomePage(),
       ),
     );
   }
