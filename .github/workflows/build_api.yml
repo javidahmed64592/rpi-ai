@@ -89,3 +89,6 @@ jobs:
         run: |
           cd rpi_ai
           ./install_rpi_ai.sh
+
+          echo "rpi_ai/"
+          ls -l
