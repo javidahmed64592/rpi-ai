@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build_wheel:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,4 +32,63 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rpi_ai_wheel
-          path: dist/*.whl
+          path: dist/rpi_ai-*-py3-none-any.whl
+  create_installer:
+    runs-on: ubuntu-latest
+    needs: build_wheel
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: rpi_ai_wheel
+      - name: Prepare release directory
+        run: |
+          WHEEL_FILE=$(find . -name 'rpi_ai-*-py3-none-any.whl')
+          mv $WHEEL_FILE "release/${WHEEL_FILE}"
+          cp -r config release/config
+          chmod +x release/install_rpi_ai.sh
+          mv release rpi_ai
+
+          echo "rpi_ai/"
+          ls -l rpi_ai/
+      - name: Create release tarball
+        run: |
+          tar -czf rpi_ai.tar.gz rpi_ai
+      - name: Upload release tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpi_ai_release
+          path: rpi_ai.tar.gz
+  check_installer:
+    runs-on: ubuntu-latest
+    needs: create_installer
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download artifact from create_installer job
+        uses: actions/download-artifact@v4
+        with:
+          name: rpi_ai_release
+      - name: Extract release tarball
+        run: |
+          tar -xzf rpi_ai.tar.gz
+      - name: Run installer script
+        run: |
+          cd rpi_ai
+          ./install_rpi_ai.sh
+
+          echo "rpi_ai/"
+          ls -l
