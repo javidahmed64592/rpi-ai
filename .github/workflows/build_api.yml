@@ -60,8 +60,8 @@ jobs:
           chmod +x release/install_rpi_ai.sh
           mv release rpi_ai
 
-          echo "release/"
-          ls -l release/
+          echo "rpi_ai/"
+          ls -l rpi_ai/
       - name: Create release tarball
         run: |
           tar -czf rpi_ai.tar.gz rpi_ai
