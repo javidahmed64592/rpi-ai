@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 class AppState extends ChangeNotifier {
   String _ip = '127.0.0.1';
   int _port = 5000;
+  String _authToken = '';
+  String _activePage = 'login';
 
-  final List<Map<String, dynamic>> _messages = [
-    {
-      'text': 'Failed to retrieve messages! Please check IP and port.',
-      'isUserMessage': false
-    },
-  ];
+  final List<Map<String, dynamic>> _messages = [];
 
   String get ip => _ip;
   int get port => _port;
+  String get authToken => _authToken;
+  String get activePage => _activePage;
 
   List<Map<String, dynamic>> get messages => _messages;
 
@@ -23,6 +22,16 @@ class AppState extends ChangeNotifier {
 
   void setPort(int newPort) {
     _port = newPort;
+    notifyListeners();
+  }
+
+  void setAuthToken(String newAuthToken) {
+    _authToken = newAuthToken;
+    notifyListeners();
+  }
+
+  void setActivePage(String newPage) {
+    _activePage = newPage;
     notifyListeners();
   }
 

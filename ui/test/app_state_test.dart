@@ -12,6 +12,8 @@ void main() {
     test('initial values are correct', () {
       expect(appState.ip, '127.0.0.1');
       expect(appState.port, 5000);
+      expect(appState.authToken, '');
+      expect(appState.activePage, 'login');
       expect(appState.messages.length, 1);
       expect(appState.messages[0]['text'],
           'Failed to retrieve messages! Please check IP and port.');
@@ -26,6 +28,16 @@ void main() {
     test('setPort updates the port', () {
       appState.setPort(8080);
       expect(appState.port, 8080);
+    });
+
+    test('setAuthToken updates the auth token', () {
+      appState.setAuthToken('newToken');
+      expect(appState.authToken, 'newToken');
+    });
+
+    test('setActivePage updates the active page', () {
+      appState.setActivePage('message');
+      expect(appState.activePage, 'message');
     });
 
     test('addMessage adds a new message', () {
