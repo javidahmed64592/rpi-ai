@@ -10,9 +10,9 @@ import 'package:mockito/annotations.dart';
 
 @GenerateMocks([HttpHelper, http.Client])
 void main() {
-  Widget createHomePage() {
-    return ChangeNotifierProvider(
-      create: (_) => AppState(),
+  Widget createHomePage(AppState appState) {
+    return ChangeNotifierProvider.value(
+      value: appState,
       child: const MaterialApp(
         home: HomePage(),
       ),
@@ -20,17 +20,27 @@ void main() {
   }
 
   testWidgets('HomePage displays AppBar', (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+    await tester.pumpWidget(createHomePage(AppState()));
     expect(find.byType(AppBar), findsOneWidget);
   });
 
   testWidgets('HomePage displays title', (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+    await tester.pumpWidget(createHomePage(AppState()));
     expect(find.text('Gemini'), findsOneWidget);
   });
 
   testWidgets('HomePage displays SettingsButton', (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+    final appState = AppState();
+    appState.setActivePage('message');
+    await tester.pumpWidget(createHomePage(appState));
     expect(find.byType(SettingsButton), findsOneWidget);
+  });
+
+  testWidgets('HomePage does not display SettingsButton on login page',
+      (WidgetTester tester) async {
+    final appState = AppState();
+    appState.setActivePage('login');
+    await tester.pumpWidget(createHomePage(appState));
+    expect(find.byType(SettingsButton), findsNothing);
   });
 }

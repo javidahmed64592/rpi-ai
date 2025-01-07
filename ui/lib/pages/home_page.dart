@@ -55,7 +55,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Gemini'),
-        leading: const SettingsButton(),
+        actions:
+            appState.activePage != 'login' ? [const SettingsButton()] : null,
       ),
       body: Center(
         child: Padding(
