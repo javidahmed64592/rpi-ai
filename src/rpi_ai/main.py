@@ -1,4 +1,5 @@
 import os
+import secrets
 import signal
 from types import FrameType
 
@@ -28,16 +29,39 @@ class AIApp:
 
         self.chatbot = Chatbot(api_key, self.config)
 
+        self.token = self.generate_token()
+        logger.info(f"Generated token: {self.token}")
+
         self.app = Flask(__name__)
         self.app.add_url_rule("/", "is_alive", self.is_alive, methods=["GET"])
-        self.app.add_url_rule("/history", "history", self.history, methods=["GET"])
-        self.app.add_url_rule("/chat", "chat", self.chat, methods=["POST"])
+        self.app.add_url_rule("/history", "history", self.token_required(self.history), methods=["GET"])
+        self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
 
     def get_api_key(self) -> str:
         return os.environ.get("GEMINI_API_KEY")
 
     def get_request_json(self) -> dict[str, str]:
         return request.json
+
+    def get_request_headers(self) -> dict[str, str]:
+        return request.headers
+
+    def generate_token(self) -> str:
+        """Generate a secure token for client authentication."""
+        return secrets.token_hex(16)
+
+    def authenticate(self) -> bool:
+        return self.get_request_headers().get("Authorization") == self.token
+
+    def token_required(self, f: callable) -> callable:
+        """Decorator to protect endpoints with token authentication."""
+
+        def decorated_function(*args: tuple, **kwargs: dict) -> Response:
+            if not self.authenticate():
+                return jsonify({"error": "Unauthorized"}), 401
+            return f(*args, **kwargs)
+
+        return decorated_function
 
     def is_alive(self) -> Response:
         return jsonify({"status": "alive"})

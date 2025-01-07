@@ -12,10 +12,9 @@ void main() {
     test('initial values are correct', () {
       expect(appState.ip, '127.0.0.1');
       expect(appState.port, 5000);
-      expect(appState.messages.length, 1);
-      expect(appState.messages[0]['text'],
-          'Failed to retrieve messages! Please check IP and port.');
-      expect(appState.messages[0]['isUserMessage'], false);
+      expect(appState.authToken, '');
+      expect(appState.activePage, 'login');
+      expect(appState.messages.length, 0);
     });
 
     test('setIp updates the IP address', () {
@@ -28,11 +27,21 @@ void main() {
       expect(appState.port, 8080);
     });
 
+    test('setAuthToken updates the auth token', () {
+      appState.setAuthToken('newToken');
+      expect(appState.authToken, 'newToken');
+    });
+
+    test('setActivePage updates the active page', () {
+      appState.setActivePage('message');
+      expect(appState.activePage, 'message');
+    });
+
     test('addMessage adds a new message', () {
       final newMessage = {'text': 'Hello, world!', 'isUserMessage': true};
       appState.addMessage(newMessage);
-      expect(appState.messages.length, 2);
-      expect(appState.messages[1], newMessage);
+      expect(appState.messages.length, 1);
+      expect(appState.messages[0], newMessage);
     });
 
     test('setMessages updates the messages list', () {

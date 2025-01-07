@@ -2,6 +2,7 @@ from collections.abc import Generator
 from unittest.mock import MagicMock, patch
 
 import pytest
+from flask.testing import FlaskClient
 
 from rpi_ai.config import AIConfigType
 from rpi_ai.main import AIApp
@@ -45,4 +46,12 @@ def mock_chatbot(
 
 @pytest.fixture
 def mock_ai_app(mock_chatbot: MagicMock, mock_api_key: str) -> AIApp:
-    return AIApp()
+    app = AIApp()
+    app.token = "test_token"
+    return app
+
+
+@pytest.fixture
+def mock_client(mock_ai_app: AIApp) -> Generator[FlaskClient, None, None]:
+    with mock_ai_app.app.test_client() as client:
+        yield client

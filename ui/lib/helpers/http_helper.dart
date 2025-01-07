@@ -1,8 +1,8 @@
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:provider/provider.dart';
-import '../app_state.dart';
 import 'package:flutter/material.dart';
+import 'package:ui/app_state.dart';
+import 'dart:convert';
 import 'dart:io';
 
 class HttpHelper {
@@ -10,8 +10,31 @@ class HttpHelper {
 
   HttpHelper({required this.client});
 
-  Future<List<Map<String, dynamic>>> getHistoryInternal(String uri) async {
-    final response = await client.get(Uri.parse(uri));
+  Future<void> checkApiConnection(BuildContext context) async {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final uri = '${appState.getFullUrl()}/';
+    try {
+      final response = await client.get(Uri.parse(uri));
+      if (response.statusCode != 200) {
+        appState.setActivePage('login');
+      }
+    } on SocketException catch (e) {
+      print('Failed to connect to API: $e');
+      appState.setActivePage('login');
+    } catch (e) {
+      print('Failed to connect to API: $e');
+      appState.setActivePage('login');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getHistoryInternal(
+      String uri, String authToken) async {
+    final response = await client.get(
+      Uri.parse(uri),
+      headers: <String, String>{
+        'Authorization': authToken,
+      },
+    );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
@@ -31,8 +54,9 @@ class HttpHelper {
   Future<void> getHistory(BuildContext context) async {
     final appState = Provider.of<AppState>(context, listen: false);
     try {
-      final messages =
-          await getHistoryInternal('${appState.getFullUrl()}/history');
+      await checkApiConnection(context);
+      final messages = await getHistoryInternal(
+          '${appState.getFullUrl()}/history', appState.authToken);
       appState.setMessages(messages);
     } on SocketException catch (e) {
       print('Failed to get history: $e');
@@ -42,11 +66,12 @@ class HttpHelper {
   }
 
   Future<List<Map<String, dynamic>>> sendMessageInternal(
-      String uri, String message) async {
+      String uri, String message, String authToken) async {
     final response = await client.post(
       Uri.parse(uri),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': authToken,
       },
       body: jsonEncode(<String, String>{
         'message': message,
@@ -71,8 +96,9 @@ class HttpHelper {
   Future<bool> sendMessage(BuildContext context, String message) async {
     final appState = Provider.of<AppState>(context, listen: false);
     try {
-      final messages =
-          await sendMessageInternal('${appState.getFullUrl()}/chat', message);
+      await checkApiConnection(context);
+      final messages = await sendMessageInternal(
+          '${appState.getFullUrl()}/chat', message, appState.authToken);
       appState.setMessages(messages);
       return true;
     } on SocketException catch (e) {

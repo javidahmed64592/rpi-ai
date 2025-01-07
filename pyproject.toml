@@ -106,7 +106,7 @@ select = [
     "W",
     "YTT",
 ]
-ignore = ["ANN101", "ANN102", "E501","E741","ISC001","N999"]
+ignore = ["G004"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
