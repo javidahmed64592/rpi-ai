@@ -54,6 +54,7 @@ class HttpHelper {
   Future<void> getHistory(BuildContext context) async {
     final appState = Provider.of<AppState>(context, listen: false);
     try {
+      await checkApiConnection(context);
       final messages = await getHistoryInternal(
           '${appState.getFullUrl()}/history', appState.authToken);
       appState.setMessages(messages);
@@ -95,6 +96,7 @@ class HttpHelper {
   Future<bool> sendMessage(BuildContext context, String message) async {
     final appState = Provider.of<AppState>(context, listen: false);
     try {
+      await checkApiConnection(context);
       final messages = await sendMessageInternal(
           '${appState.getFullUrl()}/chat', message, appState.authToken);
       appState.setMessages(messages);
