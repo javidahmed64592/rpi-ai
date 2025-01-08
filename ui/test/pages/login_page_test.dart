@@ -1,11 +1,16 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
-import 'package:ui/app_state.dart';
-import 'package:ui/pages/login_page.dart';
-import 'package:ui/helpers/http_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
+import 'package:provider/provider.dart';
+
+// Project imports:
+import 'package:ui/app_state.dart';
+import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/pages/login_page.dart';
 import 'login_page_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, http.Client])

@@ -1,7 +1,12 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:provider/provider.dart';
-import 'app_state.dart';
+
+// Project imports:
 import 'package:ui/pages/home_page.dart';
+import 'package:ui/app_state.dart';
 
 void main() {
   runApp(

@@ -3,14 +3,21 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+
+// Dart imports:
 import 'dart:async' as _i4;
 import 'dart:convert' as _i6;
 import 'dart:typed_data' as _i8;
 
+// Flutter imports:
 import 'package:flutter/material.dart' as _i5;
+
+// Package imports:
 import 'package:http/http.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i7;
+
+// Project imports:
 import 'package:ui/helpers/http_helper.dart' as _i3;
 
 // ignore_for_file: type=lint

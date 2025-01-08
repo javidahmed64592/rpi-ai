@@ -1,13 +1,20 @@
+// Dart imports:
+import 'dart:async';
+
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
+// Project imports:
 import 'package:ui/app_state.dart';
+import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/app_bar/settings_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
 import 'package:ui/pages/message_page.dart';
-import 'dart:async';
-import 'package:http/http.dart' as http;
-import 'package:ui/components/app_bar/logout_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

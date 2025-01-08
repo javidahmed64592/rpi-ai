@@ -1,13 +1,20 @@
+// Dart imports:
+import 'dart:convert';
+
+// Flutter imports:
+import 'package:flutter/widgets.dart';
+
+// Package imports:
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'dart:convert';
-import 'package:ui/helpers/http_helper.dart';
-import 'package:ui/app_state.dart';
-import 'http_helper_test.mocks.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/widgets.dart';
+
+// Project imports:
+import 'package:ui/app_state.dart';
+import 'package:ui/helpers/http_helper.dart';
+import 'http_helper_test.mocks.dart';
 
 // Generate a MockClient using the Mockito package.
 // Create new instances of this class in each test.
