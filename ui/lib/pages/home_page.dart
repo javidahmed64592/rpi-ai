@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/app_state.dart';
-import 'package:ui/components/settings_dialog.dart';
+import 'package:ui/components/app_bar/settings_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
 import 'package:ui/pages/message_page.dart';

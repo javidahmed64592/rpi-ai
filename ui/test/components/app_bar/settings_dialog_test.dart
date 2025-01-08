@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ui/components/settings_dialog.dart';
+import 'package:ui/components/app_bar/settings_dialog.dart';
 
 void main() {
   testWidgets('SettingsDialog displays Close button',
