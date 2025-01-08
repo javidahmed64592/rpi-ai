@@ -38,4 +38,13 @@ jobs:
       - name: Test with flutter test
         run: |
           cd ui
-          flutter test
+          flutter test --coverage
+      - name: Generate coverage report
+        run: |
+          cd ui
+          genhtml coverage/lcov.info -o coverage/html
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: ui/coverage/html
