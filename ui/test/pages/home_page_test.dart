@@ -3,10 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/pages/home_page.dart';
 import 'package:ui/app_state.dart';
-import 'package:ui/components/settings_dialog.dart';
+import 'package:ui/components/app_bar/settings_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
+import 'package:ui/components/app_bar/logout_button.dart';
 
 @GenerateMocks([HttpHelper, http.Client])
 void main() {
@@ -42,5 +43,12 @@ void main() {
     appState.setActivePage('login');
     await tester.pumpWidget(createHomePage(appState));
     expect(find.byType(SettingsButton), findsNothing);
+  });
+
+  testWidgets('HomePage displays LogoutButton', (WidgetTester tester) async {
+    final appState = AppState();
+    appState.setActivePage('message');
+    await tester.pumpWidget(createHomePage(appState));
+    expect(find.byType(LogoutButton), findsOneWidget);
   });
 }

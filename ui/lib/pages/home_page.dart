@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/app_state.dart';
-import 'package:ui/components/settings_dialog.dart';
+import 'package:ui/components/app_bar/settings_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
 import 'package:ui/pages/message_page.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:ui/components/app_bar/logout_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -55,8 +56,12 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Gemini'),
-        actions:
-            appState.activePage != 'login' ? [const SettingsButton()] : null,
+        leading: appState.activePage != 'login' ? const SettingsButton() : null,
+        actions: appState.activePage != 'login'
+            ? [
+                const LogoutButton(),
+              ]
+            : null,
       ),
       body: Center(
         child: Padding(
