@@ -42,6 +42,17 @@ void main() {
     expect(find.byType(SettingsButton), findsOneWidget);
   });
 
+  testWidgets('SettingsButton opens SettingsDialog',
+      (WidgetTester tester) async {
+    final appState = AppState();
+    appState.setActivePage('message');
+    await tester.pumpWidget(createHomePage(appState));
+
+    await tester.tap(find.byType(SettingsButton));
+    await tester.pumpAndSettle();
+    expect(find.byType(SettingsDialog), findsOneWidget);
+  });
+
   testWidgets('HomePage does not display SettingsButton on login page',
       (WidgetTester tester) async {
     final appState = AppState();
@@ -55,5 +66,13 @@ void main() {
     appState.setActivePage('message');
     await tester.pumpWidget(createHomePage(appState));
     expect(find.byType(LogoutButton), findsOneWidget);
+  });
+
+  testWidgets('HomePage does not display LogoutButton on login page',
+      (WidgetTester tester) async {
+    final appState = AppState();
+    appState.setActivePage('login');
+    await tester.pumpWidget(createHomePage(appState));
+    expect(find.byType(LogoutButton), findsNothing);
   });
 }

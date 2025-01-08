@@ -38,4 +38,20 @@ void main() {
 
     expect(find.byType(AlertDialog), findsNothing);
   });
+
+  testWidgets('SettingsButton opens SettingsDialog',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: SettingsButton(),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byType(SettingsButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SettingsDialog), findsOneWidget);
+  });
 }
