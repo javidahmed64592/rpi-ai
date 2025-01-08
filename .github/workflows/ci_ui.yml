@@ -31,11 +31,24 @@ jobs:
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
           restore-keys: |
             ${{ runner.os }}-pub-
-      - name: Install dependencies
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install lcov
+      - name: Install Flutter dependencies
         run: |
           cd ui
           flutter pub get
       - name: Test with flutter test
         run: |
           cd ui
-          flutter test
+          flutter test --coverage
+      - name: Generate coverage report
+        run: |
+          cd ui
+          genhtml coverage/lcov.info -o coverage/html
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: ui/coverage/html
