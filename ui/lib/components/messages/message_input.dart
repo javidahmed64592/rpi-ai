@@ -1,5 +1,8 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import '../../helpers/http_helper.dart';
+
+// Project imports:
+import 'package:ui/helpers/http_helper.dart';
 
 class MessageInput extends StatefulWidget {
   final VoidCallback onSend;

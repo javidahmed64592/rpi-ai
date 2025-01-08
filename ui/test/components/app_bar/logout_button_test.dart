@@ -1,6 +1,11 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+
+// Project imports:
 import 'package:ui/app_state.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
 

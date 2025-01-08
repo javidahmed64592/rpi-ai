@@ -1,5 +1,8 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'message_container.dart';
+
+// Project imports:
+import 'package:ui/components/messages/message_container.dart';
 
 class MessageList extends StatefulWidget {
   final List<Map<String, dynamic>> messages;

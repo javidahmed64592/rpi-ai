@@ -1,10 +1,15 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
+// Package imports:
 import 'package:http/http.dart' as http;
-import '../components/messages/message_input.dart';
-import '../components/messages/message_list.dart';
-import '../app_state.dart';
-import '../helpers/http_helper.dart';
+import 'package:provider/provider.dart';
+
+// Project imports:
+import 'package:ui/app_state.dart';
+import 'package:ui/components/messages/message_input.dart';
+import 'package:ui/components/messages/message_list.dart';
+import 'package:ui/helpers/http_helper.dart';
 
 class MessagePage extends StatefulWidget {
   const MessagePage({super.key});

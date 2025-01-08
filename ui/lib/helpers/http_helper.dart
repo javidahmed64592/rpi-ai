@@ -1,9 +1,16 @@
-import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
-import 'package:ui/app_state.dart';
+// Dart imports:
 import 'dart:convert';
 import 'dart:io';
+
+// Flutter imports:
+import 'package:flutter/material.dart';
+
+// Package imports:
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+// Project imports:
+import 'package:ui/app_state.dart';
 
 class HttpHelper {
   final http.Client client;
