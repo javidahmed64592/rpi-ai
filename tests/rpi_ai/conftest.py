@@ -22,13 +22,6 @@ def mock_config(config_data: dict[str, str | float]) -> AIConfigType:
 
 # Chatbot fixtures
 @pytest.fixture
-def mock_api_key() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.get_api_key") as mock:
-        mock.return_value = "test_api_key"
-        yield mock
-
-
-@pytest.fixture
 def mock_genai_configure() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.models.chatbot.genai.configure") as mock:
         yield mock
@@ -81,6 +74,13 @@ def mock_send_message() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_jsonify() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.jsonify") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_api_key() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.AIApp.get_api_key") as mock:
+        mock.return_value = "test_api_key"
         yield mock
 
 
