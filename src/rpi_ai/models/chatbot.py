@@ -1,7 +1,7 @@
 import google.generativeai as genai
 
 from rpi_ai.config import AIConfigType
-from rpi_ai.models.types import Message, MessageList
+from rpi_ai.models.types import Message
 
 
 class Chatbot:
@@ -12,11 +12,6 @@ class Chatbot:
     @property
     def first_message(self) -> dict[str, str]:
         return {"role": "model", "parts": "What's on your mind today?"}
-
-    @property
-    def chat_history(self) -> MessageList:
-        history = [{"role": item.role, "parts": item.parts} for item in self._chat.history]
-        return MessageList.from_history(history)
 
     def start_chat(self) -> Message:
         self._chat = self._model.start_chat(history=[self.first_message])

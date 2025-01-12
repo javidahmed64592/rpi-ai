@@ -34,7 +34,7 @@ class AIApp:
 
         self.app = Flask(__name__)
         self.app.add_url_rule("/", "is_alive", self.is_alive, methods=["GET"])
-        self.app.add_url_rule("/history", "history", self.token_required(self.history), methods=["GET"])
+        self.app.add_url_rule("/login", "login", self.token_required(self.login), methods=["GET"])
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
 
     def get_api_key(self) -> str:
@@ -66,15 +66,18 @@ class AIApp:
     def is_alive(self) -> Response:
         return jsonify({"status": "alive"})
 
-    def history(self) -> Response:
-        return jsonify(self.chatbot.chat_history)
+    def login(self) -> Response:
+        logger.info("Starting new chat...")
+        response = self.chatbot.start_chat()
+        logger.info(response)
+        return jsonify(response)
 
     def chat(self) -> Response:
         user_message = self.get_request_json().get("message")
         logger.info(user_message)
-        response = self.chatbot.chat(user_message)
+        response = self.chatbot.send_message(user_message)
         logger.info(response)
-        return jsonify(self.chatbot.chat_history)
+        return jsonify(response)
 
     def run(self, host: str, port: int) -> None:
         def shutdown_handler(signum: int, frame: FrameType) -> None:
