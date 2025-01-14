@@ -1,7 +1,11 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Package imports:
+import 'package:provider/provider.dart';
+
 // Project imports:
+import 'package:ui/app_state.dart';
 import 'package:ui/helpers/http_helper.dart';
 
 class MessageInput extends StatefulWidget {
@@ -19,14 +23,22 @@ class _MessageInputState extends State<MessageInput> {
   final TextEditingController textController = TextEditingController();
 
   void sendMessage() async {
-    final String message = textController.text.trim();
-    if (message.isEmpty) {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final String userMessage = textController.text.trim();
+    if (userMessage.isEmpty) {
       return;
     }
-    bool success = await widget.httpHelper.sendMessage(context, message);
-    if (success) {
-      textController.clear();
+    appState.addMessage({'text': userMessage, 'isUserMessage': true});
+    textController.clear();
+
+    Map<String, dynamic> message = await widget.httpHelper
+        .chat(appState.fullUrl, appState.authToken, userMessage);
+    if (message.isNotEmpty) {
+      appState.addMessage(message);
       widget.onSend();
+    } else {
+      appState.removeLastMessage();
+      textController.text = userMessage;
     }
   }
 

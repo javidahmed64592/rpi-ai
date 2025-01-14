@@ -1,119 +1,88 @@
 // Dart imports:
 import 'dart:convert';
-import 'dart:io';
-
-// Flutter imports:
-import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-
-// Project imports:
-import 'package:ui/app_state.dart';
 
 class HttpHelper {
   final http.Client client;
 
   HttpHelper({required this.client});
 
-  Future<void> checkApiConnection(BuildContext context) async {
-    final appState = Provider.of<AppState>(context, listen: false);
-    final uri = '${appState.getFullUrl()}/';
+  Future<http.Response> getResponseFromUri(
+      String uri, Map<String, String>? headers) async {
     try {
-      final response = await client.get(Uri.parse(uri));
-      if (response.statusCode != 200) {
-        appState.setActivePage('login');
-      }
-    } on SocketException catch (e) {
-      print('Failed to connect to API: $e');
-      appState.setActivePage('login');
+      final response = await client.get(Uri.parse(uri), headers: headers);
+      return response;
     } catch (e) {
-      print('Failed to connect to API: $e');
-      appState.setActivePage('login');
+      print('Request failed: $e');
+      rethrow;
     }
   }
 
-  Future<List<Map<String, dynamic>>> getHistoryInternal(
-      String uri, String authToken) async {
-    final response = await client.get(
-      Uri.parse(uri),
-      headers: <String, String>{
-        'Authorization': authToken,
-      },
-    );
+  Future<bool> checkApiConnection(String url) async {
+    try {
+      final response = await getResponseFromUri('$url/', {});
+      if (response.statusCode == 200) {
+        return true;
+      }
+      throw Exception('(${response.statusCode}) ${response.body}');
+    } catch (e) {
+      print('Failed to connect to API: $e');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> getLoginResponse(
+      String url, String authToken) async {
+    final headers = <String, String>{
+      'Authorization': authToken,
+    };
+    final response = await getResponseFromUri('$url/login', headers);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
-      final List<dynamic> messagesList = body['messages'];
-      return messagesList
-          .map((message) => {
-                'text': message['message'],
-                'isUserMessage': message['is_user_message']
-              })
-          .toList();
+      return {
+        'text': body['message'].toString().trim(),
+        'isUserMessage': body['is_user_message']
+      };
     }
 
     // Raise exception if response status code is not 200
-    throw Exception('Failed to get history: ${response.statusCode}');
+    throw Exception('Login failed: (${response.statusCode}) ${response.body}');
   }
 
-  Future<void> getHistory(BuildContext context) async {
-    final appState = Provider.of<AppState>(context, listen: false);
+  Future<Map<String, dynamic>> chat(
+      String url, String authToken, String message) async {
+    final headers = <String, String>{
+      'Authorization': authToken,
+      'Content-Type': 'application/json', // Add this line
+    };
+    final body = jsonEncode(<String, String>{
+      'message': message,
+    });
+
     try {
-      await checkApiConnection(context);
-      final messages = await getHistoryInternal(
-          '${appState.getFullUrl()}/history', appState.authToken);
-      appState.setMessages(messages);
-    } on SocketException catch (e) {
-      print('Failed to get history: $e');
-    } catch (e) {
-      print('Failed to get history: $e');
-    }
-  }
+      final response = await client.post(
+        Uri.parse('$url/chat'),
+        headers: headers,
+        body: body,
+      );
 
-  Future<List<Map<String, dynamic>>> sendMessageInternal(
-      String uri, String message, String authToken) async {
-    final response = await client.post(
-      Uri.parse(uri),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': authToken,
-      },
-      body: jsonEncode(<String, String>{
-        'message': message,
-      }),
-    );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> body = jsonDecode(response.body);
+        return {
+          'text': body['message'].toString().trim(),
+          'isUserMessage': body['is_user_message']
+        };
+      }
 
-    if (response.statusCode == 200) {
-      print('Message sent successfully: ${response.body}');
-      final Map<String, dynamic> body = jsonDecode(response.body);
-      final List<dynamic> messagesList = body['messages'];
-      return messagesList
-          .map((message) => {
-                'text': message['message'],
-                'isUserMessage': message['is_user_message']
-              })
-          .toList();
-    }
-
-    throw Exception('Failed to send message: ${response.statusCode}');
-  }
-
-  Future<bool> sendMessage(BuildContext context, String message) async {
-    final appState = Provider.of<AppState>(context, listen: false);
-    try {
-      await checkApiConnection(context);
-      final messages = await sendMessageInternal(
-          '${appState.getFullUrl()}/chat', message, appState.authToken);
-      appState.setMessages(messages);
-      return true;
-    } on SocketException catch (e) {
-      print('Failed to send message: $e');
-      return false;
+      // Raise exception if response status code is not 200
+      throw Exception(
+          'Login failed: (${response.statusCode}) ${response.body}');
     } catch (e) {
       print('Failed to send message: $e');
-      return false;
+      return {};
     }
   }
 }

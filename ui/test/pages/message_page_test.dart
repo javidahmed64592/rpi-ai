@@ -13,15 +13,16 @@ import 'package:ui/components/messages/message_input.dart';
 import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/message_page.dart';
+import 'message_page_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, http.Client])
 void main() {
   Widget createMessagePage() {
     return ChangeNotifierProvider(
       create: (_) => AppState(),
-      child: const MaterialApp(
+      child: MaterialApp(
         home: Scaffold(
-          body: MessagePage(),
+          body: MessagePage(httpHelper: MockHttpHelper()),
         ),
       ),
     );

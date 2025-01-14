@@ -6,16 +6,13 @@
 
 // Dart imports:
 import 'dart:async' as _i4;
-import 'dart:convert' as _i6;
-import 'dart:typed_data' as _i8;
-
-// Flutter imports:
-import 'package:flutter/material.dart' as _i5;
+import 'dart:convert' as _i5;
+import 'dart:typed_data' as _i7;
 
 // Package imports:
 import 'package:http/http.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i7;
+import 'package:mockito/src/dummies.dart' as _i6;
 
 // Project imports:
 import 'package:ui/helpers/http_helper.dart' as _i3;
@@ -82,77 +79,74 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i2.Client);
 
   @override
-  _i4.Future<void> checkApiConnection(_i5.BuildContext? context) =>
+  _i4.Future<_i2.Response> getResponseFromUri(
+    String? uri,
+    Map<String, String>? headers,
+  ) =>
       (super.noSuchMethod(
+        Invocation.method(
+          #getResponseFromUri,
+          [
+            uri,
+            headers,
+          ],
+        ),
+        returnValue: _i4.Future<_i2.Response>.value(_FakeResponse_1(
+          this,
+          Invocation.method(
+            #getResponseFromUri,
+            [
+              uri,
+              headers,
+            ],
+          ),
+        )),
+      ) as _i4.Future<_i2.Response>);
+
+  @override
+  _i4.Future<bool> checkApiConnection(String? url) => (super.noSuchMethod(
         Invocation.method(
           #checkApiConnection,
-          [context],
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
-
-  @override
-  _i4.Future<List<Map<String, dynamic>>> getHistoryInternal(
-    String? uri,
-    String? authToken,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getHistoryInternal,
-          [
-            uri,
-            authToken,
-          ],
-        ),
-        returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
-            <Map<String, dynamic>>[]),
-      ) as _i4.Future<List<Map<String, dynamic>>>);
-
-  @override
-  _i4.Future<void> getHistory(_i5.BuildContext? context) => (super.noSuchMethod(
-        Invocation.method(
-          #getHistory,
-          [context],
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
-
-  @override
-  _i4.Future<List<Map<String, dynamic>>> sendMessageInternal(
-    String? uri,
-    String? message,
-    String? authToken,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #sendMessageInternal,
-          [
-            uri,
-            message,
-            authToken,
-          ],
-        ),
-        returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
-            <Map<String, dynamic>>[]),
-      ) as _i4.Future<List<Map<String, dynamic>>>);
-
-  @override
-  _i4.Future<bool> sendMessage(
-    _i5.BuildContext? context,
-    String? message,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #sendMessage,
-          [
-            context,
-            message,
-          ],
+          [url],
         ),
         returnValue: _i4.Future<bool>.value(false),
       ) as _i4.Future<bool>);
+
+  @override
+  _i4.Future<Map<String, dynamic>> getLoginResponse(
+    String? url,
+    String? authToken,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getLoginResponse,
+          [
+            url,
+            authToken,
+          ],
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<Map<String, dynamic>> chat(
+    String? url,
+    String? authToken,
+    String? message,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #chat,
+          [
+            url,
+            authToken,
+            message,
+          ],
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
 }
 
 /// A class which mocks [Client].
@@ -210,7 +204,7 @@ class MockClient extends _i1.Mock implements _i2.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i6.Encoding? encoding,
+    _i5.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -241,7 +235,7 @@ class MockClient extends _i1.Mock implements _i2.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i6.Encoding? encoding,
+    _i5.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -272,7 +266,7 @@ class MockClient extends _i1.Mock implements _i2.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i6.Encoding? encoding,
+    _i5.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -303,7 +297,7 @@ class MockClient extends _i1.Mock implements _i2.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i6.Encoding? encoding,
+    _i5.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -340,7 +334,7 @@ class MockClient extends _i1.Mock implements _i2.Client {
           [url],
           {#headers: headers},
         ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
+        returnValue: _i4.Future<String>.value(_i6.dummyValue<String>(
           this,
           Invocation.method(
             #read,
@@ -351,7 +345,7 @@ class MockClient extends _i1.Mock implements _i2.Client {
       ) as _i4.Future<String>);
 
   @override
-  _i4.Future<_i8.Uint8List> readBytes(
+  _i4.Future<_i7.Uint8List> readBytes(
     Uri? url, {
     Map<String, String>? headers,
   }) =>
@@ -361,8 +355,8 @@ class MockClient extends _i1.Mock implements _i2.Client {
           [url],
           {#headers: headers},
         ),
-        returnValue: _i4.Future<_i8.Uint8List>.value(_i8.Uint8List(0)),
-      ) as _i4.Future<_i8.Uint8List>);
+        returnValue: _i4.Future<_i7.Uint8List>.value(_i7.Uint8List(0)),
+      ) as _i4.Future<_i7.Uint8List>);
 
   @override
   _i4.Future<_i2.StreamedResponse> send(_i2.BaseRequest? request) =>

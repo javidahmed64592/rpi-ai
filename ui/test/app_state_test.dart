@@ -47,28 +47,35 @@ void main() {
       expect(appState.messages[0], newMessage);
     });
 
-    test('setMessages updates the messages list', () {
-      final newMessages = [
-        {'text': 'New message 1', 'isUserMessage': true},
-        {'text': 'New message 2', 'isUserMessage': false},
-      ];
-      appState.setMessages(newMessages);
-      expect(appState.messages.length, 2);
-      expect(appState.messages, newMessages);
-    });
-
-    test('setMessages with null does not update the messages list', () {
-      final originalMessages =
-          List<Map<String, dynamic>>.from(appState.messages);
-      appState.setMessages(null);
-      expect(appState.messages, originalMessages);
-    });
-
     test('getFullUrl returns the correct URL', () {
-      expect(appState.getFullUrl(), 'http://127.0.0.1:5000');
+      expect(appState.fullUrl, 'http://127.0.0.1:5000');
       appState.setIp('192.168.1.1');
       appState.setPort(8080);
-      expect(appState.getFullUrl(), 'http://192.168.1.1:8080');
+      expect(appState.fullUrl, 'http://192.168.1.1:8080');
+    });
+
+    test('clearMessages clears all messages', () {
+      final messages = [
+        {'text': 'Message 1', 'isUserMessage': true},
+        {'text': 'Message 2', 'isUserMessage': false},
+      ];
+      appState.addMessage(messages[0]);
+      appState.addMessage(messages[1]);
+      appState.clearMessages();
+      expect(appState.messages.length, 0);
+    });
+
+    test('removeLastMessage removes the last message', () {
+      final messages = [
+        {'text': 'Message 1', 'isUserMessage': true},
+        {'text': 'Message 2', 'isUserMessage': false},
+      ];
+      appState.addMessage(messages[0]);
+      appState.addMessage(messages[1]);
+      appState.removeLastMessage();
+      expect(appState.messages.length, 1);
+      expect(
+          appState.messages[0], {'text': 'Message 1', 'isUserMessage': true});
     });
   });
 }

@@ -25,6 +25,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Timer? timer;
+  final httpHelper = HttpHelper(client: http.Client());
 
   @override
   void initState() {
@@ -40,8 +41,12 @@ class _HomePageState extends State<HomePage> {
 
   void startCheckAPIAlive() {
     timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      final httpHelper = HttpHelper(client: http.Client());
-      httpHelper.checkApiConnection(context);
+      final appState = Provider.of<AppState>(context, listen: false);
+      httpHelper.checkApiConnection('${appState.fullUrl}/').then((value) {
+        if (!value) {
+          appState.setActivePage('login');
+        }
+      });
     });
   }
 
@@ -52,10 +57,10 @@ class _HomePageState extends State<HomePage> {
     Widget getPage() {
       switch (appState.activePage) {
         case 'message':
-          return const MessagePage();
+          return MessagePage(httpHelper: httpHelper);
         case 'login':
         default:
-          return const LoginPage();
+          return LoginPage(httpHelper: httpHelper);
       }
     }
 

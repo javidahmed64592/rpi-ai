@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // Package imports:
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 // Project imports:
@@ -11,7 +10,9 @@ import 'package:ui/app_state.dart';
 import 'package:ui/helpers/http_helper.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final HttpHelper httpHelper;
+
+  const LoginPage({super.key, required this.httpHelper});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -27,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     final appState = Provider.of<AppState>(context, listen: false);
-    httpHelper = HttpHelper(client: http.Client());
+    httpHelper = widget.httpHelper;
     ipController = TextEditingController(text: appState.ip);
     portController = TextEditingController(text: appState.port.toString());
     authTokenController = TextEditingController(text: appState.authToken);
@@ -87,8 +88,11 @@ class _LoginPageState extends State<LoginPage> {
         child: const Text('Connect'),
         onPressed: () async {
           try {
-            await httpHelper.getHistory(context);
-            if (appState.messages.isNotEmpty) {
+            final Map<String, dynamic> message = await httpHelper
+                .getLoginResponse(appState.fullUrl, appState.authToken);
+            if (message.isNotEmpty) {
+              appState.clearMessages();
+              appState.addMessage(message);
               appState.setActivePage('message');
             }
           } catch (e) {

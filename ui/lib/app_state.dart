@@ -11,6 +11,7 @@ class AppState extends ChangeNotifier {
 
   String get ip => _ip;
   int get port => _port;
+  String get fullUrl => 'http://$_ip:$_port';
   String get authToken => _authToken;
   String get activePage => _activePage;
 
@@ -41,18 +42,15 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setMessages(List<Map<String, dynamic>>? newMessages) {
-    if (newMessages == null) {
-      return;
-    }
-
-    _messages
-      ..clear()
-      ..addAll(newMessages);
+  void clearMessages() {
+    _messages.clear();
     notifyListeners();
   }
 
-  String getFullUrl() {
-    return 'http://$_ip:$_port';
+  void removeLastMessage() {
+    if (_messages.isNotEmpty) {
+      _messages.removeLast();
+      notifyListeners();
+    }
   }
 }
