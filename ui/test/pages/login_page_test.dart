@@ -8,16 +8,20 @@ import 'package:mockito/annotations.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/app_state.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
+import 'package:ui/state/app_state.dart';
+import 'package:ui/state/notification_state.dart';
 import 'login_page_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, http.Client])
 void main() {
   Widget createLoginPage() {
-    return ChangeNotifierProvider(
-      create: (_) => AppState(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppState()),
+        ChangeNotifierProvider(create: (_) => NotificationState()),
+      ],
       child: MaterialApp(
         home: Scaffold(
           body: LoginPage(httpHelper: MockHttpHelper()),

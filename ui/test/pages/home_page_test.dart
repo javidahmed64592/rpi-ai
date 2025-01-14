@@ -6,15 +6,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/app_state.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/app_bar/settings_dialog.dart';
 import 'package:ui/pages/home_page.dart';
+import 'package:ui/state/app_state.dart';
+import 'package:ui/state/notification_state.dart';
 
 void main() {
   Widget createHomePage(AppState appState) {
-    return ChangeNotifierProvider.value(
-      value: appState,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: appState),
+        ChangeNotifierProvider(create: (context) => NotificationState()),
+      ],
       child: const MaterialApp(
         home: HomePage(),
       ),

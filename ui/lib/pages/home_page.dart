@@ -9,12 +9,14 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/app_state.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/app_bar/settings_dialog.dart';
+import 'package:ui/components/notifications.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
 import 'package:ui/pages/message_page.dart';
+import 'package:ui/state/app_state.dart';
+import 'package:ui/state/notification_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,8 +44,8 @@ class _HomePageState extends State<HomePage> {
   void startCheckAPIAlive() {
     timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       final appState = Provider.of<AppState>(context, listen: false);
-      httpHelper.checkApiConnection('${appState.fullUrl}/').then((value) {
-        if (!value) {
+      httpHelper.checkApiConnection('${appState.fullUrl}/').then((alive) {
+        if (!alive) {
           appState.setActivePage('login');
         }
       });
@@ -53,6 +55,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
+    final notificationState = Provider.of<NotificationState>(context);
 
     Widget getPage() {
       switch (appState.activePage) {
@@ -61,6 +64,37 @@ class _HomePageState extends State<HomePage> {
         case 'login':
         default:
           return LoginPage(httpHelper: httpHelper);
+      }
+    }
+
+    Widget notification() {
+      onClose() {
+        return () {
+          notificationState.clearNotification();
+        };
+      }
+
+      switch (notificationState.notificationState) {
+        case 'error':
+          return NotificationError(
+            message:
+                notificationState.notificationMessage ?? 'An error occurred.',
+            onClose: onClose(),
+          );
+        case 'warning':
+          return NotificationWarning(
+            message:
+                notificationState.notificationMessage ?? 'A warning occurred.',
+            onClose: onClose(),
+          );
+        case 'info':
+          return NotificationInfo(
+            message: notificationState.notificationMessage ??
+                'This is an informational message.',
+            onClose: onClose(),
+          );
+        default:
+          return Container();
       }
     }
 
@@ -75,11 +109,22 @@ class _HomePageState extends State<HomePage> {
               ]
             : null,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: getPage(),
-        ),
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: getPage(),
+            ),
+          ),
+          if (notificationState.notificationState != null)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: notification(),
+            ),
+        ],
       ),
     );
   }

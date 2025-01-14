@@ -2,7 +2,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 // Project imports:
-import 'package:ui/app_state.dart';
+import 'package:ui/state/app_state.dart';
 
 void main() {
   group('AppState', () {
