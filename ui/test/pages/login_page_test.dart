@@ -16,17 +16,12 @@ import 'login_page_test.mocks.dart';
 @GenerateMocks([HttpHelper, http.Client])
 void main() {
   Widget createLoginPage() {
-    MockHttpHelper mockHttpHelper = MockHttpHelper();
     return ChangeNotifierProvider(
       create: (_) => AppState(),
       child: MaterialApp(
-        home: LoginPage(httpHelper: mockHttpHelper),
-        builder: (context, child) {
-          return Provider<HttpHelper>.value(
-            value: mockHttpHelper,
-            child: child!,
-          );
-        },
+        home: Scaffold(
+          body: LoginPage(httpHelper: MockHttpHelper()),
+        ),
       ),
     );
   }
