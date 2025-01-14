@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/app_state.dart';
+import 'package:ui/state/app_state.dart';
 import 'package:ui/pages/home_page.dart';
 import 'package:ui/state/notification_state.dart';
 

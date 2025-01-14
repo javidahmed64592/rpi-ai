@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/app_state.dart';
+import 'package:ui/state/app_state.dart';
 
 class LogoutButton extends StatelessWidget {
   const LogoutButton({super.key});

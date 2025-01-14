@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/app_state.dart';
+import 'package:ui/state/app_state.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/app_bar/settings_dialog.dart';
 import 'package:ui/components/notifications.dart';

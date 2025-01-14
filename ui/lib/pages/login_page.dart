@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/app_state.dart';
+import 'package:ui/state/app_state.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/notification_state.dart';
 
@@ -38,7 +38,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context, listen: false);
-    final notificationState = Provider.of<NotificationState>(context);
+    final notificationState =
+        Provider.of<NotificationState>(context, listen: false);
 
     Widget ipTextField() {
       return TextField(

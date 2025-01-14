@@ -12,7 +12,7 @@ import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/app_state.dart';
+import 'package:ui/state/app_state.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'http_helper_test.mocks.dart';
 
