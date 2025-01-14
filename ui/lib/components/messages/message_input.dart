@@ -39,6 +39,7 @@ class _MessageInputState extends State<MessageInput> {
     } else {
       appState.removeLastMessage();
       textController.text = userMessage;
+      appState.setNotificationError('Failed to send message!');
     }
   }
 

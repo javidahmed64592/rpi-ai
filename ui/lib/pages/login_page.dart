@@ -94,9 +94,10 @@ class _LoginPageState extends State<LoginPage> {
               appState.clearMessages();
               appState.addMessage(message);
               appState.setActivePage('message');
+              appState.clearNotification();
             }
           } catch (e) {
-            print('Failed to connect: $e');
+            appState.setNotificationError('Failed to connect: $e');
           }
         },
       );
