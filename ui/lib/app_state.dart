@@ -41,15 +41,16 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setMessages(List<Map<String, dynamic>>? newMessages) {
-    if (newMessages == null) {
-      return;
-    }
-
-    _messages
-      ..clear()
-      ..addAll(newMessages);
+  void clearMessages() {
+    _messages.clear();
     notifyListeners();
+  }
+
+  void removeLastMessage() {
+    if (_messages.isNotEmpty) {
+      _messages.removeLast();
+      notifyListeners();
+    }
   }
 
   String getFullUrl() {

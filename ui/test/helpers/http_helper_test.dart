@@ -22,106 +22,87 @@ import 'http_helper_test.mocks.dart';
 void main() {
   group('HttpHelper', () {
     test(
-        'getHistoryInternal returns list of messages if the http call completes successfully',
+        'getLoginResponse returns a message if the http call completes successfully',
         () async {
       final client = MockClient();
       final httpHelper = HttpHelper(client: client);
-      const uri = 'http://example.com/history';
+      const uri = 'http://example.com';
       const authToken = 'testToken';
 
       // Use Mockito to return a successful response when it calls the
       // provided http.Client.
       when(client.get(
-        Uri.parse(uri),
+        Uri.parse('$uri/login'),
         headers: {'Authorization': authToken},
       )).thenAnswer((_) async => http.Response(
-          jsonEncode({
-            'messages': [
-              {'message': 'Hello', 'is_user_message': true},
-              {'message': 'Hi', 'is_user_message': false}
-            ]
-          }),
-          200));
+          jsonEncode({'message': 'Welcome', 'is_user_message': true}), 200));
 
-      expect(await httpHelper.getHistoryInternal(uri, authToken), [
-        {'text': 'Hello', 'isUserMessage': true},
-        {'text': 'Hi', 'isUserMessage': false}
-      ]);
+      expect(await httpHelper.getLoginResponse(uri, authToken),
+          {'text': 'Welcome', 'isUserMessage': true});
     });
 
     test(
-        'getHistoryInternal throws an exception if the http call completes with an error',
+        'getLoginResponse throws an exception if the http call completes with an error',
         () {
       final client = MockClient();
       final httpHelper = HttpHelper(client: client);
-      const uri = 'http://example.com/history';
+      const uri = 'http://example.com';
       const authToken = 'testToken';
 
       // Use Mockito to return an unsuccessful response when it calls the
       // provided http.Client.
       when(client.get(
-        Uri.parse(uri),
+        Uri.parse('$uri/login'),
         headers: {'Authorization': authToken},
       )).thenAnswer((_) async => http.Response('Not Found', 404));
 
-      expect(httpHelper.getHistoryInternal(uri, authToken), throwsException);
+      expect(httpHelper.getLoginResponse(uri, authToken), throwsException);
     });
 
-    test(
-        'sendMessageInternal returns list of messages if the http call completes successfully',
+    test('chat returns a message if the http call completes successfully',
         () async {
       final client = MockClient();
       final httpHelper = HttpHelper(client: client);
-      const uri = 'http://example.com/chat';
+      const uri = 'http://example.com';
       const message = 'Hello';
       const authToken = 'testToken';
 
       // Use Mockito to return a successful response when it calls the
       // provided http.Client.
       when(client.post(
-        Uri.parse(uri),
+        Uri.parse('$uri/chat'),
         headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
+          'Content-Type': 'application/json',
           'Authorization': authToken,
         },
         body: jsonEncode({'message': message}),
       )).thenAnswer((_) async => http.Response(
-          jsonEncode({
-            'messages': [
-              {'message': 'Hello', 'is_user_message': true},
-              {'message': 'Hi', 'is_user_message': false}
-            ]
-          }),
-          200));
+          jsonEncode({'message': 'Hi', 'is_user_message': false}), 200));
 
-      expect(await httpHelper.sendMessageInternal(uri, message, authToken), [
-        {'text': 'Hello', 'isUserMessage': true},
-        {'text': 'Hi', 'isUserMessage': false}
-      ]);
+      expect(await httpHelper.chat(uri, authToken, message),
+          {'text': 'Hi', 'isUserMessage': false});
     });
 
-    test(
-        'sendMessageInternal throws an exception if the http call completes with an error',
-        () {
+    test('chat returns empty dict if the http call completes with an error',
+        () async {
       final client = MockClient();
       final httpHelper = HttpHelper(client: client);
-      const uri = 'http://example.com/chat';
+      const uri = 'http://example.com';
       const message = 'Hello';
       const authToken = 'testToken';
 
       // Use Mockito to return an unsuccessful response when it calls the
       // provided http.Client.
       when(client.post(
-        Uri.parse(uri),
+        Uri.parse('$uri/chat'),
         headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
+          'Content-Type': 'application/json',
           'Authorization': authToken,
         },
         body: jsonEncode({'message': message}),
       )).thenAnswer((_) async => http.Response('Not Found', 404));
 
-      expect(httpHelper.sendMessageInternal(uri, message, authToken),
-          throwsException);
+      expect(await httpHelper.chat(uri, authToken, message), {});
     });
 
     testWidgets(
@@ -140,7 +121,7 @@ void main() {
           value: appState,
           child: Builder(
             builder: (context) {
-              Future.microtask(() => httpHelper.checkApiConnection(context));
+              Future.microtask(() => httpHelper.checkApiConnection(uri));
               return Container();
             },
           ),
@@ -150,6 +131,36 @@ void main() {
       await tester.pump(); // Rebuild the widget tree
 
       expect(appState.activePage, 'login');
+    });
+
+    test(
+        'checkApiConnection returns true if the http call completes successfully',
+        () async {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      const uri = 'http://example.com';
+
+      // Use Mockito to return a successful response when it calls the
+      // provided http.Client.
+      when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
+          .thenAnswer((_) async => http.Response('OK', 200));
+
+      expect(await httpHelper.checkApiConnection(uri), true);
+    });
+
+    test(
+        'checkApiConnection returns false if the http call completes with an error',
+        () async {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      const uri = 'http://example.com';
+
+      // Use Mockito to return an unsuccessful response when it calls the
+      // provided http.Client.
+      when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
+          .thenAnswer((_) async => http.Response('Not Found', 404));
+
+      expect(await httpHelper.checkApiConnection(uri), false);
     });
   });
 }

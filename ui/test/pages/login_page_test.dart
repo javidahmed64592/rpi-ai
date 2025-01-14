@@ -15,11 +15,12 @@ import 'login_page_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, http.Client])
 void main() {
-  Widget createLoginPage(MockHttpHelper mockHttpHelper) {
+  Widget createLoginPage() {
+    MockHttpHelper mockHttpHelper = MockHttpHelper();
     return ChangeNotifierProvider(
       create: (_) => AppState(),
       child: MaterialApp(
-        home: const LoginPage(),
+        home: LoginPage(httpHelper: mockHttpHelper),
         builder: (context, child) {
           return Provider<HttpHelper>.value(
             value: mockHttpHelper,
@@ -32,8 +33,7 @@ void main() {
 
   testWidgets('LoginPage displays IP, Port, and Auth Token fields',
       (WidgetTester tester) async {
-    final mockHttpHelper = MockHttpHelper();
-    await tester.pumpWidget(createLoginPage(mockHttpHelper));
+    await tester.pumpWidget(createLoginPage());
 
     expect(find.byType(TextField), findsNWidgets(3));
     expect(find.widgetWithText(TextField, 'IP'), findsOneWidget);
@@ -43,16 +43,14 @@ void main() {
   });
 
   testWidgets('LoginPage displays Connect button', (WidgetTester tester) async {
-    final mockHttpHelper = MockHttpHelper();
-    await tester.pumpWidget(createLoginPage(mockHttpHelper));
+    await tester.pumpWidget(createLoginPage());
 
     expect(find.widgetWithText(ElevatedButton, 'Connect'), findsOneWidget);
   });
 
   testWidgets('Fields sets IP, Port, and Auth Token in AppState',
       (WidgetTester tester) async {
-    final mockHttpHelper = MockHttpHelper();
-    await tester.pumpWidget(createLoginPage(mockHttpHelper));
+    await tester.pumpWidget(createLoginPage());
 
     final ipField = find.widgetWithText(TextField, 'IP');
     final portField = find.widgetWithText(TextField, 'Port');
