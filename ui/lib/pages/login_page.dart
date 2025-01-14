@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: () async {
           try {
             final Map<String, dynamic> message = await httpHelper
-                .getLoginResponse(appState.getFullUrl(), appState.authToken);
+                .getLoginResponse(appState.fullUrl, appState.authToken);
             if (message.isNotEmpty) {
               appState.clearMessages();
               appState.addMessage(message);

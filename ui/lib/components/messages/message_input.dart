@@ -32,7 +32,7 @@ class _MessageInputState extends State<MessageInput> {
     textController.clear();
 
     Map<String, dynamic> message = await widget.httpHelper
-        .chat(appState.getFullUrl(), appState.authToken, userMessage);
+        .chat(appState.fullUrl, appState.authToken, userMessage);
     if (message.isNotEmpty) {
       appState.addMessage(message);
       widget.onSend();

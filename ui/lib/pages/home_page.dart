@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
   void startCheckAPIAlive() {
     timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       final appState = Provider.of<AppState>(context, listen: false);
-      httpHelper.checkApiConnection('${appState.getFullUrl()}/').then((value) {
+      httpHelper.checkApiConnection('${appState.fullUrl}/').then((value) {
         if (!value) {
           appState.setActivePage('login');
         }

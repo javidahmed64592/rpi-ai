@@ -48,10 +48,10 @@ void main() {
     });
 
     test('getFullUrl returns the correct URL', () {
-      expect(appState.getFullUrl(), 'http://127.0.0.1:5000');
+      expect(appState.fullUrl, 'http://127.0.0.1:5000');
       appState.setIp('192.168.1.1');
       appState.setPort(8080);
-      expect(appState.getFullUrl(), 'http://192.168.1.1:8080');
+      expect(appState.fullUrl, 'http://192.168.1.1:8080');
     });
 
     test('clearMessages clears all messages', () {
