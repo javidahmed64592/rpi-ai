@@ -16,6 +16,7 @@ import 'package:ui/components/notifications.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
 import 'package:ui/pages/message_page.dart';
+import 'package:ui/state/notification_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -54,6 +55,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
+    final notificationState = Provider.of<NotificationState>(context);
 
     Widget getPage() {
       switch (appState.activePage) {
@@ -68,24 +70,26 @@ class _HomePageState extends State<HomePage> {
     Widget notification() {
       onClose() {
         return () {
-          appState.clearNotification();
+          notificationState.clearNotification();
         };
       }
 
-      switch (appState.notificationState) {
+      switch (notificationState.notificationState) {
         case 'error':
           return NotificationError(
-            message: appState.notificationMessage ?? 'An error occurred.',
+            message:
+                notificationState.notificationMessage ?? 'An error occurred.',
             onClose: onClose(),
           );
         case 'warning':
           return NotificationWarning(
-            message: appState.notificationMessage ?? 'A warning occurred.',
+            message:
+                notificationState.notificationMessage ?? 'A warning occurred.',
             onClose: onClose(),
           );
         case 'info':
           return NotificationInfo(
-            message: appState.notificationMessage ??
+            message: notificationState.notificationMessage ??
                 'This is an informational message.',
             onClose: onClose(),
           );
@@ -113,7 +117,7 @@ class _HomePageState extends State<HomePage> {
               child: getPage(),
             ),
           ),
-          if (appState.notificationState != null)
+          if (notificationState.notificationState != null)
             Positioned(
               bottom: 0,
               left: 0,

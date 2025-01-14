@@ -7,9 +7,6 @@ class AppState extends ChangeNotifier {
   String _authToken = '';
   String _activePage = 'login';
 
-  String? _notificationState;
-  String? _notificationMessage;
-
   final List<Map<String, dynamic>> _messages = [];
 
   String get ip => _ip;
@@ -17,8 +14,6 @@ class AppState extends ChangeNotifier {
   String get fullUrl => 'http://$_ip:$_port';
   String get authToken => _authToken;
   String get activePage => _activePage;
-  String? get notificationState => _notificationState;
-  String? get notificationMessage => _notificationMessage;
 
   List<Map<String, dynamic>> get messages => _messages;
 
@@ -39,30 +34,6 @@ class AppState extends ChangeNotifier {
 
   void setActivePage(String newPage) {
     _activePage = newPage;
-    notifyListeners();
-  }
-
-  void setNotificationError(String? message) {
-    _notificationState = 'error';
-    _notificationMessage = message;
-    notifyListeners();
-  }
-
-  void setNotificationWarning(String? message) {
-    _notificationState = 'warning';
-    _notificationMessage = message;
-    notifyListeners();
-  }
-
-  void setNotificationInfo(String? message) {
-    _notificationState = 'info';
-    _notificationMessage = message;
-    notifyListeners();
-  }
-
-  void clearNotification() {
-    _notificationState = null;
-    _notificationMessage = null;
     notifyListeners();
   }
 

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:ui/app_state.dart';
 import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/state/notification_state.dart';
 
 class MessageInput extends StatefulWidget {
   final VoidCallback onSend;
@@ -24,6 +25,8 @@ class _MessageInputState extends State<MessageInput> {
 
   void sendMessage() async {
     final appState = Provider.of<AppState>(context, listen: false);
+    final notificationState = Provider.of<NotificationState>(context);
+
     final String userMessage = textController.text.trim();
     if (userMessage.isEmpty) {
       return;
@@ -39,7 +42,7 @@ class _MessageInputState extends State<MessageInput> {
     } else {
       appState.removeLastMessage();
       textController.text = userMessage;
-      appState.setNotificationError('Failed to send message!');
+      notificationState.setNotificationError('Failed to send message!');
     }
   }
 
