@@ -3,18 +3,14 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:mockito/annotations.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/app_state.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/app_bar/settings_dialog.dart';
-import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/home_page.dart';
 
-@GenerateMocks([HttpHelper, http.Client])
 void main() {
   Widget createHomePage(AppState appState) {
     return ChangeNotifierProvider.value(
