@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/state/app_state.dart';
 import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/state/app_state.dart';
 import 'package:ui/state/notification_state.dart';
 
 class MessageInput extends StatefulWidget {

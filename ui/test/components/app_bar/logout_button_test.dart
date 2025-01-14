@@ -6,8 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/state/app_state.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
+import 'package:ui/state/app_state.dart';
 
 void main() {
   Widget createTestWidget(AppState appState) {
