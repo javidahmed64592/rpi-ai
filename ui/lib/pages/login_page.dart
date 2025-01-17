@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/app_state.dart';
+import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 
 class LoginPage extends StatefulWidget {
@@ -38,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context, listen: false);
+    final messageState = Provider.of<MessageState>(context, listen: false);
     final notificationState =
         Provider.of<NotificationState>(context, listen: false);
 
@@ -94,8 +96,8 @@ class _LoginPageState extends State<LoginPage> {
             final Map<String, dynamic> message = await httpHelper
                 .getLoginResponse(appState.fullUrl, appState.authToken);
             if (message.isNotEmpty) {
-              appState.clearMessages();
-              appState.addMessage(message);
+              messageState.clearMessages();
+              messageState.addMessage(message);
               appState.setActivePage('message');
               notificationState.clearNotification();
             }

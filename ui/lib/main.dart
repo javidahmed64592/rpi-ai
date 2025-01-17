@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:ui/pages/home_page.dart';
 import 'package:ui/state/app_state.dart';
+import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 
 void main() {
@@ -14,6 +15,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AppState()),
+        ChangeNotifierProvider(create: (context) => MessageState()),
         ChangeNotifierProvider(create: (context) => NotificationState()),
       ],
       child: const AIApp(),
