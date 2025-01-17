@@ -7,15 +7,11 @@ class AppState extends ChangeNotifier {
   String _authToken = '';
   String _activePage = 'login';
 
-  final List<Map<String, dynamic>> _messages = [];
-
   String get ip => _ip;
   int get port => _port;
   String get fullUrl => 'http://$_ip:$_port';
   String get authToken => _authToken;
   String get activePage => _activePage;
-
-  List<Map<String, dynamic>> get messages => _messages;
 
   void setIp(String newIp) {
     _ip = newIp;
@@ -35,22 +31,5 @@ class AppState extends ChangeNotifier {
   void setActivePage(String newPage) {
     _activePage = newPage;
     notifyListeners();
-  }
-
-  void addMessage(Map<String, dynamic> message) {
-    _messages.add(message);
-    notifyListeners();
-  }
-
-  void clearMessages() {
-    _messages.clear();
-    notifyListeners();
-  }
-
-  void removeLastMessage() {
-    if (_messages.isNotEmpty) {
-      _messages.removeLast();
-      notifyListeners();
-    }
   }
 }
