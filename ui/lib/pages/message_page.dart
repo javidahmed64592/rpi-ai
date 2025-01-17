@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:ui/components/messages/message_input.dart';
 import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/helpers/http_helper.dart';
-import 'package:ui/state/app_state.dart';
+import 'package:ui/state/message_state.dart';
 
 class MessagePage extends StatefulWidget {
   final HttpHelper httpHelper;
@@ -42,10 +42,10 @@ class _MessagePageState extends State<MessagePage> {
     return Column(
       children: <Widget>[
         Expanded(
-          child: Consumer<AppState>(
-            builder: (context, appState, child) {
+          child: Consumer<MessageState>(
+            builder: (context, messageState, child) {
               return MessageList(
-                messages: appState.messages,
+                messages: messageState.messages,
                 scrollController: scrollController,
               );
             },

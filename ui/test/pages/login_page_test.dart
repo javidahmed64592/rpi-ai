@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
 import 'package:ui/state/app_state.dart';
+import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'login_page_test.mocks.dart';
 
@@ -20,6 +21,7 @@ void main() {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
+        ChangeNotifierProvider(create: (_) => MessageState()),
         ChangeNotifierProvider(create: (_) => NotificationState()),
       ],
       child: MaterialApp(

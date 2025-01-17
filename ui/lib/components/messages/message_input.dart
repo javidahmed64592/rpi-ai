@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/app_state.dart';
+import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 
 class MessageInput extends StatefulWidget {
@@ -25,6 +26,7 @@ class _MessageInputState extends State<MessageInput> {
 
   void sendMessage() async {
     final appState = Provider.of<AppState>(context, listen: false);
+    final messageState = Provider.of<MessageState>(context, listen: false);
     final notificationState =
         Provider.of<NotificationState>(context, listen: false);
 
@@ -32,16 +34,16 @@ class _MessageInputState extends State<MessageInput> {
     if (userMessage.isEmpty) {
       return;
     }
-    appState.addMessage({'text': userMessage, 'isUserMessage': true});
+    messageState.addMessage({'text': userMessage, 'isUserMessage': true});
     textController.clear();
 
     Map<String, dynamic> message = await widget.httpHelper
         .chat(appState.fullUrl, appState.authToken, userMessage);
     if (message.isNotEmpty) {
-      appState.addMessage(message);
+      messageState.addMessage(message);
       widget.onSend();
     } else {
-      appState.removeLastMessage();
+      messageState.removeLastMessage();
       textController.text = userMessage;
       notificationState.setNotificationError('Failed to send message!');
     }

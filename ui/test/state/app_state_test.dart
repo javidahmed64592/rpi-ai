@@ -17,7 +17,6 @@ void main() {
       expect(appState.port, 5000);
       expect(appState.authToken, '');
       expect(appState.activePage, 'login');
-      expect(appState.messages.length, 0);
     });
 
     test('setIp updates the IP address', () {
@@ -40,42 +39,11 @@ void main() {
       expect(appState.activePage, 'message');
     });
 
-    test('addMessage adds a new message', () {
-      final newMessage = {'text': 'Hello, world!', 'isUserMessage': true};
-      appState.addMessage(newMessage);
-      expect(appState.messages.length, 1);
-      expect(appState.messages[0], newMessage);
-    });
-
     test('getFullUrl returns the correct URL', () {
       expect(appState.fullUrl, 'http://127.0.0.1:5000');
       appState.setIp('192.168.1.1');
       appState.setPort(8080);
       expect(appState.fullUrl, 'http://192.168.1.1:8080');
-    });
-
-    test('clearMessages clears all messages', () {
-      final messages = [
-        {'text': 'Message 1', 'isUserMessage': true},
-        {'text': 'Message 2', 'isUserMessage': false},
-      ];
-      appState.addMessage(messages[0]);
-      appState.addMessage(messages[1]);
-      appState.clearMessages();
-      expect(appState.messages.length, 0);
-    });
-
-    test('removeLastMessage removes the last message', () {
-      final messages = [
-        {'text': 'Message 1', 'isUserMessage': true},
-        {'text': 'Message 2', 'isUserMessage': false},
-      ];
-      appState.addMessage(messages[0]);
-      appState.addMessage(messages[1]);
-      appState.removeLastMessage();
-      expect(appState.messages.length, 1);
-      expect(
-          appState.messages[0], {'text': 'Message 1', 'isUserMessage': true});
     });
   });
 }

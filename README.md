@@ -11,13 +11,11 @@ Flutter is used to create a cross-platform application to interact with this API
 ## Table of Contents
 - [Flask Application](#flask-application)
   - [Installing Dependencies](#installing-dependencies)
+  - [Configuration](#configuration)
   - [Getting Started](#getting-started)
   - [Testing](#testing)
   - [Linting and Formatting](#linting-and-formatting)
 - [Flutter Application](#flutter-application)
-  - [Installing Dependencies](#installing-dependencies-1)
-  - [Getting Started](#getting-started-1)
-  - [Testing](#testing-1)
 
 ## Flask Application
 
@@ -30,6 +28,11 @@ To install with `dev` dependencies:
 
     pip install -e .[dev]
 
+### Configuration
+Add your Gemini API key to `.env`:
+
+    GEMINI_API_KEY=<Gemini API key here>
+
 ### Getting Started
 The Flask application can be started by executing one of the following:
 
@@ -38,12 +41,21 @@ The Flask application can be started by executing one of the following:
 
 There are currently 2 endpoints:
 
-- `/history`: GET chat history in form `{"messages": [{"message": <Message here>, "is_user_message": <true/false>}, ...]}`
-- `/chat`: POST message to model by sending payload `{"message": <Message here>}`
+- `/login`: GET method, start new chat and return payload `{"message": <First message>, "is_user_message": false}`
+- `/chat`: POST method, send message to model by sending request `{"message": <Message here>}` and return payload `{"message": <Model response>, "is_user_message": false}`
+
+When the API is started, an authorisation token is generated which is required to authenticate requests.
+Requests must have the following header:
+
+```
+{
+    'Authorization': <authorisation token here>,
+}
+```
 
 ### Testing
 This library uses Pytest for the unit tests.
-These tests are located in the `tests` directory.
+These tests are located in the `/tests` directory.
 To run the tests:
 
     python -m pytest tests
@@ -60,20 +72,6 @@ To format the code:
     python -m ruff format .
 
 ## Flutter Application
-
-### Installing Dependencies
-Install the required dependencies:
-
-    cd ui
-    flutter pub get
-
-### Getting Started
-The source code is located in the `/ui/lib` directory.
-The IP address and port on which the API is hosted can be set in the application.
-The text box at the bottom allows the user to send messages to the API.
-
-### Testing
-These tests are located in the `/ui/tests` directory.
-To run the tests:
-
-    flutter test
+A Flutter application is created in the `/ui` directory.
+This provides a GUI for interacting with the API.
+See the `README.md` in the `/ui` directory for more details.
