@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/app_bar/settings_dialog.dart';
 import 'package:ui/components/notifications.dart';
+import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
 import 'package:ui/pages/message_page.dart';
@@ -41,14 +42,28 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void checkApiAlive() {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final notificationState =
+        Provider.of<NotificationState>(context, listen: false);
+
+    httpHelper.checkApiConnection('${appState.fullUrl}/').then((alive) {
+      if (!appState.connected && alive) {
+        appState.setConnected(alive);
+        notificationState.setNotificationInfo('API connection restored!');
+      } else if (!appState.connected && !alive) {
+        notificationState.setNotificationError('Failed to restore connection!');
+      }
+    }).catchError((error) {
+      notificationState
+          .setNotificationError('Error checking API connection: $error');
+      appState.setConnected(false);
+    });
+  }
+
   void startCheckAPIAlive() {
     timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      final appState = Provider.of<AppState>(context, listen: false);
-      httpHelper.checkApiConnection('${appState.fullUrl}/').then((alive) {
-        if (!alive) {
-          appState.setActivePage('login');
-        }
-      });
+      checkApiAlive();
     });
   }
 
@@ -120,10 +135,12 @@ class _HomePageState extends State<HomePage> {
           if (notificationState.notificationState != null)
             Positioned(
               bottom: 0,
-              left: 0,
-              right: 0,
+              left: MediaQuery.of(context).size.width * 0.1,
+              right: MediaQuery.of(context).size.width * 0.1,
               child: notification(),
             ),
+          if (!appState.connected && appState.activePage == 'message')
+            TimeoutDialog(retryConnection: checkApiAlive),
         ],
       ),
     );

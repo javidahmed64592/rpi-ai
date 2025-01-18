@@ -96,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
             final Map<String, dynamic> message = await httpHelper
                 .getLoginResponse(appState.fullUrl, appState.authToken);
             if (message.isNotEmpty) {
+              appState.setConnected(true);
               messageState.clearMessages();
               messageState.addMessage(message);
               appState.setActivePage('message');

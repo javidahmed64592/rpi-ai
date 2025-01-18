@@ -6,12 +6,14 @@ class AppState extends ChangeNotifier {
   int _port = 5000;
   String _authToken = '';
   String _activePage = 'login';
+  bool _connected = false;
 
   String get ip => _ip;
   int get port => _port;
   String get fullUrl => 'http://$_ip:$_port';
   String get authToken => _authToken;
   String get activePage => _activePage;
+  bool get connected => _connected;
 
   void setIp(String newIp) {
     _ip = newIp;
@@ -30,6 +32,11 @@ class AppState extends ChangeNotifier {
 
   void setActivePage(String newPage) {
     _activePage = newPage;
+    notifyListeners();
+  }
+
+  void setConnected(bool newConnected) {
+    _connected = newConnected;
     notifyListeners();
   }
 }
