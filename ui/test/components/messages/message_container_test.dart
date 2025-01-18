@@ -24,10 +24,6 @@ void main() {
     final messageFinder = find.text('Hello, this is a user message');
     expect(messageFinder, findsOneWidget);
 
-    final container = tester.widget<Container>(find.byType(Container));
-    final decoration = container.decoration as BoxDecoration;
-    expect(decoration.color, ThemeData().colorScheme.primary);
-
     await tester.longPress(find.text('Hello, this is a user message'));
     await tester.pumpAndSettle();
     expect(find.text('Copied to clipboard'), findsOneWidget);
@@ -49,13 +45,37 @@ void main() {
     final messageFinder = find.text('Hello, this is a non-user message');
     expect(messageFinder, findsOneWidget);
 
-    final container = tester.widget<Container>(find.byType(Container));
-    final decoration = container.decoration as BoxDecoration;
-    expect(decoration.color, ThemeData().colorScheme.secondary);
-
-    // Long press to copy text
     await tester.longPress(find.text('Hello, this is a non-user message'));
     await tester.pumpAndSettle();
     expect(find.text('Copied to clipboard'), findsOneWidget);
+  });
+
+  testWidgets('MessageBox displays message with correct colors',
+      (WidgetTester tester) async {
+    const message = 'Test message';
+    const boxColour = Colors.blue;
+    const textColour = Colors.white;
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: MessageBox(
+            message: message,
+            boxColour: boxColour,
+            textColour: textColour,
+          ),
+        ),
+      ),
+    );
+
+    final messageFinder = find.text(message);
+    expect(messageFinder, findsOneWidget);
+
+    final container = tester.widget<Container>(find.byType(Container));
+    final decoration = container.decoration as BoxDecoration;
+    expect(decoration.color, boxColour);
+
+    final text = tester.widget<Text>(find.text(message));
+    expect(text.style?.color, textColour);
   });
 }
