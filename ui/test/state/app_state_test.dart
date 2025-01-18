@@ -17,6 +17,7 @@ void main() {
       expect(appState.port, 5000);
       expect(appState.authToken, '');
       expect(appState.activePage, 'login');
+      expect(appState.connected, false);
     });
 
     test('setIp updates the IP address', () {
@@ -37,6 +38,11 @@ void main() {
     test('setActivePage updates the active page', () {
       appState.setActivePage('message');
       expect(appState.activePage, 'message');
+    });
+
+    test('setConnected updates the connection status', () {
+      appState.setConnected(true);
+      expect(appState.connected, true);
     });
 
     test('getFullUrl returns the correct URL', () {
