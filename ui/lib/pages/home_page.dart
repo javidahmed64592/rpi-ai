@@ -45,9 +45,7 @@ class _HomePageState extends State<HomePage> {
     timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       final appState = Provider.of<AppState>(context, listen: false);
       httpHelper.checkApiConnection('${appState.fullUrl}/').then((alive) {
-        if (!alive) {
-          appState.setActivePage('login');
-        }
+        appState.setConnected(alive);
       });
     });
   }
