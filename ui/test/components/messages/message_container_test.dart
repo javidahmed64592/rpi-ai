@@ -27,6 +27,10 @@ void main() {
     final container = tester.widget<Container>(find.byType(Container));
     final decoration = container.decoration as BoxDecoration;
     expect(decoration.color, ThemeData().colorScheme.primary);
+
+    await tester.longPress(find.text('Hello, this is a user message'));
+    await tester.pumpAndSettle();
+    expect(find.text('Copied to clipboard'), findsOneWidget);
   });
 
   testWidgets('MessageContainer displays non-user message correctly',
@@ -48,5 +52,10 @@ void main() {
     final container = tester.widget<Container>(find.byType(Container));
     final decoration = container.decoration as BoxDecoration;
     expect(decoration.color, ThemeData().colorScheme.secondary);
+
+    // Long press to copy text
+    await tester.longPress(find.text('Hello, this is a non-user message'));
+    await tester.pumpAndSettle();
+    expect(find.text('Copied to clipboard'), findsOneWidget);
   });
 }
