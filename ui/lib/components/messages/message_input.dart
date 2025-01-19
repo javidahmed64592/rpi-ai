@@ -34,7 +34,11 @@ class _MessageInputState extends State<MessageInput> {
     if (userMessage.isEmpty) {
       return;
     }
-    messageState.addMessage({'text': userMessage, 'isUserMessage': true});
+    messageState.addMessage({
+      'text': userMessage,
+      'isUserMessage': true,
+      'timestamp': DateTime.now()
+    });
     textController.clear();
 
     Map<String, dynamic> message = await widget.httpHelper

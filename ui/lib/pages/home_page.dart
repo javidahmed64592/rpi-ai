@@ -48,6 +48,9 @@ class _HomePageState extends State<HomePage> {
         Provider.of<NotificationState>(context, listen: false);
 
     httpHelper.checkApiConnection('${appState.fullUrl}/').then((alive) {
+      if (appState.activePage == 'login') {
+        return;
+      }
       if (!appState.connected && alive) {
         appState.setConnected(alive);
         notificationState.setNotificationInfo('API connection restored!');
