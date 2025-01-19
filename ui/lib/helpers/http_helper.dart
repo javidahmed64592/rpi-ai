@@ -3,21 +3,18 @@ import 'dart:convert';
 
 // Package imports:
 import 'package:http/http.dart' as http;
+import 'package:logging/logging.dart';
 
 class HttpHelper {
   final http.Client client;
+  final Logger _logger = Logger('HttpHelper');
 
   HttpHelper({required this.client});
 
   Future<http.Response> getResponseFromUri(
       String uri, Map<String, String>? headers) async {
-    try {
-      final response = await client.get(Uri.parse(uri), headers: headers);
-      return response;
-    } catch (e) {
-      print('Request failed: $e');
-      rethrow;
-    }
+    final response = await client.get(Uri.parse(uri), headers: headers);
+    return response;
   }
 
   Future<bool> checkApiConnection(String url) async {
@@ -28,7 +25,7 @@ class HttpHelper {
       }
       throw Exception('(${response.statusCode}) ${response.body}');
     } catch (e) {
-      print('Failed to connect to API: $e');
+      _logger.severe('Failed to connect to API: $e');
       return false;
     }
   }
@@ -83,7 +80,7 @@ class HttpHelper {
       throw Exception(
           'Login failed: (${response.statusCode}) ${response.body}');
     } catch (e) {
-      print('Failed to send message: $e');
+      _logger.severe('Failed to send message: $e');
       return {};
     }
   }
