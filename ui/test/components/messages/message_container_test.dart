@@ -10,19 +10,23 @@ import 'package:ui/components/messages/message_container.dart';
 void main() {
   testWidgets('MessageContainer displays user message correctly',
       (WidgetTester tester) async {
+    final timestamp = DateTime(2023, 10, 1, 14, 30);
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: Scaffold(
           body: MessageContainer(
             message: 'Hello, this is a user message',
             isUserMessage: true,
+            timestamp: timestamp,
           ),
         ),
       ),
     );
 
     final messageFinder = find.text('Hello, this is a user message');
+    final timestampFinder = find.text('01/10/23 | 14:30');
     expect(messageFinder, findsOneWidget);
+    expect(timestampFinder, findsOneWidget);
 
     await tester.longPress(find.text('Hello, this is a user message'));
     await tester.pumpAndSettle();
@@ -31,19 +35,23 @@ void main() {
 
   testWidgets('MessageContainer displays non-user message correctly',
       (WidgetTester tester) async {
+    final timestamp = DateTime(2023, 10, 1, 14, 30);
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: Scaffold(
           body: MessageContainer(
             message: 'Hello, this is a non-user message',
             isUserMessage: false,
+            timestamp: timestamp,
           ),
         ),
       ),
     );
 
     final messageFinder = find.text('Hello, this is a non-user message');
+    final timestampFinder = find.text('01/10/23 | 14:30');
     expect(messageFinder, findsOneWidget);
+    expect(timestampFinder, findsOneWidget);
 
     await tester.longPress(find.text('Hello, this is a non-user message'));
     await tester.pumpAndSettle();

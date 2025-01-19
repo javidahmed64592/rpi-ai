@@ -38,6 +38,7 @@ class _MessageListState extends State<MessageList> {
         return MessageContainer(
           message: message['text'],
           isUserMessage: message['isUserMessage'],
+          timestamp: DateTime.parse(message['timestamp'].toString()),
         );
       },
     );
