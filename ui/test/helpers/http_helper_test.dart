@@ -37,8 +37,11 @@ void main() {
       )).thenAnswer((_) async => http.Response(
           jsonEncode({'message': 'Welcome', 'is_user_message': true}), 200));
 
-      expect(await httpHelper.getLoginResponse(uri, authToken),
-          {'text': 'Welcome', 'isUserMessage': true});
+      expect(await httpHelper.getLoginResponse(uri, authToken), {
+        'text': 'Welcome',
+        'isUserMessage': true,
+        'timestamp': isA<DateTime>(),
+      });
     });
 
     test(
@@ -79,8 +82,11 @@ void main() {
       )).thenAnswer((_) async => http.Response(
           jsonEncode({'message': 'Hi', 'is_user_message': false}), 200));
 
-      expect(await httpHelper.chat(uri, authToken, message),
-          {'text': 'Hi', 'isUserMessage': false});
+      expect(await httpHelper.chat(uri, authToken, message), {
+        'text': 'Hi',
+        'isUserMessage': false,
+        'timestamp': isA<DateTime>(),
+      });
     });
 
     test('chat returns empty dict if the http call completes with an error',

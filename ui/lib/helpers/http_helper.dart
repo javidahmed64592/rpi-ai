@@ -44,7 +44,8 @@ class HttpHelper {
       final Map<String, dynamic> body = jsonDecode(response.body);
       return {
         'text': body['message'].toString().trim(),
-        'isUserMessage': body['is_user_message']
+        'isUserMessage': body['is_user_message'],
+        'timestamp': DateTime.now(),
       };
     }
 
@@ -73,7 +74,8 @@ class HttpHelper {
         final Map<String, dynamic> body = jsonDecode(response.body);
         return {
           'text': body['message'].toString().trim(),
-          'isUserMessage': body['is_user_message']
+          'isUserMessage': body['is_user_message'],
+          'timestamp': DateTime.now(),
         };
       }
 
