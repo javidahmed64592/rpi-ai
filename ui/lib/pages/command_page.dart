@@ -38,7 +38,7 @@ class _CommandPageState extends State<CommandPage> {
           child: Consumer<MessageState>(
             builder: (context, messageState, child) {
               return MessageList(
-                messages: messageState.messages,
+                messages: [messageState.userMessage, messageState.botMessage],
                 messageType: MessageType.command,
                 scrollController: scrollController,
               );
