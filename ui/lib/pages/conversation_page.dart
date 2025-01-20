@@ -9,6 +9,7 @@ import 'package:ui/components/messages/message_input.dart';
 import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/message_state.dart';
+import 'package:ui/types.dart';
 
 class ConversationPage extends StatefulWidget {
   final HttpHelper httpHelper;
@@ -29,14 +30,6 @@ class _ConversationPageState extends State<ConversationPage> {
     httpHelper = widget.httpHelper;
   }
 
-  void scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
-        scrollController.jumpTo(scrollController.position.maxScrollExtent);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -46,12 +39,17 @@ class _ConversationPageState extends State<ConversationPage> {
             builder: (context, messageState, child) {
               return MessageList(
                 messages: messageState.messages,
+                messageType: MessageType.chat,
                 scrollController: scrollController,
               );
             },
           ),
         ),
-        MessageInput(onSend: scrollToBottom, httpHelper: httpHelper),
+        MessageInput(
+          messageType: MessageType.chat,
+          httpHelper: httpHelper,
+          scrollController: scrollController,
+        ),
       ],
     );
   }

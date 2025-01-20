@@ -4,3 +4,7 @@ enum PageType {
   command,
 }
 
+enum MessageType {
+  chat,
+  command,
+}
