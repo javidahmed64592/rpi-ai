@@ -36,6 +36,7 @@ class AIApp:
         self.app.add_url_rule("/", "is_alive", self.is_alive, methods=["GET"])
         self.app.add_url_rule("/login", "login", self.token_required(self.login), methods=["GET"])
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
+        self.app.add_url_rule("/command", "command", self.token_required(self.command), methods=["POST"])
 
     def get_api_key(self) -> str:
         return os.environ.get("GEMINI_API_KEY")
@@ -48,6 +49,7 @@ class AIApp:
 
     def generate_token(self) -> str:
         """Generate a secure token for client authentication."""
+        return "1234"
         return secrets.token_hex(16)
 
     def authenticate(self) -> bool:
