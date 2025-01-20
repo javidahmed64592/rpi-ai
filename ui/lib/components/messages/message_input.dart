@@ -59,6 +59,8 @@ class _MessageInputState extends State<MessageInput> {
     if (widget.messageType == MessageType.chat) {
       messageState.addMessage(userMessageDict);
     } else if (widget.messageType == MessageType.command) {
+      messageState.clearUserMessage();
+      messageState.clearBotMessage();
       messageState.setUserMessage(userMessageDict);
     }
 

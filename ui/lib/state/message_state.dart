@@ -28,14 +28,22 @@ class MessageState extends ChangeNotifier {
   }
 
   void setUserMessage(Map<String, dynamic> message) {
-    _userMessage.clear();
     _userMessage.addAll(message);
     notifyListeners();
   }
 
+  void clearUserMessage() {
+    _userMessage.clear();
+    notifyListeners();
+  }
+
   void setBotMessage(Map<String, dynamic> message) {
-    _botMessage.clear();
     _botMessage.addAll(message);
+    notifyListeners();
+  }
+
+  void clearBotMessage() {
+    _botMessage.clear();
     notifyListeners();
   }
 }
