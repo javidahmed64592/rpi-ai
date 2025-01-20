@@ -10,16 +10,16 @@ import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/message_state.dart';
 
-class MessagePage extends StatefulWidget {
+class ConversationPage extends StatefulWidget {
   final HttpHelper httpHelper;
 
-  const MessagePage({super.key, required this.httpHelper});
+  const ConversationPage({super.key, required this.httpHelper});
 
   @override
-  State<MessagePage> createState() => _MessagePageState();
+  State<ConversationPage> createState() => _ConversationPageState();
 }
 
-class _MessagePageState extends State<MessagePage> {
+class _ConversationPageState extends State<ConversationPage> {
   final ScrollController scrollController = ScrollController();
   late HttpHelper httpHelper;
 
