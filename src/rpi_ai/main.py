@@ -79,6 +79,13 @@ class AIApp:
         logger.info(response)
         return jsonify(response)
 
+    def command(self) -> Response:
+        user_message = self.get_request_json().get("message")
+        logger.info(user_message)
+        response = self.chatbot.send_command(user_message)
+        logger.info(response)
+        return jsonify(response)
+
     def run(self, host: str, port: int) -> None:
         def shutdown_handler(signum: int, frame: FrameType) -> None:
             logger.info("Shutting down AI...")
