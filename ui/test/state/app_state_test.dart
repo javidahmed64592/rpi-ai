@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Project imports:
 import 'package:ui/state/app_state.dart';
+import 'package:ui/types.dart';
 
 void main() {
   group('AppState', () {
@@ -16,7 +17,7 @@ void main() {
       expect(appState.ip, '127.0.0.1');
       expect(appState.port, 5000);
       expect(appState.authToken, '');
-      expect(appState.activePage, 'login');
+      expect(appState.activePage, PageType.login);
       expect(appState.connected, false);
     });
 
@@ -36,8 +37,8 @@ void main() {
     });
 
     test('setActivePage updates the active page', () {
-      appState.setActivePage('message');
-      expect(appState.activePage, 'message');
+      appState.setActivePage(PageType.chat);
+      expect(appState.activePage, PageType.chat);
     });
 
     test('setConnected updates the connection status', () {

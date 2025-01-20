@@ -14,10 +14,11 @@ import 'package:ui/components/app_bar/settings_dialog.dart';
 import 'package:ui/components/notifications.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
-import 'package:ui/pages/login_page.dart';
 import 'package:ui/pages/conversation_page.dart';
+import 'package:ui/pages/login_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/notification_state.dart';
+import 'package:ui/types.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -48,7 +49,7 @@ class _HomePageState extends State<HomePage> {
         Provider.of<NotificationState>(context, listen: false);
 
     httpHelper.checkApiConnection('${appState.fullUrl}/').then((alive) {
-      if (appState.activePage == 'login') {
+      if (appState.activePage == PageType.login) {
         return;
       }
       if (!appState.connected && alive) {
@@ -77,9 +78,9 @@ class _HomePageState extends State<HomePage> {
 
     Widget getPage() {
       switch (appState.activePage) {
-        case 'message':
+        case PageType.chat:
           return ConversationPage(httpHelper: httpHelper);
-        case 'login':
+        case PageType.login:
         default:
           return LoginPage(httpHelper: httpHelper);
       }
@@ -120,8 +121,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Gemini'),
-        leading: appState.activePage != 'login' ? const SettingsButton() : null,
-        actions: appState.activePage != 'login'
+        leading: appState.activePage != PageType.login
+            ? const SettingsButton()
+            : null,
+        actions: appState.activePage != PageType.login
             ? [
                 const LogoutButton(),
               ]
@@ -142,7 +145,7 @@ class _HomePageState extends State<HomePage> {
               right: MediaQuery.of(context).size.width * 0.1,
               child: notification(),
             ),
-          if (!appState.connected && appState.activePage == 'message')
+          if (!appState.connected && appState.activePage == PageType.chat)
             TimeoutDialog(retryConnection: checkApiAlive),
         ],
       ),

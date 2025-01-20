@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/state/app_state.dart';
+import 'package:ui/types.dart';
 
 void main() {
   Widget createTestWidget(AppState appState) {
@@ -24,10 +25,10 @@ void main() {
   testWidgets('LogoutButton changes activePage to login',
       (WidgetTester tester) async {
     final appState = AppState();
-    appState.setActivePage('message');
+    appState.setActivePage(PageType.login);
     await tester.pumpWidget(createTestWidget(appState));
     await tester.tap(find.byType(IconButton));
     await tester.pump();
-    expect(appState.activePage, 'login');
+    expect(appState.activePage, PageType.login);
   });
 }

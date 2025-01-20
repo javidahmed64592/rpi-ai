@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/state/app_state.dart';
+import 'package:ui/types.dart';
 
 class LogoutButton extends StatelessWidget {
   const LogoutButton({super.key});
@@ -17,7 +18,7 @@ class LogoutButton extends StatelessWidget {
     return IconButton(
       icon: const Icon(Icons.logout),
       onPressed: () {
-        appState.setActivePage('login');
+        appState.setActivePage(PageType.login);
       },
     );
   }

@@ -12,6 +12,7 @@ import 'package:ui/pages/home_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
+import 'package:ui/types.dart';
 
 void main() {
   Widget createHomePage(AppState appState) {
@@ -39,7 +40,7 @@ void main() {
 
   testWidgets('HomePage displays SettingsButton', (WidgetTester tester) async {
     final appState = AppState();
-    appState.setActivePage('message');
+    appState.setActivePage(PageType.chat);
     await tester.pumpWidget(createHomePage(appState));
     expect(find.byType(SettingsButton), findsOneWidget);
   });
@@ -47,7 +48,7 @@ void main() {
   testWidgets('SettingsButton opens SettingsDialog',
       (WidgetTester tester) async {
     final appState = AppState();
-    appState.setActivePage('message');
+    appState.setActivePage(PageType.chat);
     await tester.pumpWidget(createHomePage(appState));
 
     await tester.tap(find.byType(SettingsButton));
@@ -58,14 +59,14 @@ void main() {
   testWidgets('HomePage does not display SettingsButton on login page',
       (WidgetTester tester) async {
     final appState = AppState();
-    appState.setActivePage('login');
+    appState.setActivePage(PageType.login);
     await tester.pumpWidget(createHomePage(appState));
     expect(find.byType(SettingsButton), findsNothing);
   });
 
   testWidgets('HomePage displays LogoutButton', (WidgetTester tester) async {
     final appState = AppState();
-    appState.setActivePage('message');
+    appState.setActivePage(PageType.chat);
     await tester.pumpWidget(createHomePage(appState));
     expect(find.byType(LogoutButton), findsOneWidget);
   });
@@ -73,7 +74,7 @@ void main() {
   testWidgets('HomePage does not display LogoutButton on login page',
       (WidgetTester tester) async {
     final appState = AppState();
-    appState.setActivePage('login');
+    appState.setActivePage(PageType.login);
     await tester.pumpWidget(createHomePage(appState));
     expect(find.byType(LogoutButton), findsNothing);
   });

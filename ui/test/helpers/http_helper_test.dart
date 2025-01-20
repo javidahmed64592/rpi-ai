@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/app_state.dart';
+import 'package:ui/types.dart';
 import 'http_helper_test.mocks.dart';
 
 // Generate a MockClient using the Mockito package.
@@ -136,7 +137,7 @@ void main() {
 
       await tester.pump(); // Rebuild the widget tree
 
-      expect(appState.activePage, 'login');
+      expect(appState.activePage, PageType.login);
     });
 
     test(
