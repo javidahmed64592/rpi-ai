@@ -100,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
               appState.setConnected(true);
               messageState.clearMessages();
               messageState.addMessage(message);
+              messageState.setBotMessage(message);
               appState.setActivePage(PageType.chat);
               notificationState.clearNotification();
             }

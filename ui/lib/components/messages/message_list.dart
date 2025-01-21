@@ -38,11 +38,14 @@ class _MessageListState extends State<MessageList> {
       itemCount: widget.messages.length,
       itemBuilder: (context, index) {
         final message = widget.messages[index];
-        return MessageContainer(
-          message: message['text'],
-          isUserMessage: message['isUserMessage'],
-          timestamp: DateTime.parse(message['timestamp'].toString()),
-        );
+        if (message.isNotEmpty) {
+          return MessageContainer(
+            message: message['text'],
+            isUserMessage: message['isUserMessage'],
+            timestamp: DateTime.parse(message['timestamp'].toString()),
+          );
+        }
+        return const SizedBox.shrink();
       },
     );
   }
