@@ -19,3 +19,6 @@ class Chatbot:
 
     def send_message(self, text: str) -> Message:
         return Message(message=self._chat.send_message(text).text)
+
+    def send_command(self, text: str) -> Message:
+        return Message(message=self._model.generate_content(text).text)

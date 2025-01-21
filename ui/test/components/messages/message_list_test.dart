@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Project imports:
 import 'package:ui/components/messages/message_list.dart';
+import 'package:ui/types.dart';
 
 void main() {
   testWidgets('MessageList displays messages correctly',
@@ -30,6 +31,7 @@ void main() {
           body: MessageList(
             messages: messages,
             scrollController: ScrollController(),
+            messageType: MessageType.chat,
           ),
         ),
       ),
@@ -60,6 +62,7 @@ void main() {
           body: MessageList(
             messages: messages,
             scrollController: scrollController,
+            messageType: MessageType.chat,
           ),
         ),
       ),

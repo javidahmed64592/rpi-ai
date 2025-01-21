@@ -10,6 +10,7 @@ import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
+import 'package:ui/types.dart';
 
 class LoginPage extends StatefulWidget {
   final HttpHelper httpHelper;
@@ -99,7 +100,8 @@ class _LoginPageState extends State<LoginPage> {
               appState.setConnected(true);
               messageState.clearMessages();
               messageState.addMessage(message);
-              appState.setActivePage('message');
+              messageState.setBotMessage(message);
+              appState.setActivePage(PageType.chat);
               notificationState.clearNotification();
             }
           } catch (e) {

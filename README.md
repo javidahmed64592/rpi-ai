@@ -42,7 +42,8 @@ The Flask application can be started by executing one of the following:
 There are currently 2 endpoints:
 
 - `/login`: GET method, start new chat and return payload `{"message": <First message>, "is_user_message": false}`
-- `/chat`: POST method, send message to model by sending request `{"message": <Message here>}` and return payload `{"message": <Model response>, "is_user_message": false}`
+- `/chat`: POST method, send message to model by sending request `{"message": <Message here>}` and return payload `{"message": <Model response>, "is_user_message": false}`. This endpoint allows for a conversation with the model.
+- `/command`: POST method, send message to model by sending request `{"message": <Message here>}` and return payload `{"message": <Model response>, "is_user_message": false}`. This endpoint does not create a conversation with the model.
 
 When the API is started, an authorisation token is generated which is required to authenticate requests.
 Requests must have the following header:

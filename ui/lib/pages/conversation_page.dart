@@ -9,17 +9,18 @@ import 'package:ui/components/messages/message_input.dart';
 import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/message_state.dart';
+import 'package:ui/types.dart';
 
-class MessagePage extends StatefulWidget {
+class ConversationPage extends StatefulWidget {
   final HttpHelper httpHelper;
 
-  const MessagePage({super.key, required this.httpHelper});
+  const ConversationPage({super.key, required this.httpHelper});
 
   @override
-  State<MessagePage> createState() => _MessagePageState();
+  State<ConversationPage> createState() => _ConversationPageState();
 }
 
-class _MessagePageState extends State<MessagePage> {
+class _ConversationPageState extends State<ConversationPage> {
   final ScrollController scrollController = ScrollController();
   late HttpHelper httpHelper;
 
@@ -29,12 +30,10 @@ class _MessagePageState extends State<MessagePage> {
     httpHelper = widget.httpHelper;
   }
 
-  void scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
-        scrollController.jumpTo(scrollController.position.maxScrollExtent);
-      }
-    });
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -46,12 +45,17 @@ class _MessagePageState extends State<MessagePage> {
             builder: (context, messageState, child) {
               return MessageList(
                 messages: messageState.messages,
+                messageType: MessageType.chat,
                 scrollController: scrollController,
               );
             },
           ),
         ),
-        MessageInput(onSend: scrollToBottom, httpHelper: httpHelper),
+        MessageInput(
+          messageType: MessageType.chat,
+          httpHelper: httpHelper,
+          scrollController: scrollController,
+        ),
       ],
     );
   }

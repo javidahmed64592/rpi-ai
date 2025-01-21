@@ -6,19 +6,18 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/state/app_state.dart';
-import 'package:ui/types.dart';
 
-class LogoutButton extends StatelessWidget {
-  const LogoutButton({super.key});
+class SwitchChatMode extends StatelessWidget {
+  const SwitchChatMode({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context, listen: false);
+    final appState = Provider.of<AppState>(context);
 
     return IconButton(
-      icon: const Icon(Icons.logout),
+      icon: const Icon(Icons.swap_horiz),
       onPressed: () {
-        appState.setActivePage(PageType.login);
+        appState.toggleActivePage();
       },
     );
   }

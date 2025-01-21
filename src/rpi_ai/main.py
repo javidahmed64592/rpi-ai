@@ -36,6 +36,7 @@ class AIApp:
         self.app.add_url_rule("/", "is_alive", self.is_alive, methods=["GET"])
         self.app.add_url_rule("/login", "login", self.token_required(self.login), methods=["GET"])
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
+        self.app.add_url_rule("/command", "command", self.token_required(self.command), methods=["POST"])
 
     def get_api_key(self) -> str:
         return os.environ.get("GEMINI_API_KEY")
@@ -76,6 +77,13 @@ class AIApp:
         user_message = self.get_request_json().get("message")
         logger.info(user_message)
         response = self.chatbot.send_message(user_message)
+        logger.info(response)
+        return jsonify(response)
+
+    def command(self) -> Response:
+        user_message = self.get_request_json().get("message")
+        logger.info(user_message)
+        response = self.chatbot.send_command(user_message)
         logger.info(response)
         return jsonify(response)
 

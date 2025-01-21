@@ -3,14 +3,17 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:ui/components/messages/message_container.dart';
+import 'package:ui/types.dart';
 
 class MessageList extends StatefulWidget {
   final List<Map<String, dynamic>> messages;
+  final MessageType messageType;
   final ScrollController scrollController;
 
   const MessageList({
     Key? key,
     required this.messages,
+    required this.messageType,
     required this.scrollController,
   }) : super(key: key);
 
@@ -35,11 +38,14 @@ class _MessageListState extends State<MessageList> {
       itemCount: widget.messages.length,
       itemBuilder: (context, index) {
         final message = widget.messages[index];
-        return MessageContainer(
-          message: message['text'],
-          isUserMessage: message['isUserMessage'],
-          timestamp: DateTime.parse(message['timestamp'].toString()),
-        );
+        if (message.isNotEmpty) {
+          return MessageContainer(
+            message: message['text'],
+            isUserMessage: message['isUserMessage'],
+            timestamp: DateTime.parse(message['timestamp'].toString()),
+          );
+        }
+        return const SizedBox.shrink();
       },
     );
   }

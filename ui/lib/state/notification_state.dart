@@ -1,27 +1,28 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:ui/types.dart';
 
 class NotificationState extends ChangeNotifier {
-  String? _notificationState;
+  NotificationType? _notificationState;
   String? _notificationMessage;
 
-  String? get notificationState => _notificationState;
+  NotificationType? get notificationState => _notificationState;
   String? get notificationMessage => _notificationMessage;
 
   void setNotificationError(String? message) {
-    _notificationState = 'error';
+    _notificationState = NotificationType.error;
     _notificationMessage = message;
     notifyListeners();
   }
 
   void setNotificationWarning(String? message) {
-    _notificationState = 'warning';
+    _notificationState = NotificationType.warning;
     _notificationMessage = message;
     notifyListeners();
   }
 
   void setNotificationInfo(String? message) {
-    _notificationState = 'info';
+    _notificationState = NotificationType.info;
     _notificationMessage = message;
     notifyListeners();
   }

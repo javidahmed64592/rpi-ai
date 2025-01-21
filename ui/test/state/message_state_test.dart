@@ -46,5 +46,31 @@ void main() {
       expect(messageState.messages[0],
           {'text': 'Message 1', 'isUserMessage': true});
     });
+
+    test('setUserMessage sets the user message', () {
+      final userMessage = {'text': 'User message', 'isUserMessage': true};
+      messageState.setUserMessage(userMessage);
+      expect(messageState.userMessage, userMessage);
+    });
+
+    test('clearUserMessage clears the user message', () {
+      final userMessage = {'text': 'User message', 'isUserMessage': true};
+      messageState.setUserMessage(userMessage);
+      messageState.clearUserMessage();
+      expect(messageState.userMessage.isEmpty, true);
+    });
+
+    test('setBotMessage sets the bot message', () {
+      final botMessage = {'text': 'Bot message', 'isUserMessage': false};
+      messageState.setBotMessage(botMessage);
+      expect(messageState.botMessage, botMessage);
+    });
+
+    test('clearBotMessage clears the bot message', () {
+      final botMessage = {'text': 'Bot message', 'isUserMessage': false};
+      messageState.setBotMessage(botMessage);
+      messageState.clearBotMessage();
+      expect(messageState.botMessage.isEmpty, true);
+    });
   });
 }

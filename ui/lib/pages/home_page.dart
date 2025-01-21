@@ -10,14 +10,16 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/components/app_bar/logout_button.dart';
-import 'package:ui/components/app_bar/settings_dialog.dart';
+import 'package:ui/components/app_bar/switch_chat_mode.dart';
 import 'package:ui/components/notifications.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/pages/command_page.dart';
+import 'package:ui/pages/conversation_page.dart';
 import 'package:ui/pages/login_page.dart';
-import 'package:ui/pages/message_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/notification_state.dart';
+import 'package:ui/types.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -48,7 +50,7 @@ class _HomePageState extends State<HomePage> {
         Provider.of<NotificationState>(context, listen: false);
 
     httpHelper.checkApiConnection('${appState.fullUrl}/').then((alive) {
-      if (appState.activePage == 'login') {
+      if (appState.activePage == PageType.login) {
         return;
       }
       if (!appState.connected && alive) {
@@ -77,9 +79,11 @@ class _HomePageState extends State<HomePage> {
 
     Widget getPage() {
       switch (appState.activePage) {
-        case 'message':
-          return MessagePage(httpHelper: httpHelper);
-        case 'login':
+        case PageType.chat:
+          return ConversationPage(httpHelper: httpHelper);
+        case PageType.command:
+          return CommandPage(httpHelper: httpHelper);
+        case PageType.login:
         default:
           return LoginPage(httpHelper: httpHelper);
       }
@@ -93,19 +97,19 @@ class _HomePageState extends State<HomePage> {
       }
 
       switch (notificationState.notificationState) {
-        case 'error':
+        case NotificationType.error:
           return NotificationError(
             message:
                 notificationState.notificationMessage ?? 'An error occurred.',
             onClose: onClose(),
           );
-        case 'warning':
+        case NotificationType.warning:
           return NotificationWarning(
             message:
                 notificationState.notificationMessage ?? 'A warning occurred.',
             onClose: onClose(),
           );
-        case 'info':
+        case NotificationType.info:
           return NotificationInfo(
             message: notificationState.notificationMessage ??
                 'This is an informational message.',
@@ -119,9 +123,11 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Gemini'),
-        leading: appState.activePage != 'login' ? const SettingsButton() : null,
-        actions: appState.activePage != 'login'
+        title: Text(appState.appBarTitle),
+        leading: appState.activePage != PageType.login
+            ? const SwitchChatMode()
+            : null,
+        actions: appState.activePage != PageType.login
             ? [
                 const LogoutButton(),
               ]
@@ -142,7 +148,7 @@ class _HomePageState extends State<HomePage> {
               right: MediaQuery.of(context).size.width * 0.1,
               child: notification(),
             ),
-          if (!appState.connected && appState.activePage == 'message')
+          if (!appState.connected && appState.activePage != PageType.login)
             TimeoutDialog(retryConnection: checkApiAlive),
         ],
       ),

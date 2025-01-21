@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Project imports:
 import 'package:ui/state/notification_state.dart';
+import 'package:ui/types.dart';
 
 void main() {
   group('NotificationState', () {
@@ -15,21 +16,21 @@ void main() {
     test('setNotificationError sets state to error', () {
       final notificationState = NotificationState();
       notificationState.setNotificationError('Error occurred');
-      expect(notificationState.notificationState, 'error');
+      expect(notificationState.notificationState, NotificationType.error);
       expect(notificationState.notificationMessage, 'Error occurred');
     });
 
     test('setNotificationWarning sets state to warning', () {
       final notificationState = NotificationState();
       notificationState.setNotificationWarning('Warning issued');
-      expect(notificationState.notificationState, 'warning');
+      expect(notificationState.notificationState, NotificationType.warning);
       expect(notificationState.notificationMessage, 'Warning issued');
     });
 
     test('setNotificationInfo sets state to info', () {
       final notificationState = NotificationState();
       notificationState.setNotificationInfo('Information provided');
-      expect(notificationState.notificationState, 'info');
+      expect(notificationState.notificationState, NotificationType.info);
       expect(notificationState.notificationMessage, 'Information provided');
     });
 

@@ -1,18 +1,23 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Project imports:
+import 'package:ui/types.dart';
+
 class AppState extends ChangeNotifier {
   String _ip = '127.0.0.1';
   int _port = 5000;
   String _authToken = '';
-  String _activePage = 'login';
+  PageType _activePage = PageType.login;
+  String _appBarTitle = PageType.login.title;
   bool _connected = false;
 
   String get ip => _ip;
   int get port => _port;
   String get fullUrl => 'http://$_ip:$_port';
   String get authToken => _authToken;
-  String get activePage => _activePage;
+  PageType get activePage => _activePage;
+  String get appBarTitle => _appBarTitle;
   bool get connected => _connected;
 
   void setIp(String newIp) {
@@ -30,13 +35,23 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setActivePage(String newPage) {
+  void setActivePage(PageType newPage) {
     _activePage = newPage;
+    _appBarTitle = newPage.title;
     notifyListeners();
   }
 
   void setConnected(bool newConnected) {
     _connected = newConnected;
+    notifyListeners();
+  }
+
+  void toggleActivePage() {
+    if (_activePage == PageType.chat) {
+      setActivePage(PageType.command);
+    } else if (_activePage == PageType.command) {
+      setActivePage(PageType.chat);
+    }
     notifyListeners();
   }
 }
