@@ -13,7 +13,7 @@ import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/conversation_page.dart';
 import 'package:ui/state/message_state.dart';
-import 'message_page_test.mocks.dart';
+import 'conversation_page_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, http.Client])
 void main() {
