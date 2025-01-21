@@ -39,4 +39,24 @@ void main() {
     await tester.pumpWidget(createConversationPage());
     expect(find.byType(MessageList), findsOneWidget);
   });
+
+  testWidgets('ConversationPage scrolls to bottom when new message is added',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(createConversationPage());
+    final messageState = Provider.of<MessageState>(
+        tester.element(find.byType(ConversationPage)),
+        listen: false);
+
+    messageState.addMessage({
+      'message': 'New message',
+      'isUserMessage': false,
+      'timestamp': DateTime.now()
+    });
+    await tester.pumpAndSettle();
+
+    final scrollController =
+        tester.widget<Scrollable>(find.byType(Scrollable)).controller;
+    expect(scrollController!.position.pixels,
+        scrollController.position.maxScrollExtent);
+  });
 }
