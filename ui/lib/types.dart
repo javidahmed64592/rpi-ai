@@ -17,6 +17,12 @@ extension PageTypeExtension on PageType {
   }
 }
 
+enum NotificationType {
+  error,
+  warning,
+  info,
+}
+
 enum MessageType {
   chat,
   command,

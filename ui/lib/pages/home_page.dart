@@ -97,19 +97,19 @@ class _HomePageState extends State<HomePage> {
       }
 
       switch (notificationState.notificationState) {
-        case 'error':
+        case NotificationType.error:
           return NotificationError(
             message:
                 notificationState.notificationMessage ?? 'An error occurred.',
             onClose: onClose(),
           );
-        case 'warning':
+        case NotificationType.warning:
           return NotificationWarning(
             message:
                 notificationState.notificationMessage ?? 'A warning occurred.',
             onClose: onClose(),
           );
-        case 'info':
+        case NotificationType.info:
           return NotificationInfo(
             message: notificationState.notificationMessage ??
                 'This is an informational message.',
