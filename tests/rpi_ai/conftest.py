@@ -49,6 +49,13 @@ def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
 
 
 @pytest.fixture
+def mock_generate_content(mock_generative_model: MagicMock) -> MagicMock:
+    mock_chat_instance = MagicMock()
+    mock_generative_model.return_value.generate_content.return_value = mock_chat_instance
+    return mock_generative_model.return_value.generate_content
+
+
+@pytest.fixture
 def mock_chatbot(
     mock_api_key: MagicMock,
     mock_config: AIConfigType,
@@ -67,6 +74,12 @@ def mock_start_chat() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_send_message() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.Chatbot.send_message") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_send_command() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.Chatbot.send_command") as mock:
         yield mock
 
 

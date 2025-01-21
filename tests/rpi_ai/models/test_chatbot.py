@@ -36,3 +36,12 @@ class TestChatbot:
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
         assert response.message == mock_response
+
+    def test_send_command(self, mock_chatbot: Chatbot, mock_generate_content: MagicMock) -> None:
+        mock_msg = "Hi model!"
+        mock_response = "Hi user!"
+        mock_generate_content.return_value.text = mock_response
+
+        response = mock_chatbot.send_command(mock_msg)
+        mock_generate_content.assert_called_once_with(mock_msg)
+        assert response.message == mock_response

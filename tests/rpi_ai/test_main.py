@@ -76,3 +76,36 @@ class TestAIApp:
         response = mock_client.post("/chat")
         mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
         assert response.status_code == 401
+
+    def test_command(
+        self,
+        mock_ai_app: AIApp,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_json: MagicMock,
+        mock_send_command: MagicMock,
+        mock_jsonify: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": "test_token"}
+        user_message = "Hello, World!"
+        mock_request_json.return_value = {"message": user_message}
+
+        response = mock_client.post("/command")
+        mock_send_command.assert_called_once_with(user_message)
+        mock_jsonify.assert_called_once_with(mock_send_command.return_value)
+        assert response.status_code == 200
+
+    def test_command_unauthorized(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_json: MagicMock,
+        mock_jsonify: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": "wrong_token"}
+        user_message = "Hello, World!"
+        mock_request_json.return_value = {"message": user_message}
+
+        response = mock_client.post("/command")
+        mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
+        assert response.status_code == 401
