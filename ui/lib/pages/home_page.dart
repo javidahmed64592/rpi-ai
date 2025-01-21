@@ -10,10 +10,11 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/components/app_bar/logout_button.dart';
-import 'package:ui/components/app_bar/settings_dialog.dart';
+import 'package:ui/components/app_bar/switch_chat_mode.dart';
 import 'package:ui/components/notifications.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/pages/command_page.dart';
 import 'package:ui/pages/conversation_page.dart';
 import 'package:ui/pages/login_page.dart';
 import 'package:ui/state/app_state.dart';
@@ -80,6 +81,8 @@ class _HomePageState extends State<HomePage> {
       switch (appState.activePage) {
         case PageType.chat:
           return ConversationPage(httpHelper: httpHelper);
+        case PageType.command:
+          return CommandPage(httpHelper: httpHelper);
         case PageType.login:
         default:
           return LoginPage(httpHelper: httpHelper);
@@ -120,9 +123,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Gemini'),
+        title: Text(appState.appBarTitle),
         leading: appState.activePage != PageType.login
-            ? const SettingsButton()
+            ? const SwitchChatMode()
             : null,
         actions: appState.activePage != PageType.login
             ? [
@@ -145,7 +148,7 @@ class _HomePageState extends State<HomePage> {
               right: MediaQuery.of(context).size.width * 0.1,
               child: notification(),
             ),
-          if (!appState.connected && appState.activePage == PageType.chat)
+          if (!appState.connected && appState.activePage != PageType.login)
             TimeoutDialog(retryConnection: checkApiAlive),
         ],
       ),
