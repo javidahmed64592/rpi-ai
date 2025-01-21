@@ -49,7 +49,6 @@ class AIApp:
 
     def generate_token(self) -> str:
         """Generate a secure token for client authentication."""
-        return "1234"
         return secrets.token_hex(16)
 
     def authenticate(self) -> bool:
