@@ -27,7 +27,7 @@ class TestMessageList:
         ]
         mock_extract_parts.side_effect = [data[0]["parts"], data[1]["parts"]]
         message_list = MessageList.from_history(data)
-        assert len(message_list.messages) == 2
+        assert len(message_list.messages) == len(data)
         assert message_list.messages[0].message == "Hello, world!"
         assert message_list.messages[0].is_user_message
         assert message_list.messages[1].message == "Hello, user!"

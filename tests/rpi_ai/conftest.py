@@ -12,7 +12,12 @@ from rpi_ai.models.chatbot import Chatbot
 # Config fixtures
 @pytest.fixture
 def config_data() -> dict[str, str | float]:
-    return {"model": "test-model", "candidate_count": 2, "max_output_tokens": 50, "temperature": 0.7}
+    return {
+        "model": "test-model",
+        "candidate_count": 2,
+        "max_output_tokens": 50,
+        "temperature": 0.7,
+    }
 
 
 @pytest.fixture
@@ -43,7 +48,9 @@ def mock_start_chat_method(mock_generative_model: MagicMock) -> MagicMock:
 @pytest.fixture
 def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
     mock_chat_instance = MagicMock()
-    mock_chat_instance.history = [MagicMock(role="model", parts="What's on your mind today")]
+    mock_chat_instance.history = [
+        MagicMock(role="model", parts="What's on your mind today")
+    ]
     mock_start_chat_method.return_value = mock_chat_instance
     return mock_chat_instance
 
@@ -51,7 +58,9 @@ def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
 @pytest.fixture
 def mock_generate_content(mock_generative_model: MagicMock) -> MagicMock:
     mock_chat_instance = MagicMock()
-    mock_generative_model.return_value.generate_content.return_value = mock_chat_instance
+    mock_generative_model.return_value.generate_content.return_value = (
+        mock_chat_instance
+    )
     return mock_generative_model.return_value.generate_content
 
 
