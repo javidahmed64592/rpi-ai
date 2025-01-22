@@ -9,7 +9,6 @@ class AppState extends ChangeNotifier {
   int _port = 5000;
   String _authToken = '';
   PageType _activePage = PageType.login;
-  String _appBarTitle = PageType.login.title;
   bool _connected = false;
 
   String get ip => _ip;
@@ -17,7 +16,6 @@ class AppState extends ChangeNotifier {
   String get fullUrl => 'http://$_ip:$_port';
   String get authToken => _authToken;
   PageType get activePage => _activePage;
-  String get appBarTitle => _appBarTitle;
   bool get connected => _connected;
 
   void setIp(String newIp) {
@@ -37,12 +35,6 @@ class AppState extends ChangeNotifier {
 
   void setActivePage(PageType newPage) {
     _activePage = newPage;
-    _appBarTitle = newPage.title;
-    notifyListeners();
-  }
-
-  void setConnected(bool newConnected) {
-    _connected = newConnected;
     notifyListeners();
   }
 
@@ -52,6 +44,11 @@ class AppState extends ChangeNotifier {
     } else if (_activePage == PageType.command) {
       setActivePage(PageType.chat);
     }
+    notifyListeners();
+  }
+
+  void setConnected(bool newConnected) {
+    _connected = newConnected;
     notifyListeners();
   }
 }
