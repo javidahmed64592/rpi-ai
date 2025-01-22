@@ -87,13 +87,13 @@ class AIApp:
         logger.info(response)
         return jsonify(response)
 
-    def run(self, host: str, port: int) -> None:
-        def shutdown_handler(signum: int, frame: FrameType) -> None:
-            logger.info("Shutting down AI...")
-            self.app.do_teardown_appcontext()
-            os._exit(0)
+    def shutdown_handler(self, signum: int, frame: FrameType) -> None:
+        logger.info("Shutting down AI...")
+        self.app.do_teardown_appcontext()
+        os._exit(0)
 
-        signal.signal(signal.SIGINT, shutdown_handler)
+    def run(self, host: str, port: int) -> None:
+        signal.signal(signal.SIGINT, self.shutdown_handler)
         self.app.run(host=host, port=port)
 
 
