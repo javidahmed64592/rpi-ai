@@ -32,7 +32,8 @@ class _MessageInputState extends State<MessageInput> {
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.scrollController!.hasClients) {
+      if (widget.scrollController != null &&
+          widget.scrollController!.hasClients) {
         widget.scrollController
             ?.jumpTo(widget.scrollController!.position.maxScrollExtent);
       }
@@ -56,29 +57,20 @@ class _MessageInputState extends State<MessageInput> {
       'timestamp': DateTime.now()
     };
 
-    if (widget.messageType == MessageType.chat) {
-      messageState.addMessage(userMessageDict);
-    } else if (widget.messageType == MessageType.command) {
-      messageState.clearUserMessage();
-      messageState.clearBotMessage();
-      messageState.setUserMessage(userMessageDict);
-    }
-
+    widget.messageType.handleAddMessage(messageState, userMessageDict);
     textController.clear();
 
-    Map<String, dynamic> message = {};
-    if (widget.messageType == MessageType.chat) {
-      message = await widget.httpHelper
-          .chat(appState.fullUrl, appState.authToken, userMessage);
-    } else if (widget.messageType == MessageType.command) {
-      message = await widget.httpHelper
-          .command(appState.fullUrl, appState.authToken, userMessage);
-    }
+    Map<String, dynamic> message = await widget.messageType.sendMessage(
+      widget.httpHelper,
+      appState.fullUrl,
+      appState.authToken,
+      userMessage,
+    );
 
     if (message.isEmpty) {
-      messageState.removeLastMessage();
+      widget.messageType.handleFailedMessage(messageState);
       textController.text = userMessage;
-      notificationState.setNotificationError('Failed to send command!');
+      notificationState.setNotificationError('Failed to send message!');
       return;
     }
 

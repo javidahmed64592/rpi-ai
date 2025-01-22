@@ -39,6 +39,14 @@ jobs:
         run: |
           cd ui
           flutter pub get
+      - name: Run import sorter
+        run: |
+          cd ui
+          dart run import_sorter:main
+      - name: Analyze code
+        run: |
+          cd ui
+          dart analyze
       - name: Test with flutter test
         run: |
           cd ui
