@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:ui/components/app_bar/custom_app_bar.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/app_bar/switch_chat_mode.dart';
 import 'package:ui/components/timeout_dialog.dart';
@@ -29,14 +30,9 @@ void main() {
     );
   }
 
-  testWidgets('HomePage displays AppBar', (WidgetTester tester) async {
+  testWidgets('HomePage displays CustomAppBar', (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage(AppState()));
-    expect(find.byType(AppBar), findsOneWidget);
-  });
-
-  testWidgets('HomePage displays title', (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage(AppState()));
-    expect(find.text('Login'), findsOneWidget);
+    expect(find.byType(CustomAppBar), findsOneWidget);
   });
 
   testWidgets('HomePage displays SwitchChatMode', (WidgetTester tester) async {

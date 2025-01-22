@@ -9,8 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/components/app_bar/logout_button.dart';
-import 'package:ui/components/app_bar/switch_chat_mode.dart';
+import 'package:ui/components/app_bar/custom_app_bar.dart';
 import 'package:ui/components/notifications.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
@@ -121,18 +120,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(appState.appBarTitle),
-        leading: appState.activePage != PageType.login
-            ? const SwitchChatMode()
-            : null,
-        actions: appState.activePage != PageType.login
-            ? [
-                const LogoutButton(),
-              ]
-            : null,
-      ),
+      appBar: CustomAppBar(appState: appState),
       body: Stack(
         children: [
           Center(
