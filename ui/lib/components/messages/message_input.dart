@@ -32,7 +32,8 @@ class _MessageInputState extends State<MessageInput> {
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.scrollController!.hasClients) {
+      if (widget.scrollController != null &&
+          widget.scrollController!.hasClients) {
         widget.scrollController
             ?.jumpTo(widget.scrollController!.position.maxScrollExtent);
       }
