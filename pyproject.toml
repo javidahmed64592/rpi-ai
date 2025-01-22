@@ -82,6 +82,7 @@ exclude = [
 
 [tool.ruff.lint]
 select = [
+    "A",
     "ANN",
     "ASYNC",
     "B",
@@ -98,15 +99,17 @@ select = [
     "NPY",
     "PD",
     "PERF",
+    "PL",
     "PT",
     "RET",
     "RUF",
+    "S",
     "TRY",
     "UP",
     "W",
     "YTT",
 ]
-ignore = ["G004"]
+ignore = ["E501","E741","ISC001","N999"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
