@@ -30,7 +30,8 @@ void main() {
     mockNotificationState = MockNotificationState();
   });
 
-  Widget createWidgetUnderTest(MessageType messageType) {
+  Widget createWidgetUnderTest(MessageType messageType,
+      {ScrollController? scrollController}) {
     return MultiProvider(
       providers: [
         Provider<HttpHelper>.value(value: mockHttpHelper),
@@ -41,9 +42,15 @@ void main() {
       ],
       child: MaterialApp(
         home: Scaffold(
-          body: MessageInput(
-            messageType: messageType,
-            httpHelper: mockHttpHelper,
+          body: ListView(
+            controller: scrollController,
+            children: [
+              MessageInput(
+                messageType: messageType,
+                httpHelper: mockHttpHelper,
+                scrollController: scrollController,
+              ),
+            ],
           ),
         ),
       ),
@@ -85,5 +92,26 @@ void main() {
     verify(mockNotificationState
             .setNotificationError('Failed to send message!'))
         .called(1);
+  });
+
+  testWidgets('MessageInput scrolls to bottom when message is sent',
+      (WidgetTester tester) async {
+    final ScrollController scrollController = ScrollController();
+    when(mockAppState.fullUrl).thenReturn('http://example.com');
+    when(mockAppState.authToken).thenReturn('token');
+    when(mockHttpHelper.chat(any, any, any)).thenAnswer((_) async => {
+          'text': 'response',
+          'isUserMessage': false,
+          'timestamp': DateTime.now()
+        });
+
+    await tester.pumpWidget(createWidgetUnderTest(MessageType.chat,
+        scrollController: scrollController));
+
+    await tester.enterText(find.byType(TextField), 'Hello');
+    await tester.tap(find.byIcon(Icons.send));
+    await tester.pump();
+
+    expect(scrollController.offset, scrollController.position.maxScrollExtent);
   });
 }
