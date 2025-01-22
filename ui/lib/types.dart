@@ -1,3 +1,7 @@
+// Project imports:
+import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/state/message_state.dart';
+
 enum PageType {
   login,
   chat,
@@ -25,5 +29,41 @@ enum NotificationType {
 
 enum MessageType {
   chat,
-  command,
+  command;
+
+  Future<Map<String, dynamic>> sendMessage(HttpHelper httpHelper, String url,
+      String token, String userMessage) async {
+    switch (this) {
+      case MessageType.chat:
+        return await httpHelper.chat(url, token, userMessage);
+      case MessageType.command:
+        return await httpHelper.command(url, token, userMessage);
+    }
+  }
+
+  void handleAddMessage(
+      MessageState messageState, Map<String, dynamic> userMessageDict) {
+    switch (this) {
+      case MessageType.chat:
+        messageState.addMessage(userMessageDict);
+        break;
+      case MessageType.command:
+        messageState.clearUserMessage();
+        messageState.clearBotMessage();
+        messageState.setUserMessage(userMessageDict);
+        break;
+    }
+  }
+
+  void handleFailedMessage(MessageState messageState) {
+    switch (this) {
+      case MessageType.chat:
+        messageState.removeLastMessage();
+        break;
+      case MessageType.command:
+        messageState.clearUserMessage();
+        messageState.clearBotMessage();
+        break;
+    }
+  }
 }
