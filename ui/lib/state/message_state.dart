@@ -46,4 +46,11 @@ class MessageState extends ChangeNotifier {
     _botMessage.clear();
     notifyListeners();
   }
+
+  void initialiseChat(Map<String, dynamic> message) {
+    clearMessages();
+    clearUserMessage();
+    addMessage(message);
+    setBotMessage(message);
+  }
 }

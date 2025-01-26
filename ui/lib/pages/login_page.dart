@@ -98,9 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                 .getLoginResponse(appState.fullUrl, appState.authToken);
             if (message.isNotEmpty) {
               appState.setConnected(true);
-              messageState.clearMessages();
-              messageState.addMessage(message);
-              messageState.setBotMessage(message);
+              messageState.initialiseChat(message);
               appState.setActivePage(PageType.chat);
               notificationState.clearNotification();
             }
