@@ -41,7 +41,7 @@ repository = "https://github.com/javidahmed64592/rpi-ai"
 
 [tool.pytest.ini_options]
 addopts = [
-    "-vx",
+    "-vv",
     "--cov",
     "--cov-report",
     "term-missing",
