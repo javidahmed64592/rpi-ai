@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 from google.generativeai.protos import FunctionCall
 
-from rpi_ai.models.types import FunctionResponse, FunctionsList, Message, MessageList
+from rpi_ai.models.types import CallableFunctionResponse, FunctionsList, Message, MessageList
 
 
 class TestMessage:
@@ -39,22 +39,22 @@ class TestMessageList:
 class TestFunctionResponse:
     def test_name(self) -> None:
         fn = FunctionCall(name="test_function", args={})
-        response = FunctionResponse(fn, lambda: {})
+        response = CallableFunctionResponse(fn, lambda: {})
         assert response.name == "test_function"
 
     def test_args(self) -> None:
         fn = FunctionCall(name="test_function", args={"arg1": "value1", "arg2": "value2"})
-        response = FunctionResponse(fn, lambda: {})
+        response = CallableFunctionResponse(fn, lambda: {})
         assert set(response.args.split(", ")) == {"arg1=value1", "arg2=value2"}
 
     def test_response(self) -> None:
         fn = FunctionCall(name="test_function", args={})
-        response = FunctionResponse(fn, lambda: {"result": "success"})
+        response = CallableFunctionResponse(fn, lambda: {"result": "success"})
         assert response.response == {"result": "success"}
 
     def test_output(self) -> None:
         fn = FunctionCall(name="test_function", args={"arg1": "value1"})
-        response = FunctionResponse(fn, lambda: {"result": "success"})
+        response = CallableFunctionResponse(fn, lambda: {"result": "success"})
         assert response.output == "test_function(arg1=value1)={'result': 'success'}"
 
 

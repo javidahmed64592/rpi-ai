@@ -35,7 +35,7 @@ class MessageList:
         return cls([Message.from_dict(item) for item in data])
 
 
-class FunctionResponse:
+class CallableFunctionResponse:
     def __init__(self, fn: FunctionCall, callable_fn: Callable) -> None:
         self.function = fn
         self.callable_fn = callable_fn

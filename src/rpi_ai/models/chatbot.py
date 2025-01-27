@@ -1,24 +1,67 @@
+from collections.abc import Iterable
+
 import google.generativeai as genai
+from google.generativeai.protos import FunctionResponse, Part
+from google.generativeai.types.generation_types import GenerateContentResponse
+from pydantic import ValidationError
 
 from rpi_ai.config import AIConfigType
-from rpi_ai.models.types import Message
+from rpi_ai.models.types import CallableFunctionResponse, FunctionsList, Message
 
 
 class Chatbot:
-    def __init__(self, api_key: str, config: AIConfigType) -> None:
+    def __init__(self, api_key: str, config: AIConfigType, functions: FunctionsList) -> None:
         genai.configure(api_key=api_key)
-        self._model = genai.GenerativeModel(config.model, generation_config=config.generation_config)
+
+        self._config = config
+        self._functions = functions
+        self._model = genai.GenerativeModel(
+            self._config.model, generation_config=self._config.generation_config, tools=self._functions.functions
+        )
 
     @property
     def first_message(self) -> dict[str, str]:
         return {"role": "model", "parts": "What's on your mind today?"}
+
+    def _extract_command_from_part(self, part: Part) -> CallableFunctionResponse:
+        try:
+            return CallableFunctionResponse(fn=part.function_call, callable_fn=self._functions[part.function_call.name])
+        except AttributeError:
+            return None
+
+    def _get_commands_from_response(self, response: GenerateContentResponse) -> Iterable[CallableFunctionResponse]:
+        commands: Iterable[FunctionResponse] = []
+        for part in response.parts:
+            commands.append(self._extract_command_from_part(part))
+        return commands
+
+    def _get_response_parts_from_commands(self, commands: Iterable[CallableFunctionResponse]) -> list[Part]:
+        return [
+            Part(function_response=FunctionResponse(name=fn.name, response={"result": fn.response})) for fn in commands
+        ]
 
     def start_chat(self) -> Message:
         self._chat = self._model.start_chat(history=[self.first_message])
         return Message(message=self.first_message.get("parts"))
 
     def send_message(self, text: str) -> Message:
-        return Message(message=self._chat.send_message(text).text)
+        response = self._chat.send_message(text)
+
+        if commands := self._get_commands_from_response(response):
+            response_parts = self._get_response_parts_from_commands(commands)
+            response = self._chat.send_message(response_parts)
+        try:
+            return Message(message=response.text)
+        except (AttributeError, ValidationError):
+            self._chat.rewind()
+            return Message(message="An error occurred! Please try again.")
 
     def send_command(self, text: str) -> Message:
-        return Message(message=self._model.generate_content(text).text)
+        try:
+            response = self._model.generate_content(text)
+
+            if commands := self._get_commands_from_response(response):
+                return Message(message=f"Executing commands:\n{'\n'.join([cmd.output for cmd in commands])}")
+            return Message(message="Sorry, I don't understand that command.")
+        except ValueError:
+            return Message(message="Sorry, I don't understand that command.")
