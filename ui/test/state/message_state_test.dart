@@ -72,5 +72,17 @@ void main() {
       messageState.clearBotMessage();
       expect(messageState.botMessage.isEmpty, true);
     });
+
+    test('initialiseChat initializes the chat correctly', () {
+      final initialMessage = {
+        'text': 'Initial message',
+        'isUserMessage': false
+      };
+      messageState.initialiseChat(initialMessage);
+      expect(messageState.messages.length, 1);
+      expect(messageState.messages[0], initialMessage);
+      expect(messageState.userMessage.isEmpty, true);
+      expect(messageState.botMessage, initialMessage);
+    });
   });
 }
