@@ -50,6 +50,8 @@ class CallableFunctionResponse:
 
     @property
     def response(self) -> dict[str, str]:
+        if self.function.args:
+            return self.callable_fn(**self.function.args)
         return self.callable_fn()
 
     @property
