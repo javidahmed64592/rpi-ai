@@ -26,7 +26,7 @@ class Chatbot:
     def _extract_command_from_part(self, part: Part) -> CallableFunctionResponse:
         try:
             return CallableFunctionResponse(fn=part.function_call, callable_fn=self._functions[part.function_call.name])
-        except AttributeError:
+        except (AttributeError, KeyError):
             return None
 
     def _get_commands_from_response(self, response: GenerateContentResponse) -> Iterable[CallableFunctionResponse]:
@@ -36,9 +36,13 @@ class Chatbot:
         return commands
 
     def _get_response_parts_from_commands(self, commands: Iterable[CallableFunctionResponse]) -> list[Part]:
-        return [
-            Part(function_response=FunctionResponse(name=fn.name, response={"result": fn.response})) for fn in commands
-        ]
+        try:
+            return [
+                Part(function_response=FunctionResponse(name=fn.name, response={"result": fn.response}))
+                for fn in commands
+            ]
+        except AttributeError:
+            return []
 
     def start_chat(self) -> Message:
         self._chat = self._model.start_chat(history=[self.first_message])
@@ -48,8 +52,8 @@ class Chatbot:
         response = self._chat.send_message(text)
 
         if commands := self._get_commands_from_response(response):
-            response_parts = self._get_response_parts_from_commands(commands)
-            response = self._chat.send_message(response_parts)
+            if response_parts := self._get_response_parts_from_commands(commands):
+                response = self._chat.send_message(response_parts)
         try:
             return Message(message=response.text)
         except (AttributeError, ValidationError):
