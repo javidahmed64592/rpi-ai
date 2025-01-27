@@ -7,6 +7,7 @@ from flask.testing import FlaskClient
 from rpi_ai.config import AIConfigType
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
+from rpi_ai.models.types import FunctionsList
 
 
 # Config fixtures
@@ -23,6 +24,20 @@ def config_data() -> dict[str, str | float]:
 @pytest.fixture
 def mock_config(config_data: dict[str, str | float]) -> AIConfigType:
     return AIConfigType(**config_data)
+
+
+# Function fixtures
+def function_a_without_args() -> str:
+    return "Function A without args"
+
+
+def function_b_without_args() -> str:
+    return "Function B without args"
+
+
+@pytest.fixture
+def mock_functions_list() -> FunctionsList:
+    return FunctionsList([function_a_without_args, function_b_without_args])
 
 
 # Chatbot fixtures
