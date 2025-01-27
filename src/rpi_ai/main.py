@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 
 from rpi_ai.config import AIConfigType
+from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models.chatbot import Chatbot
 from rpi_ai.models.logger import Logger
 
@@ -27,7 +28,7 @@ class AIApp:
         logger.debug("Loading config...")
         self.config = AIConfigType.load("config/ai_config.json")
 
-        self.chatbot = Chatbot(api_key, self.config)
+        self.chatbot = Chatbot(api_key, self.config, FUNCTIONS)
 
         self.token = self.generate_token()
         logger.info(f"Generated token: {self.token}")
@@ -77,14 +78,14 @@ class AIApp:
         user_message = self.get_request_json().get("message")
         logger.info(user_message)
         response = self.chatbot.send_message(user_message)
-        logger.info(response)
+        logger.info(response.message)
         return jsonify(response)
 
     def command(self) -> Response:
         user_message = self.get_request_json().get("message")
         logger.info(user_message)
         response = self.chatbot.send_command(user_message)
-        logger.info(response)
+        logger.info(response.message)
         return jsonify(response)
 
     def shutdown_handler(self, signum: int, frame: FrameType) -> None:
