@@ -1,14 +1,20 @@
 from unittest.mock import MagicMock
 
+import pytest
 from flask.testing import FlaskClient
 
-from rpi_ai.main import AIApp
+from rpi_ai.main import AIApp, main
 
 SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
 
 
 class TestAIApp:
+    def test_init_no_api_key(self, mock_api_key: MagicMock) -> None:
+        mock_api_key.return_value = ""
+        with pytest.raises(ValueError, match="GEMINI_API_KEY variable not set!"):
+            AIApp()
+
     def test_authenticate_success(self, mock_ai_app: AIApp, mock_request_headers: MagicMock) -> None:
         mock_request_headers.return_value = {"Authorization": "test_token"}
         assert mock_ai_app.authenticate() is True
@@ -109,3 +115,8 @@ class TestAIApp:
         response = mock_client.post("/command")
         mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
         assert response.status_code == UNAUTHORIZED_CODE
+
+
+def test_main(mock_ai_app_class: MagicMock) -> None:
+    main()
+    mock_ai_app_class.return_value.run.assert_called_once_with(host="0.0.0.0", port=8080)

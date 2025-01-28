@@ -126,6 +126,12 @@ def mock_jsonify() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
+def mock_ai_app_class() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.AIApp") as mock:
+        yield mock
+
+
+@pytest.fixture
 def mock_api_key() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.AIApp.get_api_key") as mock:
         mock.return_value = "test_api_key"
