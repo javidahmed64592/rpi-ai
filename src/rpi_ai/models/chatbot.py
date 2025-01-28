@@ -32,7 +32,8 @@ class Chatbot:
     def _get_commands_from_response(self, response: GenerateContentResponse) -> Iterable[CallableFunctionResponse]:
         commands: Iterable[FunctionResponse] = []
         for part in response.parts:
-            commands.append(self._extract_command_from_part(part))
+            if command := self._extract_command_from_part(part):
+                commands.append(command)
         return commands
 
     def _get_response_parts_from_commands(self, commands: Iterable[CallableFunctionResponse]) -> list[Part]:
@@ -55,7 +56,7 @@ class Chatbot:
             if response_parts := self._get_response_parts_from_commands(commands):
                 response = self._chat.send_message(response_parts)
         try:
-            return Message(message=response.text)
+            return Message(message=response.parts[0].text)
         except (AttributeError, ValidationError):
             self._chat.rewind()
             return Message(message="An error occurred! Please try again.")

@@ -84,7 +84,7 @@ def mock_generate_content(mock_generative_model: MagicMock) -> MagicMock:
 @pytest.fixture
 def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
     mock_chat_instance = MagicMock()
-    mock_chat_instance.history = [MagicMock(role="model", parts="What's on your mind today")]
+    mock_chat_instance.history = [MagicMock(role="model", parts=[MagicMock(text="What's on your mind today")])]
     mock_start_chat_method.return_value = mock_chat_instance
     return mock_chat_instance
 
