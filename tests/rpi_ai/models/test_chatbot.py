@@ -1,8 +1,10 @@
 from unittest.mock import MagicMock
 
+from google.generativeai.protos import FunctionCall
+
 from rpi_ai.config import AIConfigType
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import FunctionsList
+from rpi_ai.models.types import CallableFunctionResponse, FunctionsList
 
 
 class TestChatbot:
@@ -70,6 +72,30 @@ class TestChatbot:
         assert commands[0].name == function_name
         assert commands[0].callable_fn == mock_functions_list[function_name]
         assert commands[0].function.args == mock_response_command_with_args.parts[0].function_call.args
+
+    def test_get_response_parts_from_commands_with_valid_commands(
+        self, mock_chatbot: Chatbot, mock_functions_list: FunctionsList
+    ) -> None:
+        commands = [
+            CallableFunctionResponse(
+                fn=FunctionCall(name=mock_functions_list.functions[0].__name__, args={}),
+                callable_fn=mock_functions_list.functions[0],
+            ),
+            CallableFunctionResponse(
+                fn=FunctionCall(name=mock_functions_list.functions[1].__name__, args={"data": "test"}),
+                callable_fn=mock_functions_list.functions[1],
+            ),
+        ]
+        response_parts = mock_chatbot._get_response_parts_from_commands(commands)
+        assert len(response_parts) == len(commands)
+        for i, command in enumerate(commands):
+            assert response_parts[i].function_response.name == command.name
+            assert response_parts[i].function_response.response["result"] == command.response
+
+    def test_get_response_parts_from_commands_with_invalid_commands(self, mock_chatbot: Chatbot) -> None:
+        commands = [CallableFunctionResponse(fn=None, callable_fn=None)]
+        response_parts = mock_chatbot._get_response_parts_from_commands(commands)
+        assert response_parts == []
 
     def test_start_chat(self, mock_chatbot: Chatbot, mock_start_chat_method: MagicMock) -> None:
         response = mock_chatbot.start_chat()
