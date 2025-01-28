@@ -32,14 +32,25 @@ def function_without_args() -> str:
     return "Function without args"
 
 
+def function_with_args(data: str) -> str:
+    return f"Function with args: {data}"
+
+
 @pytest.fixture
 def mock_functions_list() -> FunctionsList:
-    return FunctionsList([function_without_args])
+    return FunctionsList([function_without_args, function_with_args])
 
 
 @pytest.fixture
 def mock_response_command_without_args() -> MagicMock:
     mock_function_call = FunctionCall(name=function_without_args.__name__, args={})
+    mock_part = Part(function_call=mock_function_call)
+    return MagicMock(parts=[mock_part])
+
+
+@pytest.fixture
+def mock_response_command_with_args() -> MagicMock:
+    mock_function_call = FunctionCall(name=function_with_args.__name__, args={})
     mock_part = Part(function_call=mock_function_call)
     return MagicMock(parts=[mock_part])
 

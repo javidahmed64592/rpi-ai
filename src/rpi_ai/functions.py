@@ -19,29 +19,27 @@ def stop_music() -> str:
     return "Stopping music!"
 
 
-def turn_on_lights() -> str:
-    """Turn on the lights.
+def set_lights_brightness(brightness: int) -> str:
+    """Set the brightness of the room lights to the specified percentage.
 
-    Returns: Confirmation that the lights are on.
+    Parameters:
+        brightness (int): The brightness percentage to set the lights to. This must be between 0 and 100.
+
+    Returns:
+        (str): Confirmation that the lights are on.
     """
-    print("Turning on the lights!")
-    return "Turning on the lights!"
-
-
-def turn_off_lights() -> str:
-    """Turn off the lights.
-
-    Returns: Confirmation that the lights are off.
-    """
-    print("Turning off the lights!")
-    return "Turning off the lights!"
+    max_brightness = 100
+    if brightness < 0 or brightness > max_brightness:
+        msg = "Brightness must be between 0 and 100."
+        raise ValueError(msg)
+    print(f"Setting brightness to {brightness}.")
+    return f"Lights on at {brightness}%!"
 
 
 FUNCTIONS = FunctionsList(
     [
         start_music,
         stop_music,
-        turn_on_lights,
-        turn_off_lights,
+        set_lights_brightness,
     ]
 )

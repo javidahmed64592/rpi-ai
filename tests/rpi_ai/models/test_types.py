@@ -47,15 +47,20 @@ class TestFunctionResponse:
         response = CallableFunctionResponse(fn, lambda: {})
         assert set(response.args.split(", ")) == {"arg1=value1", "arg2=value2"}
 
-    def test_response(self) -> None:
+    def test_response_without_args(self) -> None:
         fn = FunctionCall(name="test_function", args={})
         response = CallableFunctionResponse(fn, lambda: {"result": "success"})
         assert response.response == {"result": "success"}
 
+    def test_response_with_args(self) -> None:
+        fn = FunctionCall(name="test_function", args={"arg1": "value1"})
+        response = CallableFunctionResponse(fn, lambda arg1: {"result": f"success with {arg1}"})
+        assert response.response == {"result": "success with value1"}
+
     def test_output(self) -> None:
         fn = FunctionCall(name="test_function", args={"arg1": "value1"})
-        response = CallableFunctionResponse(fn, lambda: {"result": "success"})
-        assert response.output == "test_function(arg1=value1)={'result': 'success'}"
+        response = CallableFunctionResponse(fn, lambda arg1: {"result": f"success with {arg1}"})
+        assert response.output == "test_function(arg1=value1)={'result': 'success with value1'}"
 
 
 class TestFunctionsList:

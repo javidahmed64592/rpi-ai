@@ -23,7 +23,7 @@ class TestChatbot:
         assert mock_chatbot.first_message["role"] == "model"
         assert isinstance(mock_chatbot.first_message["parts"], str)
 
-    def test_extract_command_from_part_with_valid_function(
+    def test_extract_command_without_args_from_part_with_valid_function(
         self, mock_chatbot: Chatbot, mock_functions_list: FunctionsList, mock_response_command_without_args: MagicMock
     ) -> None:
         part = mock_response_command_without_args.parts[0]
@@ -32,6 +32,17 @@ class TestChatbot:
         assert command is not None
         assert command.function.name == part.function_call.name
         assert command.callable_fn == mock_functions_list[part.function_call.name]
+
+    def test_extract_command_with_args_from_part_with_valid_function(
+        self, mock_chatbot: Chatbot, mock_functions_list: FunctionsList, mock_response_command_with_args: MagicMock
+    ) -> None:
+        part = mock_response_command_with_args.parts[0]
+        command = mock_chatbot._extract_command_from_part(part)
+
+        assert command is not None
+        assert command.function.name == part.function_call.name
+        assert command.callable_fn == mock_functions_list[part.function_call.name]
+        assert command.function.args == part.function_call.args
 
     def test_extract_command_from_part_with_invalid_function(self, mock_chatbot: Chatbot) -> None:
         mock_part = MagicMock(function_call=None)
@@ -48,6 +59,17 @@ class TestChatbot:
         function_name = mock_response_command_without_args.parts[0].function_call.name
         assert commands[0].name == function_name
         assert commands[0].callable_fn == mock_functions_list[function_name]
+
+    def test_get_commands_with_args_from_response(
+        self, mock_chatbot: Chatbot, mock_functions_list: FunctionsList, mock_response_command_with_args: MagicMock
+    ) -> None:
+        commands = list(mock_chatbot._get_commands_from_response(mock_response_command_with_args))
+        assert len(commands) == 1
+
+        function_name = mock_response_command_with_args.parts[0].function_call.name
+        assert commands[0].name == function_name
+        assert commands[0].callable_fn == mock_functions_list[function_name]
+        assert commands[0].function.args == mock_response_command_with_args.parts[0].function_call.args
 
     def test_start_chat(self, mock_chatbot: Chatbot, mock_start_chat_method: MagicMock) -> None:
         response = mock_chatbot.start_chat()
