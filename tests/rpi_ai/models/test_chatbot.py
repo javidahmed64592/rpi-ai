@@ -104,13 +104,14 @@ class TestChatbot:
 
     def test_send_message_with_valid_response(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
         mock_msg = "Hi model!"
-        mock_response = "Hi user!"
-        mock_chat_instance.send_message.return_value.text = mock_response
+        mock_response = MagicMock()
+        mock_response.parts = [MagicMock(text="Hi user!")]
+        mock_chat_instance.send_message.return_value = mock_response
 
         mock_chatbot.start_chat()
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
-        assert response.message == mock_response
+        assert response.message == "Hi user!"
 
     def test_send_message_with_commands(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_response_command_without_args: MagicMock
@@ -118,7 +119,7 @@ class TestChatbot:
         mock_msg = "Hi model!"
         mock_responses = [
             mock_response_command_without_args,
-            MagicMock(text="Command executed"),
+            MagicMock(parts=[MagicMock(text="Command executed")]),
         ]
         mock_chat_instance.send_message.side_effect = mock_responses
 
