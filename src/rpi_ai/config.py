@@ -9,6 +9,7 @@ from pydantic.dataclasses import dataclass
 @dataclass
 class AIConfigType:
     model: str
+    system_instruction: str
     candidate_count: int = 1
     max_output_tokens: int = 20
     temperature: float = 1.0

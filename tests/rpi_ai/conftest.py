@@ -16,6 +16,7 @@ from rpi_ai.models.types import FunctionsList
 def config_data() -> dict[str, str | float]:
     return {
         "model": "test-model",
+        "system_instruction": "test-instruction",
         "candidate_count": 2,
         "max_output_tokens": 50,
         "temperature": 0.7,

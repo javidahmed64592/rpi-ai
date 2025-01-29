@@ -12,16 +12,21 @@ from rpi_ai.models.types import CallableFunctionResponse, FunctionsList, Message
 class Chatbot:
     def __init__(self, api_key: str, config: AIConfigType, functions: FunctionsList) -> None:
         genai.configure(api_key=api_key)
-
         self._config = config
         self._functions = functions
-        self._model = genai.GenerativeModel(
-            self._config.model, generation_config=self._config.generation_config, tools=self._functions.functions
-        )
+        self._initialise_model()
 
     @property
     def first_message(self) -> dict[str, str]:
         return {"role": "model", "parts": "What's on your mind today?"}
+
+    def _initialise_model(self) -> None:
+        self._model = genai.GenerativeModel(
+            self._config.model,
+            system_instruction=self._config.system_instruction,
+            generation_config=self._config.generation_config,
+            tools=self._functions.functions,
+        )
 
     def _extract_command_from_part(self, part: Part) -> CallableFunctionResponse:
         try:
