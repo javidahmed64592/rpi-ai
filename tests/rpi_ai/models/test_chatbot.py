@@ -99,6 +99,18 @@ class TestChatbot:
         response_parts = mock_chatbot._get_response_parts_from_commands(commands)
         assert response_parts == []
 
+    def test_update_config(
+        self, mock_chatbot: Chatbot, mock_config: AIConfigType, mock_generative_model: MagicMock
+    ) -> None:
+        mock_config.model = "new-model"
+        mock_chatbot.update_config(mock_config)
+        mock_generative_model.assert_called_with(
+            model_name="new-model",
+            system_instruction=mock_config.system_instruction,
+            generation_config=mock_config.generation_config,
+            tools=mock_chatbot._functions.functions,
+        )
+
     def test_start_chat(self, mock_chatbot: Chatbot, mock_start_chat_method: MagicMock) -> None:
         response = mock_chatbot.start_chat()
         mock_start_chat_method.assert_called_once_with(history=[mock_chatbot.first_message])

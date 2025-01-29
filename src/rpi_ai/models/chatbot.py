@@ -49,6 +49,10 @@ class Chatbot:
             tools=self._functions.functions,
         )
 
+    def update_config(self, config: AIConfigType) -> None:
+        self._config = config
+        self.initialise_model()
+
     def start_chat(self) -> Message:
         self._chat = self._model.start_chat(history=[self.first_message])
         return Message(message=self.first_message.get("parts"))
