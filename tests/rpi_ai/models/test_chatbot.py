@@ -18,7 +18,10 @@ class TestChatbot:
     ) -> None:
         mock_genai_configure.assert_called_once_with(api_key=mock_api_key.return_value)
         mock_generative_model.assert_called_once_with(
-            mock_config.model, generation_config=mock_config.generation_config, tools=mock_chatbot._functions.functions
+            mock_config.model,
+            system_instruction=mock_config.system_instruction,
+            generation_config=mock_config.generation_config,
+            tools=mock_chatbot._functions.functions,
         )
 
     def test_first_message(self, mock_chatbot: Chatbot) -> None:
