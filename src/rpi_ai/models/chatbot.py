@@ -44,7 +44,7 @@ class Chatbot:
 
     def initialise_model(self) -> None:
         self._model = genai.GenerativeModel(
-            self._config.model,
+            model_name=self._config.model,
             system_instruction=self._config.system_instruction,
             generation_config=self._config.generation_config,
             tools=self._functions.functions,
