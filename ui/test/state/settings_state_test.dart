@@ -20,28 +20,18 @@ void main() {
       expect(settingsState.temperature, 1.0);
     });
 
-    test('setModel updates model', () {
-      settingsState.setModel('newModel');
+    test('updateConfig updates all values', () {
+      settingsState.updateConfig({
+        'model': 'newModel',
+        'systemInstruction': 'newSystemInstruction',
+        'candidateCount': 2,
+        'maxOutputTokens': 2000,
+        'temperature': 2.0,
+      });
       expect(settingsState.model, 'newModel');
-    });
-
-    test('setSystemInstruction updates systemInstruction', () {
-      settingsState.setSystemInstruction('newSystemInstruction');
       expect(settingsState.systemInstruction, 'newSystemInstruction');
-    });
-
-    test('setCandidateCount updates candidateCount', () {
-      settingsState.setCandidateCount(2);
       expect(settingsState.candidateCount, 2);
-    });
-
-    test('setMaxOutputTokens updates maxOutputTokens', () {
-      settingsState.setMaxOutputTokens(2000);
       expect(settingsState.maxOutputTokens, 2000);
-    });
-
-    test('setTemperature updates temperature', () {
-      settingsState.setTemperature(2.0);
       expect(settingsState.temperature, 2.0);
     });
   });

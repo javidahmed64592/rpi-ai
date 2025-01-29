@@ -39,14 +39,13 @@ class SettingsDialog extends StatelessWidget {
       return TextButton(
         child: const Text('Update'),
         onPressed: () {
-          settingsState.setModel(modelController.text);
-          settingsState.setSystemInstruction(systemInstructionController.text);
-          settingsState
-              .setCandidateCount(int.parse(candidateCountController.text));
-          settingsState
-              .setMaxOutputTokens(int.parse(maxOutputTokensController.text));
-          settingsState
-              .setTemperature(double.parse(temperatureController.text));
+          settingsState.updateConfig({
+            'model': modelController.text,
+            'systemInstruction': systemInstructionController.text,
+            'candidateCount': int.parse(candidateCountController.text),
+            'maxOutputTokens': int.parse(maxOutputTokensController.text),
+            'temperature': double.parse(temperatureController.text),
+          });
           Navigator.of(context).pop();
         },
       );

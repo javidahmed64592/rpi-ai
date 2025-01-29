@@ -14,28 +14,12 @@ class SettingsState extends ChangeNotifier {
   int get maxOutputTokens => _maxOutputTokens;
   double get temperature => _temperature;
 
-  void setModel(String newModel) {
-    _model = newModel;
-    notifyListeners();
-  }
-
-  void setSystemInstruction(String newSystemInstruction) {
-    _systemInstruction = newSystemInstruction;
-    notifyListeners();
-  }
-
-  void setCandidateCount(int newCandidateCount) {
-    _candidateCount = newCandidateCount;
-    notifyListeners();
-  }
-
-  void setMaxOutputTokens(int newMaxOutputTokens) {
-    _maxOutputTokens = newMaxOutputTokens;
-    notifyListeners();
-  }
-
-  void setTemperature(double newTemperature) {
-    _temperature = newTemperature;
+  void updateConfig(Map<String, dynamic> config) {
+    _model = config['model'];
+    _systemInstruction = config['systemInstruction'];
+    _candidateCount = config['candidateCount'];
+    _maxOutputTokens = config['maxOutputTokens'];
+    _temperature = config['temperature'];
     notifyListeners();
   }
 }
