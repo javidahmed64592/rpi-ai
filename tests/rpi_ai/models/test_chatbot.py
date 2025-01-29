@@ -2,9 +2,8 @@ from unittest.mock import MagicMock
 
 from google.generativeai.protos import FunctionCall
 
-from rpi_ai.config import AIConfigType
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import CallableFunctionResponse, FunctionsList
+from rpi_ai.models.types import AIConfigType, CallableFunctionResponse, FunctionsList
 
 
 class TestChatbot:

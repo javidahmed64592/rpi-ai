@@ -5,10 +5,9 @@ import pytest
 from flask.testing import FlaskClient
 from google.generativeai.protos import FunctionCall, Part
 
-from rpi_ai.config import AIConfigType
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import FunctionsList
+from rpi_ai.models.types import AIConfigType, FunctionsList
 
 
 # Config fixtures
