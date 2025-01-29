@@ -7,13 +7,13 @@ class Logger:
         self._logger = logging.getLogger(name)
 
     def debug(self, msg: str) -> None:
-        self._logger.debug(msg)
+        self._logger.debug(msg.strip())
 
     def info(self, msg: str) -> None:
-        self._logger.info(msg)
+        self._logger.info(msg.strip())
 
     def warning(self, msg: str) -> None:
-        self._logger.warning(msg)
+        self._logger.warning(msg.strip())
 
     def error(self, msg: str) -> None:
-        self._logger.error(msg)
+        self._logger.error(msg.strip())
