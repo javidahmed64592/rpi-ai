@@ -75,7 +75,7 @@ class AIApp:
     def login(self) -> Response:
         logger.info("Starting new chat...")
         response = self.chatbot.start_chat()
-        logger.info(response)
+        logger.info(response.message)
         return jsonify(response)
 
     def get_config(self) -> Response:
@@ -86,7 +86,7 @@ class AIApp:
         config = AIConfigType(**self.get_request_json())
         self.chatbot.update_config(config)
         response = self.chatbot.start_chat()
-        logger.info(response)
+        logger.info(response.message)
         return jsonify(response)
 
     def chat(self) -> Response:
