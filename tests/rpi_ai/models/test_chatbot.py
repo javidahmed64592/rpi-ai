@@ -99,6 +99,9 @@ class TestChatbot:
         response_parts = mock_chatbot._get_response_parts_from_commands(commands)
         assert response_parts == []
 
+    def test_get_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+        assert mock_chatbot.get_config() == mock_config
+
     def test_update_config(
         self, mock_chatbot: Chatbot, mock_config: AIConfigType, mock_generative_model: MagicMock
     ) -> None:

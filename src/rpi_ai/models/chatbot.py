@@ -49,6 +49,9 @@ class Chatbot:
             tools=self._functions.functions,
         )
 
+    def get_config(self) -> AIConfigType:
+        return self._config
+
     def update_config(self, config: AIConfigType) -> None:
         self._config = config
         self.initialise_model()

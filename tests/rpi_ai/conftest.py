@@ -101,6 +101,19 @@ def mock_chatbot(
 
 
 @pytest.fixture
+def mock_get_config(mock_config: AIConfigType) -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.Chatbot.get_config") as mock:
+        mock.return_value = mock_config
+        yield mock
+
+
+@pytest.fixture
+def mock_update_config() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.Chatbot.update_config") as mock:
+        yield mock
+
+
+@pytest.fixture
 def mock_start_chat() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.Chatbot.start_chat") as mock:
         yield mock
