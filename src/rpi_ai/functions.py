@@ -1,4 +1,7 @@
+from rpi_ai.models.logger import Logger
 from rpi_ai.models.types import FunctionsList
+
+logger = Logger(__name__)
 
 
 def start_music() -> str:
@@ -6,7 +9,7 @@ def start_music() -> str:
 
     Returns: Confirmation that music has started playing.
     """
-    print("Starting music!")
+    logger.info("Starting music!")
     return "Starting music!"
 
 
@@ -15,7 +18,7 @@ def stop_music() -> str:
 
     Returns: Confirmation that music has stopped playing.
     """
-    print("Stopping music!")
+    logger.info("Stopping music!")
     return "Stopping music!"
 
 
@@ -32,7 +35,7 @@ def set_lights_brightness(brightness: int) -> str:
     if brightness < 0 or brightness > max_brightness:
         msg = "Brightness must be between 0 and 100."
         raise ValueError(msg)
-    print(f"Setting brightness to {brightness}.")
+    logger.info(f"Setting brightness to {brightness}.")
     return f"Lights on at {brightness}%!"
 
 
