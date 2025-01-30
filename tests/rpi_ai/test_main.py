@@ -4,6 +4,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from rpi_ai.main import AIApp, main
+from rpi_ai.models.types import AIConfigType
 
 SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
@@ -113,6 +114,75 @@ class TestAIApp:
         mock_request_json.return_value = {"message": user_message}
 
         response = mock_client.post("/command")
+        mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
+        assert response.status_code == UNAUTHORIZED_CODE
+
+    def test_get_config(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_get_config: MagicMock,
+        mock_jsonify: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": "test_token"}
+        response = mock_client.get("/get-config")
+        mock_jsonify.assert_called_once_with(mock_get_config.return_value)
+        assert response.status_code == SUCCESS_CODE
+
+    def test_get_config_unauthorized(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_jsonify: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": "wrong_token"}
+        response = mock_client.get("/get-config")
+        mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
+        assert response.status_code == UNAUTHORIZED_CODE
+
+    def test_update_config(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_json: MagicMock,
+        mock_update_config: MagicMock,
+        mock_start_chat: MagicMock,
+        mock_jsonify: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": "test_token"}
+        new_config = {
+            "model": "new-model",
+            "system_instruction": "new-instruction",
+            "candidate_count": 3,
+            "max_output_tokens": 100,
+            "temperature": 0.9,
+        }
+        mock_request_json.return_value = new_config
+
+        response = mock_client.post("/update-config")
+        mock_update_config.assert_called_once_with(AIConfigType(**new_config))
+        mock_start_chat.assert_called_once()
+        mock_jsonify.assert_called_once_with(mock_start_chat.return_value)
+        assert response.status_code == SUCCESS_CODE
+
+    def test_update_config_unauthorized(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_json: MagicMock,
+        mock_jsonify: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": "wrong_token"}
+        new_config = {
+            "model": "new-model",
+            "system_instruction": "new-instruction",
+            "candidate_count": 3,
+            "max_output_tokens": 100,
+            "temperature": 0.9,
+        }
+        mock_request_json.return_value = new_config
+
+        response = mock_client.post("/update-config")
         mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
         assert response.status_code == UNAUTHORIZED_CODE
 

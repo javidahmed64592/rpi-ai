@@ -9,6 +9,7 @@ import 'package:ui/pages/home_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
+import 'package:ui/state/settings_state.dart';
 
 void main() {
   runApp(
@@ -17,6 +18,7 @@ void main() {
         ChangeNotifierProvider(create: (context) => AppState()),
         ChangeNotifierProvider(create: (context) => MessageState()),
         ChangeNotifierProvider(create: (context) => NotificationState()),
+        ChangeNotifierProvider(create: (context) => SettingsState()),
       ],
       child: const AIApp(),
     ),

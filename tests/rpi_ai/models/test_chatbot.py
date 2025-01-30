@@ -2,9 +2,8 @@ from unittest.mock import MagicMock
 
 from google.generativeai.protos import FunctionCall
 
-from rpi_ai.config import AIConfigType
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import CallableFunctionResponse, FunctionsList
+from rpi_ai.models.types import AIConfigType, CallableFunctionResponse, FunctionsList
 
 
 class TestChatbot:
@@ -18,7 +17,7 @@ class TestChatbot:
     ) -> None:
         mock_genai_configure.assert_called_once_with(api_key=mock_api_key.return_value)
         mock_generative_model.assert_called_once_with(
-            mock_config.model,
+            model_name=mock_config.model,
             system_instruction=mock_config.system_instruction,
             generation_config=mock_config.generation_config,
             tools=mock_chatbot._functions.functions,
@@ -99,6 +98,21 @@ class TestChatbot:
         commands = [CallableFunctionResponse(fn=None, callable_fn=None)]
         response_parts = mock_chatbot._get_response_parts_from_commands(commands)
         assert response_parts == []
+
+    def test_get_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+        assert mock_chatbot.get_config() == mock_config
+
+    def test_update_config(
+        self, mock_chatbot: Chatbot, mock_config: AIConfigType, mock_generative_model: MagicMock
+    ) -> None:
+        mock_config.model = "new-model"
+        mock_chatbot.update_config(mock_config)
+        mock_generative_model.assert_called_with(
+            model_name="new-model",
+            system_instruction=mock_config.system_instruction,
+            generation_config=mock_config.generation_config,
+            tools=mock_chatbot._functions.functions,
+        )
 
     def test_start_chat(self, mock_chatbot: Chatbot, mock_start_chat_method: MagicMock) -> None:
         response = mock_chatbot.start_chat()

@@ -5,10 +5,9 @@ import pytest
 from flask.testing import FlaskClient
 from google.generativeai.protos import FunctionCall, Part
 
-from rpi_ai.config import AIConfigType
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import FunctionsList
+from rpi_ai.models.types import AIConfigType, FunctionsList
 
 
 # Config fixtures
@@ -99,6 +98,19 @@ def mock_chatbot(
     mock_functions_list: FunctionsList,
 ) -> Chatbot:
     return Chatbot(mock_api_key.return_value, mock_config, mock_functions_list)
+
+
+@pytest.fixture
+def mock_get_config(mock_config: AIConfigType) -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.Chatbot.get_config") as mock:
+        mock.return_value = mock_config
+        yield mock
+
+
+@pytest.fixture
+def mock_update_config() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.Chatbot.update_config") as mock:
+        yield mock
 
 
 @pytest.fixture

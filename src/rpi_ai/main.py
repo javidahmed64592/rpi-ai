@@ -6,10 +6,10 @@ from types import FrameType
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 
-from rpi_ai.config import AIConfigType
 from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models.chatbot import Chatbot
 from rpi_ai.models.logger import Logger
+from rpi_ai.models.types import AIConfigType
 
 logger = Logger(__name__)
 
@@ -26,9 +26,9 @@ class AIApp:
             raise ValueError(msg)
 
         logger.debug("Loading config...")
-        self.config = AIConfigType.load("config/ai_config.json")
+        config = AIConfigType.load("config/ai_config.json")
 
-        self.chatbot = Chatbot(api_key, self.config, FUNCTIONS)
+        self.chatbot = Chatbot(api_key, config, FUNCTIONS)
 
         self.token = self.generate_token()
         logger.info(f"Generated token: {self.token}")
@@ -36,6 +36,10 @@ class AIApp:
         self.app = Flask(__name__)
         self.app.add_url_rule("/", "is_alive", self.is_alive, methods=["GET"])
         self.app.add_url_rule("/login", "login", self.token_required(self.login), methods=["GET"])
+        self.app.add_url_rule("/get-config", "get-config", self.token_required(self.get_config), methods=["GET"])
+        self.app.add_url_rule(
+            "/update-config", "update-config", self.token_required(self.update_config), methods=["POST"]
+        )
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
         self.app.add_url_rule("/command", "command", self.token_required(self.command), methods=["POST"])
 
@@ -71,7 +75,18 @@ class AIApp:
     def login(self) -> Response:
         logger.info("Starting new chat...")
         response = self.chatbot.start_chat()
-        logger.info(response)
+        logger.info(response.message)
+        return jsonify(response)
+
+    def get_config(self) -> Response:
+        return jsonify(self.chatbot.get_config())
+
+    def update_config(self) -> Response:
+        logger.info("Updating AI config...")
+        config = AIConfigType(**self.get_request_json())
+        self.chatbot.update_config(config)
+        response = self.chatbot.start_chat()
+        logger.info(response.message)
         return jsonify(response)
 
     def chat(self) -> Response:
