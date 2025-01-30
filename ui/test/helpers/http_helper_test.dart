@@ -63,6 +63,140 @@ void main() {
       expect(httpHelper.getLoginResponse(uri, authToken), throwsException);
     });
 
+    test('getConfig returns config if the http call completes successfully',
+        () async {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      const uri = 'http://example.com';
+      const authToken = 'testToken';
+
+      // Use Mockito to return a successful response when it calls the
+      // provided http.Client.
+      when(client.get(
+        Uri.parse('$uri/get-config'),
+        headers: {'Authorization': authToken},
+      )).thenAnswer((_) async => http.Response(
+          jsonEncode({
+            'model': 'testModel',
+            'system_instruction': 'testInstruction',
+            'candidate_count': 5,
+            'max_output_tokens': 100,
+            'temperature': 0.7,
+          }),
+          200));
+
+      expect(await httpHelper.getConfig(uri, authToken), {
+        'model': 'testModel',
+        'systemInstruction': 'testInstruction',
+        'candidateCount': 5,
+        'maxOutputTokens': 100,
+        'temperature': 0.7,
+      });
+    });
+
+    test(
+        'getConfig throws an exception if the http call completes with an error',
+        () {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      const uri = 'http://example.com';
+      const authToken = 'testToken';
+
+      // Use Mockito to return an unsuccessful response when it calls the
+      // provided http.Client.
+      when(client.get(
+        Uri.parse('$uri/get-config'),
+        headers: {'Authorization': authToken},
+      )).thenAnswer((_) async => http.Response('Not Found', 404));
+
+      expect(httpHelper.getConfig(uri, authToken), throwsException);
+    });
+
+    test(
+        'updateConfig returns updated config if the http call completes successfully',
+        () async {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      const uri = 'http://example.com';
+      const authToken = 'testToken';
+      final config = {
+        'model': 'newModel',
+        'system_instruction': 'newInstruction',
+        'candidate_count': 10,
+        'max_output_tokens': 200,
+        'temperature': 0.9,
+      };
+
+      // Use Mockito to return a successful response when it calls the
+      // provided http.Client.
+      when(client.post(
+        Uri.parse('$uri/update-config'),
+        headers: {
+          'Authorization': authToken,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(config),
+      )).thenAnswer((_) async => http.Response(
+          jsonEncode({
+            'model': 'newModel',
+            'system_instruction': 'newInstruction',
+            'candidate_count': 10,
+            'max_output_tokens': 200,
+            'temperature': 0.9,
+          }),
+          200));
+
+      when(client.get(
+        Uri.parse('$uri/get-config'),
+        headers: {'Authorization': authToken},
+      )).thenAnswer((_) async => http.Response(
+          jsonEncode({
+            'model': 'newModel',
+            'system_instruction': 'newInstruction',
+            'candidate_count': 10,
+            'max_output_tokens': 200,
+            'temperature': 0.9,
+          }),
+          200));
+
+      expect(await httpHelper.updateConfig(uri, authToken, config), {
+        'model': 'newModel',
+        'systemInstruction': 'newInstruction',
+        'candidateCount': 10,
+        'maxOutputTokens': 200,
+        'temperature': 0.9,
+      });
+    });
+
+    test(
+        'updateConfig throws an exception if the http call completes with an error',
+        () {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      const uri = 'http://example.com';
+      const authToken = 'testToken';
+      final config = {
+        'model': 'newModel',
+        'system_instruction': 'newInstruction',
+        'candidate_count': 10,
+        'max_output_tokens': 200,
+        'temperature': 0.9,
+      };
+
+      // Use Mockito to return an unsuccessful response when it calls the
+      // provided http.Client.
+      when(client.post(
+        Uri.parse('$uri/update-config'),
+        headers: {
+          'Authorization': authToken,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(config),
+      )).thenAnswer((_) async => http.Response('Not Found', 404));
+
+      expect(httpHelper.updateConfig(uri, authToken, config), throwsException);
+    });
+
     test('chat returns a message if the http call completes successfully',
         () async {
       final client = MockClient();
