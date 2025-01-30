@@ -3,20 +3,31 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/components/app_bar/settings_dialog.dart';
+import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/state/app_state.dart';
+import 'package:ui/state/message_state.dart';
+import 'package:ui/state/notification_state.dart';
 import 'package:ui/state/settings_state.dart';
+import 'settings_dialog_test.mocks.dart';
 
+@GenerateMocks([HttpHelper])
 void main() {
   testWidgets('SettingsButton opens SettingsDialog',
       (WidgetTester tester) async {
-    final settingsState = SettingsState();
-
     await tester.pumpWidget(
-      ChangeNotifierProvider<SettingsState>.value(
-        value: settingsState,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppState()),
+          ChangeNotifierProvider(create: (_) => MessageState()),
+          ChangeNotifierProvider(create: (_) => NotificationState()),
+          ChangeNotifierProvider(create: (_) => SettingsState()),
+        ],
         child: const MaterialApp(
           home: Scaffold(
             body: SettingsButton(),
@@ -33,11 +44,14 @@ void main() {
 
   testWidgets('SettingsDialog displays Update button',
       (WidgetTester tester) async {
-    final settingsState = SettingsState();
-
     await tester.pumpWidget(
-      ChangeNotifierProvider<SettingsState>.value(
-        value: settingsState,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppState()),
+          ChangeNotifierProvider(create: (_) => MessageState()),
+          ChangeNotifierProvider(create: (_) => NotificationState()),
+          ChangeNotifierProvider(create: (_) => SettingsState()),
+        ],
         child: const MaterialApp(
           home: Scaffold(
             body: SettingsDialog(),
@@ -53,13 +67,27 @@ void main() {
       'SettingsDialog updates SettingsState when Update button is pressed',
       (WidgetTester tester) async {
     final settingsState = SettingsState();
+    final mockHttpHelper = MockHttpHelper();
+    final appState = AppState();
+
+    when(mockHttpHelper.updateConfig(any, any, any)).thenAnswer((_) async => {
+          'text': 'Config updated successfully',
+          'isUserMessage': false,
+          'timestamp': DateTime.now(),
+        });
 
     await tester.pumpWidget(
-      ChangeNotifierProvider<SettingsState>.value(
-        value: settingsState,
-        child: const MaterialApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => appState),
+          ChangeNotifierProvider(create: (_) => MessageState()),
+          ChangeNotifierProvider(create: (_) => NotificationState()),
+          ChangeNotifierProvider(create: (_) => settingsState),
+          Provider<HttpHelper>.value(value: mockHttpHelper),
+        ],
+        child: MaterialApp(
           home: Scaffold(
-            body: SettingsDialog(),
+            body: SettingsDialog(httpHelper: mockHttpHelper),
           ),
         ),
       ),
@@ -88,11 +116,14 @@ void main() {
 
   testWidgets('SettingsDialog displays Close button',
       (WidgetTester tester) async {
-    final settingsState = SettingsState();
-
     await tester.pumpWidget(
-      ChangeNotifierProvider<SettingsState>.value(
-        value: settingsState,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppState()),
+          ChangeNotifierProvider(create: (_) => MessageState()),
+          ChangeNotifierProvider(create: (_) => NotificationState()),
+          ChangeNotifierProvider(create: (_) => SettingsState()),
+        ],
         child: const MaterialApp(
           home: Scaffold(
             body: SettingsDialog(),
@@ -106,11 +137,14 @@ void main() {
 
   testWidgets('SettingsDialog closes when Close button is pressed',
       (WidgetTester tester) async {
-    final settingsState = SettingsState();
-
     await tester.pumpWidget(
-      ChangeNotifierProvider<SettingsState>.value(
-        value: settingsState,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppState()),
+          ChangeNotifierProvider(create: (_) => MessageState()),
+          ChangeNotifierProvider(create: (_) => NotificationState()),
+          ChangeNotifierProvider(create: (_) => SettingsState()),
+        ],
         child: const MaterialApp(
           home: Scaffold(
             body: SettingsDialog(),

@@ -171,7 +171,7 @@ void main() {
     });
 
     test(
-        'updateConfig returns updated config if the http call completes successfully',
+        'updateConfig returns the first message if the http call completes successfully',
         () async {
       final client = MockClient();
       final httpHelper = HttpHelper(client: client);
@@ -196,33 +196,15 @@ void main() {
         body: jsonEncode(config),
       )).thenAnswer((_) async => http.Response(
           jsonEncode({
-            'model': 'newModel',
-            'system_instruction': 'newInstruction',
-            'candidate_count': 10,
-            'max_output_tokens': 200,
-            'temperature': 0.9,
-          }),
-          200));
-
-      when(client.get(
-        Uri.parse('$uri/get-config'),
-        headers: {'Authorization': authToken},
-      )).thenAnswer((_) async => http.Response(
-          jsonEncode({
-            'model': 'newModel',
-            'system_instruction': 'newInstruction',
-            'candidate_count': 10,
-            'max_output_tokens': 200,
-            'temperature': 0.9,
+            'message': 'Config updated successfully',
+            'is_user_message': false,
           }),
           200));
 
       expect(await httpHelper.updateConfig(uri, authToken, config), {
-        'model': 'newModel',
-        'systemInstruction': 'newInstruction',
-        'candidateCount': 10,
-        'maxOutputTokens': 200,
-        'temperature': 0.9,
+        'text': 'Config updated successfully',
+        'isUserMessage': false,
+        'timestamp': isA<DateTime>(),
       });
     });
 

@@ -3,17 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // Package imports:
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/state/app_state.dart';
+import 'package:ui/state/message_state.dart';
+import 'package:ui/state/notification_state.dart';
 import 'package:ui/state/settings_state.dart';
 
 class SettingsDialog extends StatelessWidget {
-  const SettingsDialog({super.key});
+  final HttpHelper? httpHelper;
+
+  const SettingsDialog({super.key, this.httpHelper});
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
+    final messageState = Provider.of<MessageState>(context);
+    final notificationState = Provider.of<NotificationState>(context);
     final settingsState = Provider.of<SettingsState>(context);
+    final httpHelper = this.httpHelper ?? HttpHelper(client: http.Client());
 
     final TextEditingController modelController =
         TextEditingController(text: settingsState.model);
@@ -39,13 +50,30 @@ class SettingsDialog extends StatelessWidget {
       return TextButton(
         child: const Text('Update'),
         onPressed: () {
-          settingsState.updateConfig({
+          final Map<String, dynamic> config = {
             'model': modelController.text,
-            'systemInstruction': systemInstructionController.text,
-            'candidateCount': int.parse(candidateCountController.text),
-            'maxOutputTokens': int.parse(maxOutputTokensController.text),
+            'system_instruction': systemInstructionController.text,
+            'candidate_count': int.parse(candidateCountController.text),
+            'max_output_tokens': int.parse(maxOutputTokensController.text),
             'temperature': double.parse(temperatureController.text),
+          };
+
+          final response = httpHelper.updateConfig(
+              appState.fullUrl, appState.authToken, config);
+          response.then((value) {
+            settingsState.updateConfig({
+              'model': config['model'],
+              'systemInstruction': config['system_instruction'],
+              'candidateCount': config['candidate_count'],
+              'maxOutputTokens': config['max_output_tokens'],
+              'temperature': config['temperature'],
+            });
+            messageState.initialiseChat(value);
+          }).catchError((error) {
+            notificationState
+                .setNotificationError('Error updating settings: $error');
           });
+
           Navigator.of(context).pop();
         },
       );

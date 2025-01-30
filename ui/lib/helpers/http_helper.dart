@@ -93,7 +93,12 @@ class HttpHelper {
         await postResponseToUri('$url/update-config', headers, body);
 
     if (response.statusCode == 200) {
-      return await getConfig(url, authToken);
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      return {
+        'text': body['message'].toString().trim(),
+        'isUserMessage': body['is_user_message'],
+        'timestamp': DateTime.now(),
+      };
     }
 
     // Raise exception if response status code is not 200
