@@ -22,6 +22,64 @@ import 'http_helper_test.mocks.dart';
 @GenerateMocks([http.Client])
 void main() {
   group('HttpHelper', () {
+    testWidgets(
+        'checkApiConnection sets activePage to login if the http call completes with an error',
+        (WidgetTester tester) async {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      final appState = AppState();
+      const uri = '/';
+
+      when(client.get(Uri.parse(uri)))
+          .thenAnswer((_) async => http.Response('Not Found', 404));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<AppState>.value(
+          value: appState,
+          child: Builder(
+            builder: (context) {
+              Future.microtask(() => httpHelper.checkApiConnection(uri));
+              return Container();
+            },
+          ),
+        ),
+      );
+
+      await tester.pump(); // Rebuild the widget tree
+
+      expect(appState.activePage, PageType.login);
+    });
+
+    test(
+        'checkApiConnection returns true if the http call completes successfully',
+        () async {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      const uri = 'http://example.com';
+
+      // Use Mockito to return a successful response when it calls the
+      // provided http.Client.
+      when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
+          .thenAnswer((_) async => http.Response('OK', 200));
+
+      expect(await httpHelper.checkApiConnection(uri), true);
+    });
+
+    test(
+        'checkApiConnection returns false if the http call completes with an error',
+        () async {
+      final client = MockClient();
+      final httpHelper = HttpHelper(client: client);
+      const uri = 'http://example.com';
+
+      // Use Mockito to return an unsuccessful response when it calls the
+      // provided http.Client.
+      when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
+          .thenAnswer((_) async => http.Response('Not Found', 404));
+
+      expect(await httpHelper.checkApiConnection(uri), false);
+    });
+
     test(
         'getLoginResponse returns a message if the http call completes successfully',
         () async {
@@ -294,64 +352,6 @@ void main() {
       )).thenAnswer((_) async => http.Response('Not Found', 404));
 
       expect(await httpHelper.command(uri, authToken, message), {});
-    });
-
-    testWidgets(
-        'checkApiConnection sets activePage to login if the http call completes with an error',
-        (WidgetTester tester) async {
-      final client = MockClient();
-      final httpHelper = HttpHelper(client: client);
-      final appState = AppState();
-      const uri = '/';
-
-      when(client.get(Uri.parse(uri)))
-          .thenAnswer((_) async => http.Response('Not Found', 404));
-
-      await tester.pumpWidget(
-        ChangeNotifierProvider<AppState>.value(
-          value: appState,
-          child: Builder(
-            builder: (context) {
-              Future.microtask(() => httpHelper.checkApiConnection(uri));
-              return Container();
-            },
-          ),
-        ),
-      );
-
-      await tester.pump(); // Rebuild the widget tree
-
-      expect(appState.activePage, PageType.login);
-    });
-
-    test(
-        'checkApiConnection returns true if the http call completes successfully',
-        () async {
-      final client = MockClient();
-      final httpHelper = HttpHelper(client: client);
-      const uri = 'http://example.com';
-
-      // Use Mockito to return a successful response when it calls the
-      // provided http.Client.
-      when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
-          .thenAnswer((_) async => http.Response('OK', 200));
-
-      expect(await httpHelper.checkApiConnection(uri), true);
-    });
-
-    test(
-        'checkApiConnection returns false if the http call completes with an error',
-        () async {
-      final client = MockClient();
-      final httpHelper = HttpHelper(client: client);
-      const uri = 'http://example.com';
-
-      // Use Mockito to return an unsuccessful response when it calls the
-      // provided http.Client.
-      when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
-          .thenAnswer((_) async => http.Response('Not Found', 404));
-
-      expect(await httpHelper.checkApiConnection(uri), false);
     });
   });
 }
