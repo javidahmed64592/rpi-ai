@@ -14,6 +14,7 @@ import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'package:ui/state/settings_state.dart';
+import 'package:ui/types.dart';
 import 'settings_dialog_test.mocks.dart';
 
 @GenerateMocks([HttpHelper])
@@ -110,6 +111,45 @@ void main() {
     expect(settingsState.candidateCount, 5);
     expect(settingsState.maxOutputTokens, 1500);
     expect(settingsState.temperature, 1.5);
+
+    expect(find.byType(AlertDialog), findsNothing);
+  });
+
+  testWidgets(
+      'SettingsDialog shows error notification when Update button is pressed and an error occurs',
+      (WidgetTester tester) async {
+    final notificationState = NotificationState();
+    final settingsState = SettingsState();
+    final mockHttpHelper = MockHttpHelper();
+
+    when(mockHttpHelper.updateConfig(any, any, any))
+        .thenThrow(Exception('Failed to update config'));
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppState()),
+          ChangeNotifierProvider(create: (_) => MessageState()),
+          ChangeNotifierProvider(create: (_) => notificationState),
+          ChangeNotifierProvider(create: (_) => settingsState),
+          Provider<HttpHelper>.value(value: mockHttpHelper),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: SettingsDialog(httpHelper: mockHttpHelper),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(AlertDialog), findsOneWidget);
+
+    await tester.tap(find.text('Update'));
+    await tester.pumpAndSettle();
+
+    expect(notificationState.notificationState, NotificationType.error);
+    expect(notificationState.notificationMessage,
+        'Error updating settings: Exception: Failed to update config');
 
     expect(find.byType(AlertDialog), findsNothing);
   });

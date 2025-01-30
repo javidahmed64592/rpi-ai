@@ -58,21 +58,23 @@ class SettingsDialog extends StatelessWidget {
             'temperature': double.parse(temperatureController.text),
           };
 
-          final response = httpHelper.updateConfig(
-              appState.fullUrl, appState.authToken, config);
-          response.then((value) {
-            settingsState.updateConfig({
-              'model': config['model'],
-              'systemInstruction': config['system_instruction'],
-              'candidateCount': config['candidate_count'],
-              'maxOutputTokens': config['max_output_tokens'],
-              'temperature': config['temperature'],
+          try {
+            httpHelper
+                .updateConfig(appState.fullUrl, appState.authToken, config)
+                .then((value) {
+              settingsState.updateConfig({
+                'model': config['model'],
+                'systemInstruction': config['system_instruction'],
+                'candidateCount': config['candidate_count'],
+                'maxOutputTokens': config['max_output_tokens'],
+                'temperature': config['temperature'],
+              });
+              messageState.initialiseChat(value);
             });
-            messageState.initialiseChat(value);
-          }).catchError((error) {
+          } catch (error) {
             notificationState
                 .setNotificationError('Error updating settings: $error');
-          });
+          }
 
           Navigator.of(context).pop();
         },
