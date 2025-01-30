@@ -50,6 +50,27 @@ class HttpHelper {
     throw Exception('Login failed: (${response.statusCode}) ${response.body}');
   }
 
+  Future<Map<String, dynamic>> getConfig(String url, String authToken) async {
+    final headers = <String, String>{
+      'Authorization': authToken,
+    };
+    final response = await getResponseFromUri('$url/get-config', headers);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      return {
+        'model': body['model'].toString().trim(),
+        'systemInstruction': body['system_instruction'].toString().trim(),
+        'candidateCount': body['candidate_count'],
+        'maxOutputTokens': body['max_output_tokens'],
+        'temperature': body['temperature'],
+      };
+    }
+
+    // Raise exception if response status code is not 200
+    throw Exception('Login failed: (${response.statusCode}) ${response.body}');
+  }
+
   Future<Map<String, dynamic>> chat(
       String url, String authToken, String message) async {
     final headers = <String, String>{

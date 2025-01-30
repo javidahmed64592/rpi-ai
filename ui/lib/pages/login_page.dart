@@ -10,6 +10,7 @@ import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
+import 'package:ui/state/settings_state.dart';
 import 'package:ui/types.dart';
 
 class LoginPage extends StatefulWidget {
@@ -43,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     final messageState = Provider.of<MessageState>(context, listen: false);
     final notificationState =
         Provider.of<NotificationState>(context, listen: false);
+    final settingsState = Provider.of<SettingsState>(context, listen: false);
 
     Widget ipTextField() {
       return TextField(
@@ -96,7 +98,11 @@ class _LoginPageState extends State<LoginPage> {
           try {
             final Map<String, dynamic> message = await httpHelper
                 .getLoginResponse(appState.fullUrl, appState.authToken);
+            final Map<String, dynamic> config = await httpHelper.getConfig(
+                appState.fullUrl, appState.authToken);
+
             if (message.isNotEmpty) {
+              settingsState.updateConfig(config);
               appState.setConnected(true);
               messageState.initialiseChat(message);
               appState.setActivePage(PageType.chat);
