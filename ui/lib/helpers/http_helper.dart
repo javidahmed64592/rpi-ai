@@ -17,6 +17,16 @@ class HttpHelper {
     return response;
   }
 
+  Future<http.Response> postResponseToUri(
+      String uri, Map<String, String>? headers, String body) async {
+    final response = await client.post(
+      Uri.parse(uri),
+      headers: headers,
+      body: body,
+    );
+    return response;
+  }
+
   Future<bool> checkApiConnection(String url) async {
     try {
       final response = await getResponseFromUri('$url/', {});
@@ -68,7 +78,27 @@ class HttpHelper {
     }
 
     // Raise exception if response status code is not 200
-    throw Exception('Login failed: (${response.statusCode}) ${response.body}');
+    throw Exception(
+        'Getting config failed: (${response.statusCode}) ${response.body}');
+  }
+
+  Future<Map<String, dynamic>> updateConfig(
+      String url, String authToken, Map<String, dynamic> config) async {
+    final headers = <String, String>{
+      'Authorization': authToken,
+      'Content-Type': 'application/json',
+    };
+    final body = jsonEncode(config);
+    final response =
+        await postResponseToUri('$url/update-config', headers, body);
+
+    if (response.statusCode == 200) {
+      return await getConfig(url, authToken);
+    }
+
+    // Raise exception if response status code is not 200
+    throw Exception(
+        'Updating config failed: (${response.statusCode}) ${response.body}');
   }
 
   Future<Map<String, dynamic>> chat(

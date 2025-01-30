@@ -96,6 +96,34 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<_i2.Response>);
 
   @override
+  _i4.Future<_i2.Response> postResponseToUri(
+    String? uri,
+    Map<String, String>? headers,
+    String? body,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #postResponseToUri,
+          [
+            uri,
+            headers,
+            body,
+          ],
+        ),
+        returnValue: _i4.Future<_i2.Response>.value(_FakeResponse_1(
+          this,
+          Invocation.method(
+            #postResponseToUri,
+            [
+              uri,
+              headers,
+              body,
+            ],
+          ),
+        )),
+      ) as _i4.Future<_i2.Response>);
+
+  @override
   _i4.Future<bool> checkApiConnection(String? url) => (super.noSuchMethod(
         Invocation.method(
           #checkApiConnection,
@@ -132,6 +160,25 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
           [
             url,
             authToken,
+          ],
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<Map<String, dynamic>> updateConfig(
+    String? url,
+    String? authToken,
+    Map<String, dynamic>? config,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateConfig,
+          [
+            url,
+            authToken,
+            config,
           ],
         ),
         returnValue:
