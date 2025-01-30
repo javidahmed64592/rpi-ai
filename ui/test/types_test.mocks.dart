@@ -118,6 +118,23 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<Map<String, dynamic>>);
 
   @override
+  _i4.Future<Map<String, dynamic>> getConfig(
+    String? url,
+    String? authToken,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getConfig,
+          [
+            url,
+            authToken,
+          ],
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
+
+  @override
   _i4.Future<Map<String, dynamic>> chat(
     String? url,
     String? authToken,
@@ -247,6 +264,15 @@ class MockMessageState extends _i1.Mock implements _i5.MessageState {
         Invocation.method(
           #clearBotMessage,
           [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void initialiseChat(Map<String, dynamic>? message) => super.noSuchMethod(
+        Invocation.method(
+          #initialiseChat,
+          [message],
         ),
         returnValueForMissingStub: null,
       );
