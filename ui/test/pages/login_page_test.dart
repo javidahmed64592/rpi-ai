@@ -14,6 +14,7 @@ import 'package:ui/pages/login_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
+import 'package:ui/state/settings_state.dart';
 import 'login_page_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, http.Client])
@@ -24,6 +25,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => MessageState()),
         ChangeNotifierProvider(create: (_) => NotificationState()),
+        ChangeNotifierProvider(create: (_) => SettingsState()),
       ],
       child: MaterialApp(
         home: Scaffold(
@@ -77,6 +79,13 @@ void main() {
     final mockHttpHelper = MockHttpHelper();
     when(mockHttpHelper.getLoginResponse(any, any)).thenAnswer(
         (_) async => {'message': 'Hello', 'is_user_message': false});
+    when(mockHttpHelper.getConfig(any, any)).thenAnswer((_) async => {
+          'model': 'model',
+          'systemInstruction': 'instruction',
+          'candidateCount': 1,
+          'maxOutputTokens': 10,
+          'temperature': 1.0,
+        });
 
     await tester.pumpWidget(
       MultiProvider(
@@ -84,6 +93,7 @@ void main() {
           ChangeNotifierProvider(create: (_) => AppState()),
           ChangeNotifierProvider(create: (_) => MessageState()),
           ChangeNotifierProvider(create: (_) => NotificationState()),
+          ChangeNotifierProvider(create: (_) => SettingsState()),
         ],
         child: MaterialApp(
           home: Scaffold(

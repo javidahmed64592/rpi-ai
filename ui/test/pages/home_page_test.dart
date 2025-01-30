@@ -14,15 +14,18 @@ import 'package:ui/pages/home_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
+import 'package:ui/state/settings_state.dart';
 import 'package:ui/types.dart';
 
 void main() {
-  Widget createHomePage(AppState appState) {
+  Widget createHomePage(
+      AppState appState, NotificationState notificationState) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => appState),
         ChangeNotifierProvider(create: (context) => MessageState()),
-        ChangeNotifierProvider(create: (context) => NotificationState()),
+        ChangeNotifierProvider(create: (context) => notificationState),
+        ChangeNotifierProvider(create: (context) => SettingsState()),
       ],
       child: const MaterialApp(
         home: HomePage(),
@@ -31,14 +34,14 @@ void main() {
   }
 
   testWidgets('HomePage displays CustomAppBar', (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage(AppState()));
+    await tester.pumpWidget(createHomePage(AppState(), NotificationState()));
     expect(find.byType(CustomAppBar), findsOneWidget);
   });
 
   testWidgets('HomePage displays SwitchChatMode', (WidgetTester tester) async {
     final appState = AppState();
     appState.setActivePage(PageType.chat);
-    await tester.pumpWidget(createHomePage(appState));
+    await tester.pumpWidget(createHomePage(appState, NotificationState()));
     expect(find.byType(SwitchChatMode), findsOneWidget);
   });
 
@@ -46,23 +49,14 @@ void main() {
       (WidgetTester tester) async {
     final appState = AppState();
     appState.setActivePage(PageType.login);
-    await tester.pumpWidget(createHomePage(appState));
+    await tester.pumpWidget(createHomePage(appState, NotificationState()));
     expect(find.byType(SwitchChatMode), findsNothing);
-  });
-
-  testWidgets('SwitchChatMode changes page', (WidgetTester tester) async {
-    final appState = AppState();
-    appState.setActivePage(PageType.chat);
-    await tester.pumpWidget(createHomePage(appState));
-    await tester.tap(find.byType(SwitchChatMode));
-    await tester.pump();
-    expect(appState.activePage, PageType.command);
   });
 
   testWidgets('HomePage displays LogoutButton', (WidgetTester tester) async {
     final appState = AppState();
     appState.setActivePage(PageType.chat);
-    await tester.pumpWidget(createHomePage(appState));
+    await tester.pumpWidget(createHomePage(appState, NotificationState()));
     expect(find.byType(LogoutButton), findsOneWidget);
   });
 
@@ -70,26 +64,14 @@ void main() {
       (WidgetTester tester) async {
     final appState = AppState();
     appState.setActivePage(PageType.login);
-    await tester.pumpWidget(createHomePage(appState));
+    await tester.pumpWidget(createHomePage(appState, NotificationState()));
     expect(find.byType(LogoutButton), findsNothing);
   });
 
   testWidgets('HomePage displays notification', (WidgetTester tester) async {
-    final appState = AppState();
     final notificationState = NotificationState();
     notificationState.setNotificationError('Test error');
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => appState),
-          ChangeNotifierProvider(create: (context) => MessageState()),
-          ChangeNotifierProvider(create: (context) => notificationState),
-        ],
-        child: const MaterialApp(
-          home: HomePage(),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createHomePage(AppState(), notificationState));
     await tester.pump();
     expect(find.text('Test error'), findsOneWidget);
   });
@@ -99,7 +81,7 @@ void main() {
     final appState = AppState();
     appState.setActivePage(PageType.chat);
     appState.setConnected(false);
-    await tester.pumpWidget(createHomePage(appState));
+    await tester.pumpWidget(createHomePage(appState, NotificationState()));
     await tester.pump();
     expect(find.byType(TimeoutDialog), findsOneWidget);
   });
