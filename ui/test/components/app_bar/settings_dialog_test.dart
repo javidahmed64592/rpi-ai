@@ -19,7 +19,13 @@ import 'settings_dialog_test.mocks.dart';
 
 @GenerateMocks([HttpHelper])
 void main() {
-  Widget createSettingsDialog(MockHttpHelper? mockHttpHelper) {
+  late MockHttpHelper mockHttpHelper;
+
+  setUp(() {
+    mockHttpHelper = MockHttpHelper();
+  });
+
+  Widget createSettingsDialog() {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
@@ -63,7 +69,7 @@ void main() {
 
   testWidgets('SettingsDialog displays Update button',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createSettingsDialog(null));
+    await tester.pumpWidget(createSettingsDialog());
 
     expect(find.text('Update'), findsOneWidget);
   });
@@ -71,15 +77,13 @@ void main() {
   testWidgets(
       'SettingsDialog updates SettingsState when Update button is pressed',
       (WidgetTester tester) async {
-    final mockHttpHelper = MockHttpHelper();
-
     when(mockHttpHelper.updateConfig(any, any, any)).thenAnswer((_) async => {
           'text': 'Config updated successfully',
           'isUserMessage': false,
           'timestamp': DateTime.now(),
         });
 
-    await tester.pumpWidget(createSettingsDialog(mockHttpHelper));
+    await tester.pumpWidget(createSettingsDialog());
 
     expect(find.byType(AlertDialog), findsOneWidget);
 
@@ -108,12 +112,10 @@ void main() {
   testWidgets(
       'SettingsDialog shows error notification when Update button is pressed and an error occurs',
       (WidgetTester tester) async {
-    final mockHttpHelper = MockHttpHelper();
-
     when(mockHttpHelper.updateConfig(any, any, any))
         .thenThrow(Exception('Failed to update config'));
 
-    await tester.pumpWidget(createSettingsDialog(mockHttpHelper));
+    await tester.pumpWidget(createSettingsDialog());
 
     expect(find.byType(AlertDialog), findsOneWidget);
 
@@ -132,14 +134,14 @@ void main() {
 
   testWidgets('SettingsDialog displays Close button',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createSettingsDialog(null));
+    await tester.pumpWidget(createSettingsDialog());
 
     expect(find.text('Close'), findsOneWidget);
   });
 
   testWidgets('SettingsDialog closes when Close button is pressed',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createSettingsDialog(null));
+    await tester.pumpWidget(createSettingsDialog());
 
     expect(find.byType(AlertDialog), findsOneWidget);
 
