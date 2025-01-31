@@ -9,6 +9,19 @@ import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/types.dart';
 
 void main() {
+  Widget createMessageList(
+      List<Map<String, dynamic>> messages, ScrollController? scrollController) {
+    return MaterialApp(
+      home: Scaffold(
+        body: MessageList(
+          messages: messages,
+          scrollController: scrollController ?? ScrollController(),
+          messageType: MessageType.chat,
+        ),
+      ),
+    );
+  }
+
   testWidgets('MessageList displays messages correctly',
       (WidgetTester tester) async {
     final timestamp = DateTime(2023, 10, 1, 14, 30);
@@ -25,17 +38,7 @@ void main() {
       },
     ];
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: MessageList(
-            messages: messages,
-            scrollController: ScrollController(),
-            messageType: MessageType.chat,
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createMessageList(messages, null));
 
     final userMessageFinder = find.text('Hello, this is a user message');
     final nonUserMessageFinder = find.text('Hello, this is a non-user message');
@@ -56,17 +59,8 @@ void main() {
             });
     final scrollController = ScrollController();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: MessageList(
-            messages: messages,
-            scrollController: scrollController,
-            messageType: MessageType.chat,
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createMessageList(messages, scrollController));
+    await tester.pumpAndSettle();
 
     expect(scrollController.offset, scrollController.position.maxScrollExtent);
   });
