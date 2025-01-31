@@ -7,14 +7,11 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:ui/components/messages/message_input.dart';
 import 'package:ui/components/messages/message_list.dart';
-import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/types.dart';
 
 class CommandPage extends StatefulWidget {
-  final HttpHelper httpHelper;
-
-  const CommandPage({super.key, required this.httpHelper});
+  const CommandPage({super.key});
 
   @override
   State<CommandPage> createState() => _CommandPageState();
@@ -22,12 +19,10 @@ class CommandPage extends StatefulWidget {
 
 class _CommandPageState extends State<CommandPage> {
   final ScrollController scrollController = ScrollController();
-  late HttpHelper httpHelper;
 
   @override
   void initState() {
     super.initState();
-    httpHelper = widget.httpHelper;
   }
 
   @override
@@ -45,7 +40,7 @@ class _CommandPageState extends State<CommandPage> {
             },
           ),
         ),
-        MessageInput(messageType: MessageType.command, httpHelper: httpHelper),
+        const MessageInput(messageType: MessageType.command),
       ],
     );
   }
