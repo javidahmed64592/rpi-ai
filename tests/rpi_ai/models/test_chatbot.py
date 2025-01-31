@@ -162,7 +162,9 @@ class TestChatbot:
 
         response = mock_chatbot.send_command(mock_msg)
         mock_generate_content.assert_called_once_with(mock_msg)
-        assert "Executing commands:" in response.message
+
+        function_name = mock_response_command_without_args.parts[0].function_call.name
+        assert f"{function_name}()" in response.message
 
     def test_send_command_with_invalid_response(self, mock_chatbot: Chatbot, mock_generate_content: MagicMock) -> None:
         mock_msg = "Hi model!"
