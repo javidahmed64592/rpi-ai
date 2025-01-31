@@ -18,12 +18,20 @@ import 'package:ui/state/settings_state.dart';
 import 'package:ui/types.dart';
 
 void main() {
+  late AppState appState;
+  late NotificationState notificationState;
+
+  setUp(() {
+    appState = AppState();
+    notificationState = NotificationState();
+  });
+
   Widget createHomePage() {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AppState()),
+        ChangeNotifierProvider(create: (context) => appState),
         ChangeNotifierProvider(create: (context) => MessageState()),
-        ChangeNotifierProvider(create: (context) => NotificationState()),
+        ChangeNotifierProvider(create: (context) => notificationState),
         ChangeNotifierProvider(create: (context) => SettingsState()),
       ],
       child: const MaterialApp(
@@ -39,9 +47,6 @@ void main() {
 
   testWidgets('HomePage displays SwitchChatMode', (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
-    final appState = Provider.of<AppState>(
-        tester.element(find.byType(HomePage)),
-        listen: false);
     appState.setActivePage(PageType.chat);
     await tester.pump();
     expect(find.byType(SwitchChatMode), findsOneWidget);
@@ -50,9 +55,6 @@ void main() {
   testWidgets('HomePage does not display SwitchChatMode on login page',
       (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
-    final appState = Provider.of<AppState>(
-        tester.element(find.byType(HomePage)),
-        listen: false);
     appState.setActivePage(PageType.login);
     await tester.pump();
     expect(find.byType(SwitchChatMode), findsNothing);
@@ -60,9 +62,6 @@ void main() {
 
   testWidgets('HomePage displays LogoutButton', (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
-    final appState = Provider.of<AppState>(
-        tester.element(find.byType(HomePage)),
-        listen: false);
     appState.setActivePage(PageType.chat);
     await tester.pump();
     expect(find.byType(LogoutButton), findsOneWidget);
@@ -71,19 +70,14 @@ void main() {
   testWidgets('HomePage does not display LogoutButton on login page',
       (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
-    final appState = Provider.of<AppState>(
-        tester.element(find.byType(HomePage)),
-        listen: false);
     appState.setActivePage(PageType.login);
+    await tester.pump();
     expect(find.byType(LogoutButton), findsNothing);
   });
 
   testWidgets('HomePage displays error notification',
       (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
-    final notificationState = Provider.of<NotificationState>(
-        tester.element(find.byType(HomePage)),
-        listen: false);
     notificationState.setNotificationError('Test error');
     await tester.pump();
     expect(find.text('Test error'), findsOneWidget);
@@ -92,9 +86,6 @@ void main() {
   testWidgets('HomePage displays info notification',
       (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
-    final notificationState = Provider.of<NotificationState>(
-        tester.element(find.byType(HomePage)),
-        listen: false);
     notificationState.setNotificationInfo('Test info');
     await tester.pump();
     expect(find.text('Test info'), findsOneWidget);
@@ -103,9 +94,6 @@ void main() {
   testWidgets('HomePage displays warning notification',
       (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
-    final notificationState = Provider.of<NotificationState>(
-        tester.element(find.byType(HomePage)),
-        listen: false);
     notificationState.setNotificationWarning('Test warning');
     await tester.pump();
     expect(find.text('Test warning'), findsOneWidget);
@@ -114,9 +102,6 @@ void main() {
   testWidgets('HomePage displays TimeoutDialog when disconnected',
       (WidgetTester tester) async {
     await tester.pumpWidget(createHomePage());
-    final appState = Provider.of<AppState>(
-        tester.element(find.byType(HomePage)),
-        listen: false);
     appState.setActivePage(PageType.chat);
     appState.setConnected(false);
     await tester.pump();
