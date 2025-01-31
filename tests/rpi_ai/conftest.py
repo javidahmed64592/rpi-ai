@@ -91,6 +91,7 @@ def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
 
 @pytest.fixture
 def mock_chatbot(
+    mock_app_path: MagicMock,
     mock_api_key: MagicMock,
     mock_config: AIConfigType,
     mock_genai_configure: MagicMock,
@@ -145,6 +146,13 @@ def mock_ai_app_class() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
+def mock_app_path() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.AIApp.get_app_path") as mock:
+        mock.return_value = "/test/app/path"
+        yield mock
+
+
+@pytest.fixture
 def mock_api_key() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.AIApp.get_api_key") as mock:
         mock.return_value = "test_api_key"
@@ -164,9 +172,22 @@ def mock_request_headers() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_ai_app(mock_chatbot: Chatbot) -> AIApp:
+def mock_create_new_token() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.AIApp.create_new_token") as mock:
+        mock.return_value = "api_token"
+        yield mock
+
+
+@pytest.fixture
+def mock_write_token_to_file() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.AIApp.write_token_to_file") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_ai_app(mock_chatbot: Chatbot, mock_create_new_token: MagicMock, mock_write_token_to_file: MagicMock) -> AIApp:
     app = AIApp()
-    app.token = "test_token"
+    app.token = mock_create_new_token.return_value
     app.chatbot = mock_chatbot
     return app
 
