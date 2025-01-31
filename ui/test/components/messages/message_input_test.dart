@@ -34,7 +34,6 @@ void main() {
       {ScrollController? scrollController}) {
     return MultiProvider(
       providers: [
-        Provider<HttpHelper>.value(value: mockHttpHelper),
         ChangeNotifierProvider<AppState>.value(value: mockAppState),
         ChangeNotifierProvider<MessageState>.value(value: mockMessageState),
         ChangeNotifierProvider<NotificationState>.value(

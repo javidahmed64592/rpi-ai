@@ -13,13 +13,13 @@ import 'package:ui/types.dart';
 
 class MessageInput extends StatefulWidget {
   final MessageType messageType;
-  final HttpHelper httpHelper;
   final ScrollController? scrollController;
+  final HttpHelper? httpHelper;
 
   const MessageInput({
     Key? key,
     required this.messageType,
-    required this.httpHelper,
+    this.httpHelper,
     this.scrollController,
   }) : super(key: key);
 
@@ -28,7 +28,15 @@ class MessageInput extends StatefulWidget {
 }
 
 class _MessageInputState extends State<MessageInput> {
-  final TextEditingController textController = TextEditingController();
+  late TextEditingController textController;
+  late HttpHelper httpHelper;
+
+  @override
+  void initState() {
+    super.initState();
+    httpHelper = widget.httpHelper ?? HttpHelper();
+    textController = TextEditingController();
+  }
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,7 +69,7 @@ class _MessageInputState extends State<MessageInput> {
     textController.clear();
 
     Map<String, dynamic> message = await widget.messageType.sendMessage(
-      widget.httpHelper,
+      httpHelper,
       appState.fullUrl,
       appState.authToken,
       userMessage,
