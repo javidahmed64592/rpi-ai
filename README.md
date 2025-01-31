@@ -9,15 +9,16 @@ Flutter is used to create a cross-platform application to interact with this API
 
 <!-- omit from toc -->
 ## Table of Contents
-- [Flask Application](#flask-application)
+- [Python API](#python-api)
   - [Installing Dependencies](#installing-dependencies)
   - [Configuration](#configuration)
   - [Getting Started](#getting-started)
+  - [Endpoints](#endpoints)
   - [Testing](#testing)
   - [Linting and Formatting](#linting-and-formatting)
 - [Flutter Application](#flutter-application)
 
-## Flask Application
+## Python API
 
 ### Installing Dependencies
 Install the required dependencies using `pip`:
@@ -39,18 +40,75 @@ The Flask application can be started by executing one of the following:
     python -m rpi_ai.main
     run_rpi_ai
 
-There are currently 2 endpoints:
+### Endpoints
+`/is_alive`: GET method, check if the server is alive and return payload:
+  ```json
+  {
+      "status": "alive"
+  }
+  ```
 
-- `/login`: GET method, start new chat and return payload `{"message": <First message>, "is_user_message": false}`
-- `/chat`: POST method, send message to model by sending request `{"message": <Message here>}` and return payload `{"message": <Model response>, "is_user_message": false}`. This endpoint allows for a conversation with the model.
-- `/command`: POST method, send message to model by sending request `{"message": <Message here>}` and return payload `{"message": <Model response>, "is_user_message": false}`. This endpoint does not create a conversation with the model.
+`/login`: GET method, start new chat and return payload:
+  ```json
+  {
+      "message": "<First message>",
+      "is_user_message": false
+  }
+  ```
+
+`/get-config`: GET method, retrieve the current AI configuration and return payload:
+  ```json
+  {
+      "model": "gemini-1.5-flash",
+      "system_instruction": "You are a friendly AI assistant.",
+      "candidate_count": 1,
+      "max_output_tokens": 1000,
+      "temperature": 1.0
+  }
+  ```
+
+`/update-config`: POST method, update the AI configuration by sending request with new config data and return payload:
+  ```json
+  {
+      "message": "<First message after config update>",
+      "is_user_message": false
+  }
+  ```
+
+`/chat`: POST method, send message to model by sending request:
+  ```json
+  {
+      "message": "<Message here>"
+  }
+  ```
+  and return payload:
+  ```json
+  {
+      "message": "<Model response>",
+      "is_user_message": false
+  }
+  ```
+
+`/command`: POST method, send message to model by sending request:
+  ```json
+  {
+      "message": "<Message here>"
+  }
+  ```
+  and return payload:
+  ```json
+  {
+      "message": "<Model response>",
+      "is_user_message": false
+  }
+  ```
 
 When the API is started, an authorisation token is generated which is required to authenticate requests.
 Requests must have the following header:
 
-```
+```json
 {
-    'Authorization': <authorisation token here>,
+    "Authorization": "<Authorisation token here>",
 }
 ```
 
