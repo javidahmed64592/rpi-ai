@@ -11,22 +11,25 @@ import 'package:ui/state/app_state.dart';
 import 'package:ui/types.dart';
 
 void main() {
-  testWidgets('SwitchChatMode toggles active page',
-      (WidgetTester tester) async {
-    // Create a mock AppState
-    final appState = AppState();
-
-    // Build the widget tree
-    await tester.pumpWidget(
-      ChangeNotifierProvider<AppState>.value(
-        value: appState,
-        child: const MaterialApp(
-          home: Scaffold(
-            body: SwitchChatMode(),
-          ),
+  Widget createSwitchChatMode() {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppState()),
+      ],
+      child: const MaterialApp(
+        home: Scaffold(
+          body: SwitchChatMode(),
         ),
       ),
     );
+  }
+
+  testWidgets('SwitchChatMode toggles active page',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(createSwitchChatMode());
+    final appState = Provider.of<AppState>(
+        tester.element(find.byType(SwitchChatMode)),
+        listen: false);
 
     appState.setActivePage(PageType.chat);
     expect(appState.activePage, PageType.chat);
