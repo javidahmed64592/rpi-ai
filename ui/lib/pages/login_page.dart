@@ -23,6 +23,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late AppState appState;
   late TextEditingController ipController;
   late TextEditingController portController;
   late TextEditingController authTokenController;
@@ -31,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    final appState = Provider.of<AppState>(context, listen: false);
+    appState = Provider.of<AppState>(context, listen: false);
     httpHelper = widget.httpHelper ?? HttpHelper();
     ipController = TextEditingController(text: appState.ip);
     portController = TextEditingController(text: appState.port.toString());
@@ -40,7 +41,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context, listen: false);
     final messageState = Provider.of<MessageState>(context, listen: false);
     final notificationState =
         Provider.of<NotificationState>(context, listen: false);
