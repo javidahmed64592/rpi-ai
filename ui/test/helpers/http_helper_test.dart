@@ -22,10 +22,15 @@ import 'http_helper_test.mocks.dart';
 @GenerateMocks([http.Client])
 void main() {
   group('HttpHelper', () {
+    late MockClient client;
+
+    setUp(() {
+      client = MockClient();
+    });
+
     testWidgets(
         'checkApiConnection sets activePage to login if the http call completes with an error',
         (WidgetTester tester) async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       final appState = AppState();
       const uri = '/';
@@ -53,7 +58,6 @@ void main() {
     test(
         'checkApiConnection returns true if the http call completes successfully',
         () async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
 
@@ -68,7 +72,6 @@ void main() {
     test(
         'checkApiConnection returns false if the http call completes with an error',
         () async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
 
@@ -83,7 +86,6 @@ void main() {
     test(
         'getLoginResponse returns a message if the http call completes successfully',
         () async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const authToken = 'testToken';
@@ -106,7 +108,6 @@ void main() {
     test(
         'getLoginResponse throws an exception if the http call completes with an error',
         () {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const authToken = 'testToken';
@@ -123,7 +124,6 @@ void main() {
 
     test('getConfig returns config if the http call completes successfully',
         () async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const authToken = 'testToken';
@@ -155,7 +155,6 @@ void main() {
     test(
         'getConfig throws an exception if the http call completes with an error',
         () {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const authToken = 'testToken';
@@ -173,7 +172,6 @@ void main() {
     test(
         'updateConfig returns the first message if the http call completes successfully',
         () async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const authToken = 'testToken';
@@ -211,7 +209,6 @@ void main() {
     test(
         'updateConfig throws an exception if the http call completes with an error',
         () {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const authToken = 'testToken';
@@ -239,7 +236,6 @@ void main() {
 
     test('chat returns a message if the http call completes successfully',
         () async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const message = 'Hello';
@@ -266,7 +262,6 @@ void main() {
 
     test('chat returns empty dict if the http call completes with an error',
         () async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const message = 'Hello';
@@ -288,7 +283,6 @@ void main() {
 
     test('command returns a message if the http call completes successfully',
         () async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const message = 'Execute command';
@@ -316,7 +310,6 @@ void main() {
 
     test('command returns empty dict if the http call completes with an error',
         () async {
-      final client = MockClient();
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
       const message = 'Execute command';
