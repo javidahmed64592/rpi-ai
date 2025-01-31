@@ -92,3 +92,18 @@ jobs:
 
           echo "rpi_ai/"
           ls -l
+
+          if [ ! -f "rpi-ai" ]; then
+            echo "API executabe not found"
+            exit 1
+          fi
+
+          if [ ! -d "config" ]; then
+            echo "Config directory not found"
+            exit 1
+          fi
+
+          if [ ! -d "logs" ]; then
+            echo "Logs directory not found"
+            exit 1
+          fi

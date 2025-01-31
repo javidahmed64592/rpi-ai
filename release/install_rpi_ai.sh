@@ -7,7 +7,7 @@ FULL_VENV_PATH="${WD}/${VENV_NAME}"
 BIN_DIR="${FULL_VENV_PATH}/bin"
 LOGS_DIR="${WD}/logs"
 EXE_NAME="rpi-ai"
-EXE_PATH="${BIN_DIR}/${EXE_NAME}"
+EXE_PATH="${WD}/${EXE_NAME}"
 
 mkdir -p "${LOGS_DIR}"
 
