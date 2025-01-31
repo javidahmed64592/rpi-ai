@@ -8,18 +8,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ui/components/messages/message_container.dart';
 
 void main() {
+  Widget createMessageContainer({
+    required String message,
+    required bool isUserMessage,
+    required DateTime timestamp,
+  }) {
+    return MaterialApp(
+      home: Scaffold(
+        body: MessageContainer(
+          message: message,
+          isUserMessage: isUserMessage,
+          timestamp: timestamp,
+        ),
+      ),
+    );
+  }
+
   testWidgets('MessageContainer displays user message correctly',
       (WidgetTester tester) async {
     final timestamp = DateTime(2023, 10, 1, 14, 30);
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: MessageContainer(
-            message: 'Hello, this is a user message',
-            isUserMessage: true,
-            timestamp: timestamp,
-          ),
-        ),
+      createMessageContainer(
+        message: 'Hello, this is a user message',
+        isUserMessage: true,
+        timestamp: timestamp,
       ),
     );
 
@@ -37,14 +49,10 @@ void main() {
       (WidgetTester tester) async {
     final timestamp = DateTime(2023, 10, 1, 14, 30);
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: MessageContainer(
-            message: 'Hello, this is a non-user message',
-            isUserMessage: false,
-            timestamp: timestamp,
-          ),
-        ),
+      createMessageContainer(
+        message: 'Hello, this is a non-user message',
+        isUserMessage: false,
+        timestamp: timestamp,
       ),
     );
 

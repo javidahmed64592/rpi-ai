@@ -19,6 +19,12 @@ import 'login_page_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, http.Client])
 void main() {
+  late MockHttpHelper mockHttpHelper;
+
+  setUp(() {
+    mockHttpHelper = MockHttpHelper();
+  });
+
   Widget createLoginPage() {
     return MultiProvider(
       providers: [
@@ -29,7 +35,7 @@ void main() {
       ],
       child: MaterialApp(
         home: Scaffold(
-          body: LoginPage(httpHelper: MockHttpHelper()),
+          body: LoginPage(httpHelper: mockHttpHelper),
         ),
       ),
     );
@@ -76,7 +82,6 @@ void main() {
 
   testWidgets('Connect button triggers login process',
       (WidgetTester tester) async {
-    final mockHttpHelper = MockHttpHelper();
     when(mockHttpHelper.getLoginResponse(any, any)).thenAnswer(
         (_) async => {'message': 'Hello', 'is_user_message': false});
     when(mockHttpHelper.getConfig(any, any)).thenAnswer((_) async => {
@@ -87,21 +92,7 @@ void main() {
           'temperature': 1.0,
         });
 
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AppState()),
-          ChangeNotifierProvider(create: (_) => MessageState()),
-          ChangeNotifierProvider(create: (_) => NotificationState()),
-          ChangeNotifierProvider(create: (_) => SettingsState()),
-        ],
-        child: MaterialApp(
-          home: Scaffold(
-            body: LoginPage(httpHelper: mockHttpHelper),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createLoginPage());
 
     final ipField = find.widgetWithText(TextField, 'IP');
     final portField = find.widgetWithText(TextField, 'Port');

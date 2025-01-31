@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 // Package imports:
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 // Project imports:
@@ -29,7 +28,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Timer? timer;
-  final httpHelper = HttpHelper(client: http.Client());
+  final httpHelper = HttpHelper();
 
   @override
   void initState() {
@@ -79,12 +78,12 @@ class _HomePageState extends State<HomePage> {
     Widget getPage() {
       switch (appState.activePage) {
         case PageType.chat:
-          return ConversationPage(httpHelper: httpHelper);
+          return const ConversationPage();
         case PageType.command:
-          return CommandPage(httpHelper: httpHelper);
+          return const CommandPage();
         case PageType.login:
         default:
-          return LoginPage(httpHelper: httpHelper);
+          return const LoginPage();
       }
     }
 
@@ -120,7 +119,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
-      appBar: CustomAppBar(appState: appState),
+      appBar: const CustomAppBar(),
       body: Stack(
         children: [
           Center(

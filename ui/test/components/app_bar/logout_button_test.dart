@@ -11,9 +11,11 @@ import 'package:ui/state/app_state.dart';
 import 'package:ui/types.dart';
 
 void main() {
-  Widget createTestWidget(AppState appState) {
-    return ChangeNotifierProvider.value(
-      value: appState,
+  Widget createLogoutButton() {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppState()),
+      ],
       child: const MaterialApp(
         home: Scaffold(
           body: LogoutButton(),
@@ -24,9 +26,11 @@ void main() {
 
   testWidgets('LogoutButton changes activePage to login',
       (WidgetTester tester) async {
-    final appState = AppState();
+    await tester.pumpWidget(createLogoutButton());
+    final appState = Provider.of<AppState>(
+        tester.element(find.byType(LogoutButton)),
+        listen: false);
     appState.setActivePage(PageType.login);
-    await tester.pumpWidget(createTestWidget(appState));
     await tester.tap(find.byType(IconButton));
     await tester.pump();
     expect(appState.activePage, PageType.login);

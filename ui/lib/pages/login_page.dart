@@ -14,15 +14,19 @@ import 'package:ui/state/settings_state.dart';
 import 'package:ui/types.dart';
 
 class LoginPage extends StatefulWidget {
-  final HttpHelper httpHelper;
+  final HttpHelper? httpHelper;
 
-  const LoginPage({super.key, required this.httpHelper});
+  const LoginPage({super.key, this.httpHelper});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late AppState appState;
+  late MessageState messageState;
+  late NotificationState notificationState;
+  late SettingsState settingsState;
   late TextEditingController ipController;
   late TextEditingController portController;
   late TextEditingController authTokenController;
@@ -31,8 +35,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    final appState = Provider.of<AppState>(context, listen: false);
-    httpHelper = widget.httpHelper;
+    appState = Provider.of<AppState>(context, listen: false);
+    messageState = Provider.of<MessageState>(context, listen: false);
+    notificationState = Provider.of<NotificationState>(context, listen: false);
+    settingsState = Provider.of<SettingsState>(context, listen: false);
+    httpHelper = widget.httpHelper ?? HttpHelper();
     ipController = TextEditingController(text: appState.ip);
     portController = TextEditingController(text: appState.port.toString());
     authTokenController = TextEditingController(text: appState.authToken);
@@ -40,12 +47,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context, listen: false);
-    final messageState = Provider.of<MessageState>(context, listen: false);
-    final notificationState =
-        Provider.of<NotificationState>(context, listen: false);
-    final settingsState = Provider.of<SettingsState>(context, listen: false);
-
     Widget ipTextField() {
       return TextField(
         controller: ipController,
