@@ -19,23 +19,41 @@ import 'settings_dialog_test.mocks.dart';
 
 @GenerateMocks([HttpHelper])
 void main() {
-  testWidgets('SettingsButton opens SettingsDialog',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AppState()),
-          ChangeNotifierProvider(create: (_) => MessageState()),
-          ChangeNotifierProvider(create: (_) => NotificationState()),
-          ChangeNotifierProvider(create: (_) => SettingsState()),
-        ],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: SettingsButton(),
-          ),
+  Widget createSettingsDialog(MockHttpHelper? mockHttpHelper) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppState()),
+        ChangeNotifierProvider(create: (_) => MessageState()),
+        ChangeNotifierProvider(create: (_) => NotificationState()),
+        ChangeNotifierProvider(create: (_) => SettingsState()),
+      ],
+      child: MaterialApp(
+        home: Scaffold(
+          body: SettingsDialog(httpHelper: mockHttpHelper),
         ),
       ),
     );
+  }
+
+  Widget createSettingsButton() {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppState()),
+        ChangeNotifierProvider(create: (_) => MessageState()),
+        ChangeNotifierProvider(create: (_) => NotificationState()),
+        ChangeNotifierProvider(create: (_) => SettingsState()),
+      ],
+      child: const MaterialApp(
+        home: Scaffold(
+          body: SettingsButton(),
+        ),
+      ),
+    );
+  }
+
+  testWidgets('SettingsButton opens SettingsDialog',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(createSettingsButton());
 
     await tester.tap(find.byType(SettingsButton));
     await tester.pumpAndSettle();
@@ -45,21 +63,7 @@ void main() {
 
   testWidgets('SettingsDialog displays Update button',
       (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AppState()),
-          ChangeNotifierProvider(create: (_) => MessageState()),
-          ChangeNotifierProvider(create: (_) => NotificationState()),
-          ChangeNotifierProvider(create: (_) => SettingsState()),
-        ],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: SettingsDialog(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createSettingsDialog(null));
 
     expect(find.text('Update'), findsOneWidget);
   });
@@ -67,9 +71,7 @@ void main() {
   testWidgets(
       'SettingsDialog updates SettingsState when Update button is pressed',
       (WidgetTester tester) async {
-    final settingsState = SettingsState();
     final mockHttpHelper = MockHttpHelper();
-    final appState = AppState();
 
     when(mockHttpHelper.updateConfig(any, any, any)).thenAnswer((_) async => {
           'text': 'Config updated successfully',
@@ -77,22 +79,7 @@ void main() {
           'timestamp': DateTime.now(),
         });
 
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => appState),
-          ChangeNotifierProvider(create: (_) => MessageState()),
-          ChangeNotifierProvider(create: (_) => NotificationState()),
-          ChangeNotifierProvider(create: (_) => settingsState),
-          Provider<HttpHelper>.value(value: mockHttpHelper),
-        ],
-        child: MaterialApp(
-          home: Scaffold(
-            body: SettingsDialog(httpHelper: mockHttpHelper),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createSettingsDialog(mockHttpHelper));
 
     expect(find.byType(AlertDialog), findsOneWidget);
 
@@ -106,6 +93,9 @@ void main() {
     await tester.tap(find.text('Update'));
     await tester.pumpAndSettle();
 
+    final settingsState = Provider.of<SettingsState>(
+        tester.element(find.byType(MaterialApp)),
+        listen: false);
     expect(settingsState.model, 'newModel');
     expect(settingsState.systemInstruction, 'newSystemInstruction');
     expect(settingsState.candidateCount, 5);
@@ -118,35 +108,21 @@ void main() {
   testWidgets(
       'SettingsDialog shows error notification when Update button is pressed and an error occurs',
       (WidgetTester tester) async {
-    final notificationState = NotificationState();
-    final settingsState = SettingsState();
     final mockHttpHelper = MockHttpHelper();
 
     when(mockHttpHelper.updateConfig(any, any, any))
         .thenThrow(Exception('Failed to update config'));
 
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AppState()),
-          ChangeNotifierProvider(create: (_) => MessageState()),
-          ChangeNotifierProvider(create: (_) => notificationState),
-          ChangeNotifierProvider(create: (_) => settingsState),
-          Provider<HttpHelper>.value(value: mockHttpHelper),
-        ],
-        child: MaterialApp(
-          home: Scaffold(
-            body: SettingsDialog(httpHelper: mockHttpHelper),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createSettingsDialog(mockHttpHelper));
 
     expect(find.byType(AlertDialog), findsOneWidget);
 
     await tester.tap(find.text('Update'));
     await tester.pumpAndSettle();
 
+    final notificationState = Provider.of<NotificationState>(
+        tester.element(find.byType(MaterialApp)),
+        listen: false);
     expect(notificationState.notificationState, NotificationType.error);
     expect(notificationState.notificationMessage,
         'Error updating settings: Exception: Failed to update config');
@@ -156,42 +132,14 @@ void main() {
 
   testWidgets('SettingsDialog displays Close button',
       (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AppState()),
-          ChangeNotifierProvider(create: (_) => MessageState()),
-          ChangeNotifierProvider(create: (_) => NotificationState()),
-          ChangeNotifierProvider(create: (_) => SettingsState()),
-        ],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: SettingsDialog(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createSettingsDialog(null));
 
     expect(find.text('Close'), findsOneWidget);
   });
 
   testWidgets('SettingsDialog closes when Close button is pressed',
       (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AppState()),
-          ChangeNotifierProvider(create: (_) => MessageState()),
-          ChangeNotifierProvider(create: (_) => NotificationState()),
-          ChangeNotifierProvider(create: (_) => SettingsState()),
-        ],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: SettingsDialog(),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createSettingsDialog(null));
 
     expect(find.byType(AlertDialog), findsOneWidget);
 
