@@ -12,6 +12,7 @@ void main() {
     setUp(() {
       notificationState = NotificationState();
     });
+
     test('initial state is null', () {
       expect(notificationState.notificationState, isNull);
       expect(notificationState.notificationMessage, isNull);
