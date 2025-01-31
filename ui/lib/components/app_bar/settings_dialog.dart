@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // Package imports:
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 // Project imports:
@@ -24,7 +23,7 @@ class SettingsDialog extends StatelessWidget {
     final messageState = Provider.of<MessageState>(context);
     final notificationState = Provider.of<NotificationState>(context);
     final settingsState = Provider.of<SettingsState>(context);
-    final httpHelper = this.httpHelper ?? HttpHelper(client: http.Client());
+    final httpHelper = this.httpHelper ?? HttpHelper();
 
     final TextEditingController modelController =
         TextEditingController(text: settingsState.model);
