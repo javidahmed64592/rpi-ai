@@ -15,7 +15,7 @@ echo "Creating environment '${VENV_NAME}'..."
 python -m venv "${VENV_NAME}"
 
 echo "Installing from wheel..."
-WHEEL_FILE=$(find "${FULL_VENV_PATH}" -name "rpi_ai-*-py3-none-any.whl")
+WHEEL_FILE=$(find "${WD}" -name "rpi_ai-*-py3-none-any.whl")
 "${BIN_DIR}/pip" install "${WHEEL_FILE}"
 rm "${WHEEL_FILE}"
 
