@@ -1,29 +1,35 @@
 #!/bin/bash
 set -eu
 
-echo "Creating environment 'venv'..."
-python -m venv venv
+WD=$(pwd)
+VENV_NAME="venv"
+FULL_VENV_PATH="${WD}/${VENV_NAME}"
+BIN_DIR="${FULL_VENV_PATH}/bin"
+LOGS_DIR="${WD}/logs"
+EXE_NAME="rpi-ai"
+EXE_PATH="${BIN_DIR}/${EXE_NAME}"
+
+mkdir -p "${LOGS_DIR}"
+
+echo "Creating environment '${VENV_NAME}'..."
+python -m venv "${VENV_NAME}"
 
 echo "Installing from wheel..."
-WHEEL_FILE=$(find . -name 'rpi_ai-*-py3-none-any.whl')
-"venv/bin/pip" install $WHEEL_FILE
-rm $WHEEL_FILE
+WHEEL_FILE=$(find "${FULL_VENV_PATH}" -name "rpi_ai-*-py3-none-any.whl")
+"${BIN_DIR}/pip" install "${WHEEL_FILE}"
+rm "${WHEEL_FILE}"
 
 echo "Creating API executable..."
-cat > rpi-ai << EOF
+cat > "${EXE_PATH}" << EOF
 #!/bin/bash
-"venv/bin/python" -m rpi_ai.main
+RPI_AI_PATH=${WD}
+"${BIN_DIR}/run_rpi_ai"
 EOF
-chmod +x rpi-ai
-
-echo "Creating .env file..."
-cat > .env << EOF
-GEMINI_API_KEY=<Insert your Gemini API key here>
-EOF
+chmod +x "${EXE_PATH}"
 
 echo "==================================================================================================="
 echo "RPi-AI has been installed successfully."
 echo "Run the application: './rpi-ai'"
-echo "Add your Gemini API key to '.env' before running the application."
-echo "Configure the AI model in 'config/ai_config.json'."
+echo "Add the following line to your '.bashrc' file: 'GEMINI_API_KEY=<Your API Key>'"
+echo "Configure the AI model: 'config/ai_config.json'"
 echo "==================================================================================================="
