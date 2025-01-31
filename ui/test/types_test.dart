@@ -11,6 +11,12 @@ import 'types_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, MessageState])
 void main() {
+  late MockHttpHelper mockHttpHelper;
+
+  setUp(() {
+    mockHttpHelper = MockHttpHelper();
+  });
+
   group('PageType', () {
     test('title returns correct values', () {
       expect(PageType.login.title, 'Login');
@@ -29,7 +35,6 @@ void main() {
   });
 
   group('MessageType', () {
-    final mockHttpHelper = MockHttpHelper();
     final mockMessageState = MockMessageState();
 
     test('sendMessage calls correct methods', () async {
