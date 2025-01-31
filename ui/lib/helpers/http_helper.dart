@@ -9,7 +9,7 @@ class HttpHelper {
   final http.Client client;
   final Logger _logger = Logger('HttpHelper');
 
-  HttpHelper({required this.client});
+  HttpHelper({http.Client? client}) : client = client ?? http.Client();
 
   Future<http.Response> getResponseFromUri(
       String uri, Map<String, String>? headers) async {
