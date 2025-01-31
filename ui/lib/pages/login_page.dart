@@ -14,9 +14,9 @@ import 'package:ui/state/settings_state.dart';
 import 'package:ui/types.dart';
 
 class LoginPage extends StatefulWidget {
-  final HttpHelper httpHelper;
+  final HttpHelper? httpHelper;
 
-  const LoginPage({super.key, required this.httpHelper});
+  const LoginPage({super.key, this.httpHelper});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     final appState = Provider.of<AppState>(context, listen: false);
-    httpHelper = widget.httpHelper;
+    httpHelper = widget.httpHelper ?? HttpHelper();
     ipController = TextEditingController(text: appState.ip);
     portController = TextEditingController(text: appState.port.toString());
     authTokenController = TextEditingController(text: appState.authToken);

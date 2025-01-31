@@ -19,7 +19,7 @@ import 'login_page_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, http.Client])
 void main() {
-  Widget createLoginPage() {
+  Widget createLoginPage(MockHttpHelper? mockHttpHelper) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
@@ -29,7 +29,7 @@ void main() {
       ],
       child: MaterialApp(
         home: Scaffold(
-          body: LoginPage(httpHelper: MockHttpHelper()),
+          body: LoginPage(httpHelper: mockHttpHelper),
         ),
       ),
     );
@@ -37,7 +37,7 @@ void main() {
 
   testWidgets('LoginPage displays IP, Port, and Auth Token fields',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createLoginPage());
+    await tester.pumpWidget(createLoginPage(null));
 
     expect(find.byType(TextField), findsNWidgets(3));
     expect(find.widgetWithText(TextField, 'IP'), findsOneWidget);
@@ -47,14 +47,14 @@ void main() {
   });
 
   testWidgets('LoginPage displays Connect button', (WidgetTester tester) async {
-    await tester.pumpWidget(createLoginPage());
+    await tester.pumpWidget(createLoginPage(null));
 
     expect(find.widgetWithText(ElevatedButton, 'Connect'), findsOneWidget);
   });
 
   testWidgets('Fields set IP, Port, and Auth Token in AppState',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createLoginPage());
+    await tester.pumpWidget(createLoginPage(null));
 
     final ipField = find.widgetWithText(TextField, 'IP');
     final portField = find.widgetWithText(TextField, 'Port');
@@ -87,21 +87,7 @@ void main() {
           'temperature': 1.0,
         });
 
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AppState()),
-          ChangeNotifierProvider(create: (_) => MessageState()),
-          ChangeNotifierProvider(create: (_) => NotificationState()),
-          ChangeNotifierProvider(create: (_) => SettingsState()),
-        ],
-        child: MaterialApp(
-          home: Scaffold(
-            body: LoginPage(httpHelper: mockHttpHelper),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(createLoginPage(mockHttpHelper));
 
     final ipField = find.widgetWithText(TextField, 'IP');
     final portField = find.widgetWithText(TextField, 'Port');
@@ -123,7 +109,7 @@ void main() {
 
   testWidgets('Displays error message on failed connection',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createLoginPage());
+    await tester.pumpWidget(createLoginPage(null));
 
     final ipField = find.widgetWithText(TextField, 'IP');
     final portField = find.widgetWithText(TextField, 'Port');
