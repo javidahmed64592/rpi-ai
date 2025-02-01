@@ -77,7 +77,7 @@ class Chatbot:
             response = self._model.generate_content(text)
 
             if commands := self._get_commands_from_response(response):
-                return Message(message=f"Executing commands:\n{'\n'.join([cmd.output for cmd in commands])}")
+                return Message(message="\n".join([cmd.output for cmd in commands]))
             return Message(message="Sorry, I don't understand that command.")
         except ValueError:
             return Message(message="Sorry, I don't understand that command.")

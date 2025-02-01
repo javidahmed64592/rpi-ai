@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
@@ -11,13 +12,27 @@ UNAUTHORIZED_CODE = 401
 
 
 class TestAIApp:
-    def test_init_no_api_key(self, mock_api_key: MagicMock) -> None:
+    def test_init_no_app_path(self, mock_app_path: MagicMock) -> None:
+        mock_app_path.return_value = ""
+        with pytest.raises(ValueError, match="RPI_AI_PATH variable not set!"):
+            AIApp()
+
+    def test_init_no_api_key(self, mock_app_path: MagicMock, mock_api_key: MagicMock) -> None:
         mock_api_key.return_value = ""
         with pytest.raises(ValueError, match="GEMINI_API_KEY variable not set!"):
             AIApp()
 
-    def test_authenticate_success(self, mock_ai_app: AIApp, mock_request_headers: MagicMock) -> None:
-        mock_request_headers.return_value = {"Authorization": "test_token"}
+    def test_init(self, mock_ai_app: AIApp, mock_app_path: MagicMock, mock_create_new_token: MagicMock) -> None:
+        assert mock_ai_app.logs_dir == Path(f"{mock_app_path.return_value}/logs")
+        assert mock_ai_app.token == mock_create_new_token.return_value
+
+    def test_generating_token_writes_to_file(self, mock_ai_app: AIApp, mock_write_token_to_file: MagicMock) -> None:
+        mock_write_token_to_file.assert_called_once_with(mock_ai_app.token)
+
+    def test_authenticate_success(
+        self, mock_ai_app: AIApp, mock_request_headers: MagicMock, mock_create_new_token: MagicMock
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
         assert mock_ai_app.authenticate() is True
 
     def test_authenticate_failure(self, mock_ai_app: AIApp, mock_request_headers: MagicMock) -> None:
@@ -35,8 +50,9 @@ class TestAIApp:
         mock_request_headers: MagicMock,
         mock_start_chat: MagicMock,
         mock_jsonify: MagicMock,
+        mock_create_new_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": "test_token"}
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
         response = mock_client.get("/login")
         mock_start_chat.assert_called_once()
         mock_jsonify.assert_called_once_with(mock_start_chat.return_value)
@@ -60,8 +76,9 @@ class TestAIApp:
         mock_request_json: MagicMock,
         mock_send_message: MagicMock,
         mock_jsonify: MagicMock,
+        mock_create_new_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": "test_token"}
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
         user_message = "Hello, World!"
         mock_request_json.return_value = {"message": user_message}
 
@@ -92,8 +109,9 @@ class TestAIApp:
         mock_request_json: MagicMock,
         mock_send_command: MagicMock,
         mock_jsonify: MagicMock,
+        mock_create_new_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": "test_token"}
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
         user_message = "Hello, World!"
         mock_request_json.return_value = {"message": user_message}
 
@@ -123,8 +141,9 @@ class TestAIApp:
         mock_request_headers: MagicMock,
         mock_get_config: MagicMock,
         mock_jsonify: MagicMock,
+        mock_create_new_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": "test_token"}
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
         response = mock_client.get("/get-config")
         mock_jsonify.assert_called_once_with(mock_get_config.return_value)
         assert response.status_code == SUCCESS_CODE
@@ -148,8 +167,9 @@ class TestAIApp:
         mock_update_config: MagicMock,
         mock_start_chat: MagicMock,
         mock_jsonify: MagicMock,
+        mock_create_new_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": "test_token"}
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
         new_config = {
             "model": "new-model",
             "system_instruction": "new-instruction",

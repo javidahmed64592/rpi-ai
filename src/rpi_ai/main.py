@@ -1,6 +1,7 @@
 import os
 import secrets
 import signal
+from pathlib import Path
 from types import FrameType
 
 from dotenv import load_dotenv
@@ -18,9 +19,15 @@ class AIApp:
     def __init__(self) -> None:
         logger.debug("Loading environment variables...")
         load_dotenv()
-        api_key = self.get_api_key()
 
-        if not api_key:
+        if not (app_path := self.get_app_path()):
+            msg = "RPI_AI_PATH variable not set!"
+            logger.error(msg)
+            raise ValueError(msg)
+
+        self.logs_dir = Path(app_path) / "logs"
+
+        if not (api_key := self.get_api_key()):
             msg = "GEMINI_API_KEY variable not set!"
             logger.error(msg)
             raise ValueError(msg)
@@ -43,6 +50,9 @@ class AIApp:
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
         self.app.add_url_rule("/command", "command", self.token_required(self.command), methods=["POST"])
 
+    def get_app_path(self) -> str:
+        return os.environ.get("RPI_AI_PATH")
+
     def get_api_key(self) -> str:
         return os.environ.get("GEMINI_API_KEY")
 
@@ -52,9 +62,19 @@ class AIApp:
     def get_request_headers(self) -> dict[str, str]:
         return request.headers
 
+    def create_new_token(self) -> str:
+        return secrets.token_urlsafe(32)
+
+    def write_token_to_file(self, token: str) -> None:
+        self.logs_dir.mkdir(parents=True, exist_ok=True)
+        with (self.logs_dir / "token.txt").open("w") as file:
+            file.write(token)
+
     def generate_token(self) -> str:
         """Generate a secure token for client authentication."""
-        return secrets.token_hex(16)
+        token = self.create_new_token()
+        self.write_token_to_file(token)
+        return token
 
     def authenticate(self) -> bool:
         return self.get_request_headers().get("Authorization") == self.token
