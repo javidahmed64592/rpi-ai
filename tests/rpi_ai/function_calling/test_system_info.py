@@ -36,7 +36,7 @@ def mock_disk_usage() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_sensors_temperatures() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.function_calling.system_info.psutil.sensors_temperatures") as mock:
-        mock.return_value = {"cpu_thermal": [{"current": 45.0}]}
+        mock.return_value = {"cpu_thermal": [Mock(current=45.0)]}
         yield mock
 
 
