@@ -17,3 +17,6 @@ class Logger:
 
     def error(self, msg: str) -> None:
         self._logger.error(msg.strip())
+
+    def exception(self, msg: str) -> None:
+        self._logger.exception(msg.strip())
