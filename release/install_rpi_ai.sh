@@ -67,34 +67,38 @@ WantedBy=multi-user.target
 EOF
 
 cat > "${README_PATH}" << EOF
-echo "==================================================================================================="
-echo "RPi-AI has been installed successfully."
-echo "The AI executable is located at: '${EXE_PATH}'"
-echo "Configure the AI model: '${CONFIG_PATH}'"
-echo "Add the following line to your '.bashrc' file: 'export GEMINI_API_KEY=<Your API Key>'"
-echo
-echo "Copy the service file to your '/etc/systemd/system' directory and enable the service:"
-echo "  sudo cp ${SERVICE_PATH} /etc/systemd/system"
-echo "  sudo systemctl daemon-reload"
-echo "  sudo systemctl enable ${SERVICE_FILE}"
-echo "  sudo systemctl start ${SERVICE_FILE}"
-echo "  sudo systemctl status ${SERVICE_FILE}"
-echo
-echo "To stop the service:"
-echo "  sudo systemctl stop ${SERVICE_FILE}"
-echo "  sudo systemctl disable ${SERVICE_FILE}"
-echo "  sudo systemctl daemon-reload"
-echo
-echo "To view the logs:"
-echo "  cat ${STDOUT_LOG}"
-echo "  cat ${STDERR_LOG}"
-echo
-echo "To uninstall, stop the service and then:"
-echo "  sudo rm /etc/systemd/system/${SERVICE_FILE}"
-echo "  rm -rf ${WD}/${VENV_NAME}"
-echo "  rm ${EXE_PATH}"
-echo "  rm ${SERVICE_PATH}"
-echo "==================================================================================================="
+===================================================================================================
+RPi-AI has been installed successfully.
+The AI executable is located at: '${EXE_PATH}'
+Configure the AI model: '${CONFIG_PATH}'
+Add the following line to your '.bashrc' file: 'export GEMINI_API_KEY=<Your API Key>'
+
+Copy the service file to your '/etc/systemd/system' directory and enable the service:
+
+    sudo cp ${SERVICE_PATH} /etc/systemd/system
+    sudo systemctl daemon-reload
+    sudo systemctl enable ${SERVICE_FILE}
+    sudo systemctl start ${SERVICE_FILE}
+    sudo systemctl status ${SERVICE_FILE}
+
+To stop the service:
+
+    sudo systemctl stop ${SERVICE_FILE}
+    sudo systemctl disable ${SERVICE_FILE}
+    sudo systemctl daemon-reload
+
+To view the logs:
+
+    cat ${STDOUT_LOG}
+    cat ${STDERR_LOG}
+
+To uninstall, stop the service and then:
+
+    sudo rm /etc/systemd/system/${SERVICE_FILE}
+    rm -rf ${WD}/${VENV_NAME}
+    rm ${EXE_PATH}
+    rm ${SERVICE_PATH}
+===================================================================================================
 EOF
 
 cat "${README_PATH}"
