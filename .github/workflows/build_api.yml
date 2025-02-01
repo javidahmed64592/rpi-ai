@@ -93,17 +93,32 @@ jobs:
           echo "rpi_ai/"
           ls -l
 
+          if [ ! -d "venv" ]; then
+            echo "Virtual environment not found"
+            exit 1
+          fi
+
           if [ ! -f "rpi-ai" ]; then
             echo "API executabe not found"
             exit 1
           fi
 
-          if [ ! -d "config" ]; then
+          if [ ! -f "config/ai_config.json" ]; then
             echo "Config directory not found"
             exit 1
           fi
 
           if [ ! -d "logs" ]; then
             echo "Logs directory not found"
+            exit 1
+          fi
+
+          if [ ! -f "rpi-ai.service" ]; then
+            echo "Service file not found"
+            exit 1
+          fi
+
+          if [ ! -f "README.txt" ]; then
+            echo "README file not found"
             exit 1
           fi
