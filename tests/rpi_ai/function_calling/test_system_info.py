@@ -4,17 +4,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-from rpi_ai.function_calling.system_info import (
-    cpu_percent,
-    disk_usage,
-    get_running_processes,
-    hostname,
-    ip_address,
-    memory_percent,
-    os_info,
-    temperature,
-    uptime,
-)
+from rpi_ai.function_calling.system_info import SystemInfo
 
 
 @pytest.fixture
@@ -108,39 +98,39 @@ def test_os_info(mock_platform: dict) -> None:
         "machine": "armv7l",
         "processor": "ARMv7 Processor rev 4 (v7l)",
     }
-    assert os_info() == str(expected_result)
+    assert SystemInfo.os_info() == str(expected_result)
 
 
 def test_hostname(mock_hostname: MagicMock) -> None:
-    assert hostname() == "test_hostname"
+    assert SystemInfo.hostname() == "test_hostname"
 
 
 def test_ip_address(mock_ip_address: MagicMock) -> None:
-    assert ip_address() == "192.168.1.1"
+    assert SystemInfo.ip_address() == "192.168.1.1"
 
 
 def test_uptime(mock_boot_time: MagicMock) -> None:
-    assert "1:00:00" in uptime()
+    assert "1:00:00" in SystemInfo.uptime()
 
 
 def test_get_running_processes(mock_process_iter: MagicMock) -> None:
     expected_result = {
         mock_process_iter.return_value[0].pid: {"pid": 1234, "name": "test_process", "username": "test_user"}
     }
-    assert get_running_processes() == str(expected_result)
+    assert SystemInfo.get_running_processes() == str(expected_result)
 
 
 def test_cpu_percent(mock_cpu_percent: MagicMock) -> None:
-    assert cpu_percent() == mock_cpu_percent.return_value
+    assert SystemInfo.cpu_percent() == mock_cpu_percent.return_value
 
 
 def test_memory_percent(mock_virtual_memory: MagicMock) -> None:
-    assert memory_percent() == mock_virtual_memory.return_value.percent
+    assert SystemInfo.memory_percent() == mock_virtual_memory.return_value.percent
 
 
 def test_disk_usage(mock_disk_usage: MagicMock) -> None:
-    assert disk_usage() == mock_disk_usage.return_value.percent
+    assert SystemInfo.disk_usage() == mock_disk_usage.return_value.percent
 
 
 def test_temperature(mock_sensors_temperatures: MagicMock) -> None:
-    assert temperature() == mock_sensors_temperatures.return_value["cpu_thermal"][0].current
+    assert SystemInfo.temperature() == mock_sensors_temperatures.return_value["cpu_thermal"][0].current
