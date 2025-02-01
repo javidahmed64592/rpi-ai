@@ -22,7 +22,7 @@ rm "${WHEEL_FILE}"
 echo "Creating API executable..."
 cat > "${EXE_PATH}" << EOF
 #!/bin/bash
-RPI_AI_PATH=${WD}
+export RPI_AI_PATH=${WD}
 "${BIN_DIR}/run_rpi_ai"
 EOF
 chmod +x "${EXE_PATH}"
