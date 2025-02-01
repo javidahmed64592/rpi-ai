@@ -24,6 +24,7 @@ dependencies = [
     "grpcio==1.60.1",
     "python-dotenv",
     "pydantic",
+    "psutil",
 ]
 
 [project.optional-dependencies]
