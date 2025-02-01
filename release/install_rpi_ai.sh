@@ -1,6 +1,11 @@
 #!/bin/bash
 set -eu
 
+if [ -z "${GEMINI_API_KEY}" ]; then
+    echo "GEMINI_API_KEY environment variable is not set. Please set it before running the script."
+    exit 1
+fi
+
 WD=$(pwd)
 VENV_NAME="venv"
 EXE_NAME="rpi-ai"
@@ -36,6 +41,7 @@ echo "Creating API executable..."
 cat > "${EXE_PATH}" << EOF
 #!/bin/bash
 export RPI_AI_PATH=${WD}
+export GEMINI_API_KEY=${GEMINI_API_KEY}
 "${BIN_DIR}/run_rpi_ai"
 EOF
 chmod +x "${EXE_PATH}"
