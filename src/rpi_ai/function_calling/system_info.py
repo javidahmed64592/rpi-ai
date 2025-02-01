@@ -25,27 +25,16 @@ def disk_usage() -> float:
 def temperature() -> float:
     """
     Get the CPU temperature in degrees Celsius.
+    `None` is returned if the temperature cannot be retrieved.
     """
     try:
         return psutil.sensors_temperatures()["cpu_thermal"][0].current
-    except (KeyError, IndexError):
-        return 0
-
-
-def get_system_info() -> dict:
-    """
-    Get the system information.
-    """
-    return {
-        "cpu": cpu_percent(),
-        "memory": memory_percent(),
-        "disk": disk_usage(),
-        "temperature": temperature(),
-    }
+    except (KeyError, IndexError, AttributeError):
+        return None
 
 
 def get_running_processes() -> dict:
     """
     Get the running processes.
     """
-    return {p.pid: p.info for p in psutil.process_iter(["pid", "name", "username"])}
+    return str({p.pid: p.info for p in psutil.process_iter(["pid", "name", "username"])})

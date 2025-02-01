@@ -7,7 +7,6 @@ from rpi_ai.function_calling.system_info import (
     cpu_percent,
     disk_usage,
     get_running_processes,
-    get_system_info,
     memory_percent,
     temperature,
 )
@@ -64,23 +63,8 @@ def test_temperature(mock_sensors_temperatures: MagicMock) -> None:
     assert temperature() == mock_sensors_temperatures.return_value["cpu_thermal"][0].current
 
 
-def test_get_system_info(
-    mock_cpu_percent: MagicMock,
-    mock_virtual_memory: MagicMock,
-    mock_disk_usage: MagicMock,
-    mock_sensors_temperatures: MagicMock,
-) -> None:
-    expected_result = {
-        "cpu": mock_cpu_percent.return_value,
-        "memory": mock_virtual_memory.return_value.percent,
-        "disk": mock_disk_usage.return_value.percent,
-        "temperature": mock_sensors_temperatures.return_value["cpu_thermal"][0].current,
-    }
-    assert get_system_info() == expected_result
-
-
 def test_get_running_processes(mock_process_iter: MagicMock) -> None:
     expected_result = {
         mock_process_iter.return_value[0].pid: {"pid": 1234, "name": "test_process", "username": "test_user"}
     }
-    assert get_running_processes() == expected_result
+    assert get_running_processes() == str(expected_result)
