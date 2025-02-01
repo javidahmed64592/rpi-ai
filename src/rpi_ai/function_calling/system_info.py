@@ -19,6 +19,7 @@ class SystemInfo(FunctionsListBase):
             SystemInfo.ip_address,
             SystemInfo.uptime,
             SystemInfo.get_running_processes,
+            SystemInfo.get_process_name_by_pid,
             SystemInfo.cpu_percent,
             SystemInfo.memory_percent,
             SystemInfo.disk_usage,
@@ -71,6 +72,18 @@ class SystemInfo(FunctionsListBase):
         return str({p.pid: p.info for p in psutil.process_iter(["pid", "name", "username"])})
 
     @staticmethod
+    def get_process_name_by_pid(pid: int) -> str:
+        """
+        Get the name of a running process based on its PID.
+        """
+        pid = int(pid)
+        try:
+            process = psutil.Process(pid)
+            return process.name()
+        except psutil.NoSuchProcess:
+            logger.exception(f"No process found with PID {pid}.")
+
+    @staticmethod
     def cpu_percent() -> float:
         """
         Get the CPU usage percentage.
@@ -92,13 +105,19 @@ class SystemInfo(FunctionsListBase):
         return psutil.disk_usage("/").percent
 
     @staticmethod
+    def _psutil_temperature() -> float:
+        """
+        Get the CPU temperature using `psutil`.
+        """
+        return psutil.sensors_temperatures()["cpu-thermal"][0].current
+
+    @staticmethod
     def temperature() -> float:
         """
         Get the CPU temperature in degrees Celsius.
         `None` is returned if the temperature cannot be retrieved.
         """
         try:
-            return psutil.sensors_temperatures()["cpu_thermal"][0].current
+            return SystemInfo._psutil_temperature()
         except (KeyError, IndexError, AttributeError):
             logger.exception("Failed to get CPU temperature.")
-            return None

@@ -30,8 +30,15 @@ def mock_disk_usage() -> Generator[MagicMock, None, None]:
 
 @pytest.fixture
 def mock_sensors_temperatures() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.function_calling.system_info.psutil.sensors_temperatures") as mock:
+    with patch("rpi_ai.function_calling.system_info.SystemInfo._psutil_temperature") as mock:
         mock.return_value = {"cpu_thermal": [Mock(current=45.0)]}
+        yield mock
+
+
+@pytest.fixture
+def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.function_calling.system_info.SystemInfo._psutil_temperature") as mock:
+        mock.return_value = 45.0
         yield mock
 
 
@@ -89,6 +96,13 @@ def mock_platform() -> Generator[MagicMock, None, None]:
         }
 
 
+@pytest.fixture
+def mock_process() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.function_calling.system_info.psutil.Process") as mock:
+        mock.return_value.name.return_value = "test_process"
+        yield mock
+
+
 def test_os_info(mock_platform: dict) -> None:
     expected_result = {
         "system": "Linux",
@@ -120,6 +134,11 @@ def test_get_running_processes(mock_process_iter: MagicMock) -> None:
     assert SystemInfo.get_running_processes() == str(expected_result)
 
 
+def test_get_process_name_by_pid(mock_process: MagicMock) -> None:
+    assert SystemInfo.get_process_name_by_pid(1234) == "test_process"
+    mock_process.assert_called_once_with(1234)
+
+
 def test_cpu_percent(mock_cpu_percent: MagicMock) -> None:
     assert SystemInfo.cpu_percent() == mock_cpu_percent.return_value
 
@@ -132,5 +151,5 @@ def test_disk_usage(mock_disk_usage: MagicMock) -> None:
     assert SystemInfo.disk_usage() == mock_disk_usage.return_value.percent
 
 
-def test_temperature(mock_sensors_temperatures: MagicMock) -> None:
-    assert SystemInfo.temperature() == mock_sensors_temperatures.return_value["cpu_thermal"][0].current
+def test_temperature(mock_psutil_temperature: MagicMock) -> None:
+    assert SystemInfo.temperature() == mock_psutil_temperature.return_value
