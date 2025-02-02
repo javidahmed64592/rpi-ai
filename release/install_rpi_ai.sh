@@ -35,6 +35,7 @@ UNINSTALL_PATH="${WD}/${UNINSTALL_FILE}"
 README_PATH="${WD}/${README_FILE}"
 
 mkdir -p "${LOGS_DIR}"
+mkdir -p "${SERVICE_DIR}"
 
 echo "Creating environment '${VENV_NAME}'..."
 python -m venv "${VENV_NAME}"
