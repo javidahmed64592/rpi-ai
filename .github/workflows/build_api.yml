@@ -88,22 +88,58 @@ jobs:
       - name: Run installer script
         run: |
           cd rpi_ai
+          export GEMINI_API_KEY="test"
           ./install_rpi_ai.sh
 
           echo "rpi_ai/"
           ls -l
+
+          if [ -f "install_rpi_ai.sh" ]; then
+            echo "Installer script not removed"
+            exit 1
+          fi
+
+          if [ ! -d "venv" ]; then
+            echo "Virtual environment not found"
+            exit 1
+          fi
 
           if [ ! -f "rpi-ai" ]; then
             echo "API executabe not found"
             exit 1
           fi
 
-          if [ ! -d "config" ]; then
+          if [ ! -f "config/ai_config.json" ]; then
             echo "Config directory not found"
             exit 1
           fi
 
           if [ ! -d "logs" ]; then
             echo "Logs directory not found"
+            exit 1
+          fi
+
+          if [ ! -f "service/rpi-ai.service" ]; then
+            echo "Service file not found"
+            exit 1
+          fi
+
+          if [ ! -f "service/start_service.sh" ]; then
+            echo "Service creation file not found"
+            exit 1
+          fi
+
+          if [ ! -f "service/stop_service.sh" ]; then
+            echo "Service stopping file not found"
+            exit 1
+          fi
+
+          if [ ! -f "uninstall_rpi_ai.sh" ]; then
+            echo "Uninstallation file not found"
+            exit 1
+          fi
+
+          if [ ! -f "README.txt" ]; then
+            echo "README file not found"
             exit 1
           fi

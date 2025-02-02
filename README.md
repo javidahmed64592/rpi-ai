@@ -16,6 +16,7 @@ Flutter is used to create a cross-platform application to interact with this API
   - [Endpoints](#endpoints)
   - [Testing](#testing)
   - [Linting and Formatting](#linting-and-formatting)
+- [Installing and Running the API](#installing-and-running-the-api)
 - [Flutter Application](#flutter-application)
 
 ## Python API
@@ -41,7 +42,7 @@ The Flask application can be started by executing one of the following:
     run_rpi_ai
 
 ### Endpoints
-`/is_alive`: GET method, check if the server is alive and return payload:
+`/`: GET method, check if the server is alive and return payload:
   ```json
   {
       "status": "alive"
@@ -129,6 +130,33 @@ To check the code for linting errors:
 To format the code:
 
     python -m ruff format .
+
+## Installing and Running the API
+To install the API, download the release tarball and extract it. Then, run the `install_rpi_ai.sh` script:
+
+    tar -xzf rpi_ai.tar.gz
+    cd rpi_ai
+    export GEMINI_API_KEY=<Your API Key>
+    ./install_rpi_ai.sh
+
+This script will create a virtual environment, install the API from the wheel file, and set up the necessary directories and files.
+
+To create a start-up service for the API, run the `start_service.sh` script:
+
+    ./service/start_service.sh
+
+This will create and start a systemd service that runs the API on system start-up.
+
+To stop the service, run the `stop_service.sh` script:
+
+    ./service/stop_service.sh
+
+To uninstall the API, run the `uninstall_rpi_ai.sh` script:
+
+    ./uninstall_rpi_ai.sh
+
+This will remove the virtual environment, executable, and all related files and directories.
+The folder can then safely be deleted.
 
 ## Flutter Application
 A Flutter application is created in the `/ui` directory.
