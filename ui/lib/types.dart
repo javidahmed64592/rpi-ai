@@ -5,7 +5,6 @@ import 'package:ui/state/message_state.dart';
 enum PageType {
   login,
   chat,
-  command,
 }
 
 extension PageTypeExtension on PageType {
@@ -15,8 +14,6 @@ extension PageTypeExtension on PageType {
         return 'Login';
       case PageType.chat:
         return 'Chat Mode';
-      case PageType.command:
-        return 'Command Mode';
     }
   }
 }
@@ -28,16 +25,13 @@ enum NotificationType {
 }
 
 enum MessageType {
-  chat,
-  command;
+  chat;
 
   Future<Map<String, dynamic>> sendMessage(HttpHelper httpHelper, String url,
       String token, String userMessage) async {
     switch (this) {
       case MessageType.chat:
         return await httpHelper.chat(url, token, userMessage);
-      case MessageType.command:
-        return await httpHelper.command(url, token, userMessage);
     }
   }
 
@@ -47,11 +41,6 @@ enum MessageType {
       case MessageType.chat:
         messageState.addMessage(userMessageDict);
         break;
-      case MessageType.command:
-        messageState.clearUserMessage();
-        messageState.clearBotMessage();
-        messageState.setUserMessage(userMessageDict);
-        break;
     }
   }
 
@@ -59,10 +48,6 @@ enum MessageType {
     switch (this) {
       case MessageType.chat:
         messageState.removeLastMessage();
-        break;
-      case MessageType.command:
-        messageState.clearUserMessage();
-        messageState.clearBotMessage();
         break;
     }
   }

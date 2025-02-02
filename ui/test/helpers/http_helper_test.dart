@@ -280,53 +280,5 @@ void main() {
 
       expect(await httpHelper.chat(uri, authToken, message), {});
     });
-
-    test('command returns a message if the http call completes successfully',
-        () async {
-      final httpHelper = HttpHelper(client: client);
-      const uri = 'http://example.com';
-      const message = 'Execute command';
-      const authToken = 'testToken';
-
-      // Use Mockito to return a successful response when it calls the
-      // provided http.Client.
-      when(client.post(
-        Uri.parse('$uri/command'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': authToken,
-        },
-        body: jsonEncode({'message': message}),
-      )).thenAnswer((_) async => http.Response(
-          jsonEncode({'message': 'Command executed', 'is_user_message': false}),
-          200));
-
-      expect(await httpHelper.command(uri, authToken, message), {
-        'text': 'Command executed',
-        'isUserMessage': false,
-        'timestamp': isA<DateTime>(),
-      });
-    });
-
-    test('command returns empty dict if the http call completes with an error',
-        () async {
-      final httpHelper = HttpHelper(client: client);
-      const uri = 'http://example.com';
-      const message = 'Execute command';
-      const authToken = 'testToken';
-
-      // Use Mockito to return an unsuccessful response when it calls the
-      // provided http.Client.
-      when(client.post(
-        Uri.parse('$uri/command'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': authToken,
-        },
-        body: jsonEncode({'message': message}),
-      )).thenAnswer((_) async => http.Response('Not Found', 404));
-
-      expect(await httpHelper.command(uri, authToken, message), {});
-    });
   });
 }

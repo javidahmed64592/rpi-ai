@@ -42,74 +42,60 @@ The Flask application can be started by executing one of the following:
     run_rpi_ai
 
 ### Endpoints
-`/`: GET method, check if the server is alive and return payload:
-  ```json
-  {
-      "status": "alive"
-  }
-  ```
-
-`/login`: GET method, start new chat and return payload:
-  ```json
-  {
-      "message": "<First message>",
-      "is_user_message": false
-  }
-  ```
-
-`/get-config`: GET method, retrieve the current AI configuration and return payload:
-  ```json
-  {
-      "model": "gemini-1.5-flash",
-      "system_instruction": "You are a friendly AI assistant.",
-      "candidate_count": 1,
-      "max_output_tokens": 1000,
-      "temperature": 1.0
-  }
-  ```
-
-`/update-config`: POST method, update the AI configuration by sending request with new config data and return payload:
-  ```json
-  {
-      "message": "<First message after config update>",
-      "is_user_message": false
-  }
-  ```
-
-`/chat`: POST method, send message to model by sending request:
-  ```json
-  {
-      "message": "<Message here>"
-  }
-  ```
-  and return payload:
-  ```json
-  {
-      "message": "<Model response>",
-      "is_user_message": false
-  }
-  ```
-
-`/command`: POST method, send message to model by sending request:
-  ```json
-  {
-      "message": "<Message here>"
-  }
-  ```
-  and return payload:
-  ```json
-  {
-      "message": "<Model response>",
-      "is_user_message": false
-  }
-  ```
-
 When the API is started, an authorisation token is generated which is required to authenticate requests.
 Requests must have the following header:
 
 ```json
 {
     "Authorization": "<Authorisation token here>",
+}
+```
+
+`/`: GET method, check if the server is alive and return payload:
+```json
+{
+    "status": "alive"
+}
+```
+
+`/login`: GET method, start new chat and return payload:
+```json
+{
+    "message": "<First message>",
+    "is_user_message": false
+}
+```
+
+`/get-config`: GET method, retrieve the current AI configuration and return payload:
+```json
+{
+    "model": "gemini-1.5-flash",
+    "system_instruction": "You are a friendly AI assistant.",
+    "candidate_count": 1,
+    "max_output_tokens": 1000,
+    "temperature": 1.0
+}
+```
+
+`/update-config`: POST method, update the AI configuration by sending request with new config data and return payload:
+```json
+{
+    "message": "<First message after config update>",
+    "is_user_message": false
+}
+```
+
+`/chat`: POST method, send message to model by sending request:
+```json
+{
+    "message": "<Message here>"
+}
+```
+and return payload:
+```json
+{
+    "message": "<Model response>",
+    "is_user_message": false
 }
 ```
 

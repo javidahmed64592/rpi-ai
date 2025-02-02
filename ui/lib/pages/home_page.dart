@@ -12,7 +12,6 @@ import 'package:ui/components/app_bar/custom_app_bar.dart';
 import 'package:ui/components/notifications.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
-import 'package:ui/pages/command_page.dart';
 import 'package:ui/pages/conversation_page.dart';
 import 'package:ui/pages/login_page.dart';
 import 'package:ui/state/app_state.dart';
@@ -79,8 +78,6 @@ class _HomePageState extends State<HomePage> {
       switch (appState.activePage) {
         case PageType.chat:
           return const ConversationPage();
-        case PageType.command:
-          return const CommandPage();
         case PageType.login:
         default:
           return const LoginPage();

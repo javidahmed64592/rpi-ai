@@ -140,39 +140,4 @@ class HttpHelper {
       return {};
     }
   }
-
-  Future<Map<String, dynamic>> command(
-      String url, String authToken, String message) async {
-    final headers = <String, String>{
-      'Authorization': authToken,
-      'Content-Type': 'application/json',
-    };
-    final body = jsonEncode(<String, String>{
-      'message': message,
-    });
-
-    try {
-      final response = await client.post(
-        Uri.parse('$url/command'),
-        headers: headers,
-        body: body,
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> body = jsonDecode(response.body);
-        return {
-          'text': body['message'].toString().trim(),
-          'isUserMessage': body['is_user_message'],
-          'timestamp': DateTime.now(),
-        };
-      }
-
-      // Raise exception if response status code is not 200
-      throw Exception(
-          'Login failed: (${response.statusCode}) ${response.body}');
-    } catch (e) {
-      _logger.severe('Failed to send message: $e');
-      return {};
-    }
-  }
 }

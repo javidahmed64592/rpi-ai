@@ -153,31 +153,3 @@ class TestChatbot:
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
         assert response.message == "An error occurred! Please try again."
-
-    def test_send_command_with_valid_response(
-        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock, mock_generate_content: MagicMock
-    ) -> None:
-        mock_msg = "Hi model!"
-        mock_generate_content.return_value = mock_response_command_without_args
-
-        response = mock_chatbot.send_command(mock_msg)
-        mock_generate_content.assert_called_once_with(mock_msg)
-
-        function_name = mock_response_command_without_args.parts[0].function_call.name
-        assert f"{function_name}()" in response.message
-
-    def test_send_command_with_invalid_response(self, mock_chatbot: Chatbot, mock_generate_content: MagicMock) -> None:
-        mock_msg = "Hi model!"
-        mock_generate_content.return_value = MagicMock(parts=[])
-
-        response = mock_chatbot.send_command(mock_msg)
-        mock_generate_content.assert_called_once_with(mock_msg)
-        assert response.message == "Sorry, I don't understand that command."
-
-    def test_send_command_with_exception(self, mock_chatbot: Chatbot, mock_generate_content: MagicMock) -> None:
-        mock_msg = "Hi model!"
-        mock_generate_content.side_effect = ValueError
-
-        response = mock_chatbot.send_command(mock_msg)
-        mock_generate_content.assert_called_once_with(mock_msg)
-        assert response.message == "Sorry, I don't understand that command."

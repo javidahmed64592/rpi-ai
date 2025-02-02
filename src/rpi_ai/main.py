@@ -49,7 +49,6 @@ class AIApp:
             "/update-config", "update-config", self.token_required(self.update_config), methods=["POST"]
         )
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
-        self.app.add_url_rule("/command", "command", self.token_required(self.command), methods=["POST"])
 
     def get_app_path(self) -> str:
         return os.environ.get("RPI_AI_PATH")
@@ -114,13 +113,6 @@ class AIApp:
         user_message = self.get_request_json().get("message")
         logger.info(user_message)
         response = self.chatbot.send_message(user_message)
-        logger.info(response.message)
-        return jsonify(response)
-
-    def command(self) -> Response:
-        user_message = self.get_request_json().get("message")
-        logger.info(user_message)
-        response = self.chatbot.send_command(user_message)
         logger.info(response.message)
         return jsonify(response)
 

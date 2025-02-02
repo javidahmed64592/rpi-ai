@@ -21,7 +21,6 @@ void main() {
     test('title returns correct values', () {
       expect(PageType.login.title, 'Login');
       expect(PageType.chat.title, 'Chat Mode');
-      expect(PageType.command.title, 'Command Mode');
     });
   });
 
@@ -40,16 +39,11 @@ void main() {
     test('sendMessage calls correct methods', () async {
       when(mockHttpHelper.chat(any, any, any))
           .thenAnswer((_) async => {'response': 'chat'});
-      when(mockHttpHelper.command(any, any, any))
-          .thenAnswer((_) async => {'response': 'command'});
 
       var chatResponse = await MessageType.chat
           .sendMessage(mockHttpHelper, 'url', 'token', 'message');
-      var commandResponse = await MessageType.command
-          .sendMessage(mockHttpHelper, 'url', 'token', 'message');
 
       expect(chatResponse, {'response': 'chat'});
-      expect(commandResponse, {'response': 'command'});
     });
 
     test('handleAddMessage calls correct methods', () {
@@ -57,20 +51,11 @@ void main() {
 
       MessageType.chat.handleAddMessage(mockMessageState, userMessageDict);
       verify(mockMessageState.addMessage(userMessageDict)).called(1);
-
-      MessageType.command.handleAddMessage(mockMessageState, userMessageDict);
-      verify(mockMessageState.clearUserMessage()).called(1);
-      verify(mockMessageState.clearBotMessage()).called(1);
-      verify(mockMessageState.setUserMessage(userMessageDict)).called(1);
     });
 
     test('handleFailedMessage calls correct methods', () {
       MessageType.chat.handleFailedMessage(mockMessageState);
       verify(mockMessageState.removeLastMessage()).called(1);
-
-      MessageType.command.handleFailedMessage(mockMessageState);
-      verify(mockMessageState.clearUserMessage()).called(1);
-      verify(mockMessageState.clearBotMessage()).called(1);
     });
   });
 }

@@ -71,13 +71,3 @@ class Chatbot:
         except (AttributeError, ValidationError):
             self._chat.rewind()
             return Message(message="An error occurred! Please try again.")
-
-    def send_command(self, text: str) -> Message:
-        try:
-            response = self._model.generate_content(text)
-
-            if commands := self._get_commands_from_response(response):
-                return Message(message="\n".join([cmd.output for cmd in commands]))
-            return Message(message="Sorry, I don't understand that command.")
-        except ValueError:
-            return Message(message="Sorry, I don't understand that command.")
