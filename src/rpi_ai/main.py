@@ -30,6 +30,8 @@ class AIApp:
             logger.error(msg)
             raise ValueError(msg)
 
+        logger.info(f"Generated token: {self.token}")
+
         self.chatbot = Chatbot(self.api_key, self.config, FUNCTIONS)
 
         self.app = Flask(__name__)
@@ -83,7 +85,6 @@ class AIApp:
         except AttributeError:
             self._token = self.create_new_token()
             self.write_token_to_file(self._token)
-            logger.info(f"Generated token: {self._token}")
             return self._token
 
     def get_request_json(self) -> dict[str, str]:

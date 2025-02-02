@@ -67,6 +67,7 @@ class _MessageInputState extends State<MessageInput> {
 
     widget.messageType.handleAddMessage(messageState, userMessageDict);
     textController.clear();
+    scrollToBottom();
 
     Map<String, dynamic> message = await widget.messageType.sendMessage(
       httpHelper,

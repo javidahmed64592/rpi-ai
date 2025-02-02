@@ -61,7 +61,7 @@ class Chatbot:
         return Message(message=self.first_message.get("parts"))
 
     def send_message(self, text: str) -> Message:
-        response = self._chat.send_message(text)
+        response = self._chat.send_message([text])
 
         if commands := self._get_commands_from_response(response):
             if response_parts := self._get_response_parts_from_commands(commands):
