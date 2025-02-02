@@ -94,6 +94,11 @@ jobs:
           echo "rpi_ai/"
           ls -l
 
+          if [ -f "install_rpi_ai.sh" ]; then
+            echo "Installer script not removed"
+            exit 1
+          fi
+
           if [ ! -d "venv" ]; then
             echo "Virtual environment not found"
             exit 1
