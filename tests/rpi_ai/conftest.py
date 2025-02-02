@@ -27,6 +27,13 @@ def mock_config(config_data: dict[str, str | float]) -> AIConfigType:
     return AIConfigType(**config_data)
 
 
+@pytest.fixture
+def mock_load_config(mock_config: AIConfigType) -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.models.types.AIConfigType.load") as mock:
+        mock.return_value = mock_config
+        yield mock
+
+
 # Function fixtures
 def function_without_args() -> str:
     return "Function without args"
@@ -185,7 +192,12 @@ def mock_write_token_to_file() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_ai_app(mock_chatbot: Chatbot, mock_create_new_token: MagicMock, mock_write_token_to_file: MagicMock) -> AIApp:
+def mock_ai_app(
+    mock_chatbot: Chatbot,
+    mock_load_config: MagicMock,
+    mock_create_new_token: MagicMock,
+    mock_write_token_to_file: MagicMock,
+) -> AIApp:
     app = AIApp()
     app.token = mock_create_new_token.return_value
     app.chatbot = mock_chatbot
