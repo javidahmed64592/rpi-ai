@@ -12,7 +12,7 @@ EXE_NAME="rpi-ai"
 CONFIG_FILE="ai_config.json"
 LOG_FILE="rpi_ai.log"
 SERVICE_FILE="rpi-ai.service"
-CREATE_SERVICE_FILE="create_service.sh"
+CREATE_SERVICE_FILE="start_service.sh"
 STOP_SERVICE_FILE="stop_service.sh"
 UNINSTALL_FILE="uninstall_rpi_ai.sh"
 README_FILE="README.txt"
@@ -83,9 +83,14 @@ cat > "${CREATE_SERVICE_PATH}" << EOF
 #!/bin/bash
 set -eu
 
-sudo cp ${SERVICE_PATH} /etc/systemd/system
-sudo systemctl daemon-reload
-sudo systemctl enable ${SERVICE_FILE}
+if [ ! -f /etc/systemd/system/${SERVICE_FILE} ]; then
+    echo "Creating service..."
+    sudo cp ${SERVICE_PATH} /etc/systemd/system
+    sudo systemctl daemon-reload
+    sudo systemctl enable ${SERVICE_FILE}
+fi
+
+echo "Starting service..."
 sudo systemctl start ${SERVICE_FILE}
 sudo systemctl status ${SERVICE_FILE}
 EOF
@@ -96,9 +101,17 @@ cat > "${STOP_SERVICE_PATH}" << EOF
 #!/bin/bash
 set -eu
 
+echo "Stopping service..."
 sudo systemctl stop ${SERVICE_FILE}
-sudo systemctl disable ${SERVICE_FILE}
-sudo systemctl daemon-reload
+
+read -p "Disable service? (y/n): " disable_service
+if [ "\$disable_service" == "y" ]; then
+    echo "Disabling service..."
+    sudo systemctl disable ${SERVICE_FILE}
+    sudo systemctl daemon-reload
+    sudo rm -f /etc/systemd/system/${SERVICE_FILE}
+fi
+
 EOF
 chmod +x "${STOP_SERVICE_PATH}"
 
@@ -112,7 +125,11 @@ if systemctl is-active --quiet ${SERVICE_FILE}; then
     exit 1
 fi
 
-sudo rm -f /etc/systemd/system/${SERVICE_FILE}
+if [ -f /etc/systemd/system/${SERVICE_FILE} ]; then
+    echo "Service is enabled. Disable the service before uninstalling."
+    exit 1
+fi
+
 rm -rf ${WD}/${VENV_NAME}
 rm -f ${EXE_PATH}
 rm -f ${README_PATH}
