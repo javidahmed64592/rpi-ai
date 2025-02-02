@@ -97,18 +97,18 @@ def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
 
 def test_get_os_info(mock_platform: dict) -> None:
     expected_result = {
-        "system": "test_system",
-        "node": "test_node",
-        "release": "test_release",
-        "version": "test_version",
-        "machine": "test_machine",
-        "processor": "test_processor",
+        "system": mock_platform["system"].return_value,
+        "node": mock_platform["node"].return_value,
+        "release": mock_platform["release"].return_value,
+        "version": mock_platform["version"].return_value,
+        "machine": mock_platform["machine"].return_value,
+        "processor": mock_platform["processor"].return_value,
     }
     assert SystemInfo.get_os_info() == expected_result
 
 
 def test_get_hostname(mock_get_hostname: MagicMock) -> None:
-    assert SystemInfo.get_hostname() == "test_get_hostname"
+    assert SystemInfo.get_hostname() == mock_get_hostname.return_value
 
 
 def test_get_uptime(mock_boot_time: MagicMock) -> None:
