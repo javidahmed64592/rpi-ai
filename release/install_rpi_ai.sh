@@ -118,6 +118,7 @@ sudo rm -f /etc/systemd/system/${SERVICE_FILE}
 rm -rf ${WD}/${VENV_NAME}
 rm -f ${EXE_PATH}
 rm -f ${SERVICE_PATH}
+rm -- "\$0"
 EOF
 chmod +x "${UNINSTALL_PATH}"
 
