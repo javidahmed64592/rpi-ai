@@ -13,10 +13,14 @@ CONFIG_FILE="ai_config.json"
 STDOUT_FILE="rpi_ai.out"
 STDERR_FILE="rpi_ai.err"
 SERVICE_FILE="rpi-ai.service"
+CREATE_SERVICE_FILE="create_service.sh"
+STOP_SERVICE_FILE="stop_service.sh"
+UNINSTALL_FILE="uninstall_rpi_ai.sh"
 README_FILE="README.txt"
 
 CONFIG_DIR="${WD}/config"
 LOGS_DIR="${WD}/logs"
+SERVICE_DIR="${WD}/service"
 FULL_VENV_PATH="${WD}/${VENV_NAME}"
 BIN_DIR="${FULL_VENV_PATH}/bin"
 
@@ -24,7 +28,10 @@ EXE_PATH="${WD}/${EXE_NAME}"
 CONFIG_PATH="${CONFIG_DIR}/${CONFIG_FILE}"
 STDOUT_LOG="${LOGS_DIR}/${STDOUT_FILE}"
 STDERR_LOG="${LOGS_DIR}/${STDERR_FILE}"
-SERVICE_PATH="${WD}/${SERVICE_FILE}"
+SERVICE_PATH="${SERVICE_DIR}/${SERVICE_FILE}"
+CREATE_SERVICE_PATH="${SERVICE_DIR}/${CREATE_SERVICE_FILE}"
+STOP_SERVICE_PATH="${SERVICE_DIR}/${STOP_SERVICE_FILE}"
+UNINSTALL_PATH="${WD}/${UNINSTALL_FILE}"
 README_PATH="${WD}/${README_FILE}"
 
 mkdir -p "${LOGS_DIR}"
@@ -72,6 +79,47 @@ ReadWriteDirectories=${LOGS_DIR}
 WantedBy=multi-user.target
 EOF
 
+echo "Creating service creation script..."
+cat > "${CREATE_SERVICE_PATH}" << EOF
+#!/bin/bash
+set -eu
+
+sudo cp ${SERVICE_PATH} /etc/systemd/system
+sudo systemctl daemon-reload
+sudo systemctl enable ${SERVICE_FILE}
+sudo systemctl start ${SERVICE_FILE}
+sudo systemctl status ${SERVICE_FILE}
+EOF
+chmod +x "${CREATE_SERVICE_PATH}"
+
+echo "Creating service stop script..."
+cat > "${STOP_SERVICE_PATH}" << EOF
+#!/bin/bash
+set -eu
+
+sudo systemctl stop ${SERVICE_FILE}
+sudo systemctl disable ${SERVICE_FILE}
+sudo systemctl daemon-reload
+EOF
+chmod +x "${STOP_SERVICE_PATH}"
+
+echo "Creating uninstall script..."
+cat > "${UNINSTALL_PATH}" << EOF
+#!/bin/bash
+set -eu
+
+if systemctl is-active --quiet ${SERVICE_FILE}; then
+    echo "Service is running. Stop the service before uninstalling."
+    exit 1
+fi
+
+sudo rm -f /etc/systemd/system/${SERVICE_FILE}
+rm -rf ${WD}/${VENV_NAME}
+rm -f ${EXE_PATH}
+rm -f ${SERVICE_PATH}
+EOF
+chmod +x "${UNINSTALL_PATH}"
+
 cat > "${README_PATH}" << EOF
 ===================================================================================================
 RPi-AI has been installed successfully.
@@ -79,31 +127,15 @@ The AI executable is located at: '${EXE_PATH}'
 Configure the AI model: '${CONFIG_PATH}'
 Add the following line to your '.bashrc' file: 'export GEMINI_API_KEY=<Your API Key>'
 
-Copy the service file to your '/etc/systemd/system' directory and enable the service:
-
-    sudo cp ${SERVICE_PATH} /etc/systemd/system
-    sudo systemctl daemon-reload
-    sudo systemctl enable ${SERVICE_FILE}
-    sudo systemctl start ${SERVICE_FILE}
-    sudo systemctl status ${SERVICE_FILE}
-
-To stop the service:
-
-    sudo systemctl stop ${SERVICE_FILE}
-    sudo systemctl disable ${SERVICE_FILE}
-    sudo systemctl daemon-reload
+To create a start-up service for the AI, run: './${CREATE_SERVICE_FILE}'
+To stop the service, run: './${STOP_SERVICE_FILE}'
 
 To view the logs:
 
-    cat ${STDOUT_LOG}
-    cat ${STDERR_LOG}
+cat ${STDOUT_LOG}
+cat ${STDERR_LOG}
 
-To uninstall, stop the service and then:
-
-    sudo rm /etc/systemd/system/${SERVICE_FILE}
-    rm -rf ${WD}/${VENV_NAME}
-    rm ${EXE_PATH}
-    rm ${SERVICE_PATH}
+To uninstall, run: './${UNINSTALL_FILE}'
 ===================================================================================================
 EOF
 

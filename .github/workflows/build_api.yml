@@ -113,8 +113,23 @@ jobs:
             exit 1
           fi
 
-          if [ ! -f "rpi-ai.service" ]; then
+          if [ ! -f "service/rpi-ai.service" ]; then
             echo "Service file not found"
+            exit 1
+          fi
+
+          if [ ! -f "service/create_service.sh" ]; then
+            echo "Service creation file not found"
+            exit 1
+          fi
+
+          if [ ! -f "service/stop_service.sh" ]; then
+            echo "Service stopping file not found"
+            exit 1
+          fi
+
+          if [ ! -f "uninstall_rpi_ai.sh" ]; then
+            echo "Uninstallation file not found"
             exit 1
           fi
 
