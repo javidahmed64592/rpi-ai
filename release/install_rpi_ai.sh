@@ -10,8 +10,7 @@ WD=$(pwd)
 VENV_NAME="venv"
 EXE_NAME="rpi-ai"
 CONFIG_FILE="ai_config.json"
-STDOUT_FILE="rpi_ai.out"
-STDERR_FILE="rpi_ai.err"
+LOG_FILE="rpi_ai.log"
 SERVICE_FILE="rpi-ai.service"
 CREATE_SERVICE_FILE="create_service.sh"
 STOP_SERVICE_FILE="stop_service.sh"
@@ -26,8 +25,7 @@ BIN_DIR="${FULL_VENV_PATH}/bin"
 
 EXE_PATH="${WD}/${EXE_NAME}"
 CONFIG_PATH="${CONFIG_DIR}/${CONFIG_FILE}"
-STDOUT_LOG="${LOGS_DIR}/${STDOUT_FILE}"
-STDERR_LOG="${LOGS_DIR}/${STDERR_FILE}"
+LOG_PATH="${LOGS_DIR}/${LOG_FILE}"
 SERVICE_PATH="${SERVICE_DIR}/${SERVICE_FILE}"
 CREATE_SERVICE_PATH="${SERVICE_DIR}/${CREATE_SERVICE_FILE}"
 STOP_SERVICE_PATH="${SERVICE_DIR}/${STOP_SERVICE_FILE}"
@@ -68,8 +66,8 @@ User=${USER}
 ExecStart=${EXE_PATH}
 Restart=on-failure
 RestartSec=5s
-StandardOutput=append:${STDOUT_LOG}
-StandardError=append:${STDERR_LOG}
+StandardOutput=append:${LOG_PATH}
+StandardError=append:${LOG_PATH}
 
 ProtectSystem=full
 ReadWriteDirectories=${WD}
@@ -135,10 +133,7 @@ Add the following line to your '.bashrc' file: 'export GEMINI_API_KEY=<Your API 
 To create a start-up service for the AI, run: './${CREATE_SERVICE_FILE}'
 To stop the service, run: './${STOP_SERVICE_FILE}'
 
-To view the logs:
-
-cat ${STDOUT_LOG}
-cat ${STDERR_LOG}
+To view the logs: 'cat ${LOG_PATH}'
 
 To uninstall, run: './${UNINSTALL_FILE}'
 ===================================================================================================
