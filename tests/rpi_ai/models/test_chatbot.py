@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from google.generativeai.protos import FunctionCall
 
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import AIConfigType, FunctionTool, FunctionToolList
+from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList
 
 
 class TestChatbot:

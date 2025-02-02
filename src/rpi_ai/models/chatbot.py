@@ -5,7 +5,7 @@ from google.generativeai.protos import FunctionResponse, Part
 from google.generativeai.types.generation_types import GenerateContentResponse
 from pydantic import ValidationError
 
-from rpi_ai.models.types import AIConfigType, FunctionTool, FunctionToolList, Message
+from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList, Message
 
 
 class Chatbot:

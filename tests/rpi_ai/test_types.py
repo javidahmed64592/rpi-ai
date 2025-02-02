@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, mock_open, patch
 
 from google.generativeai.protos import FunctionCall
 
-from rpi_ai.models.types import AIConfigType, FunctionTool, FunctionToolList, Message, MessageList
+from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList, Message, MessageList
 
 
 class TestAIConfigType:

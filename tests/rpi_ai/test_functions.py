@@ -1,5 +1,5 @@
 from rpi_ai.functions import FUNCTIONS
-from rpi_ai.models.types import FunctionToolList
+from rpi_ai.types import FunctionToolList
 
 
 class TestFunctions:

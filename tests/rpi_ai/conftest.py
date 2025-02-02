@@ -7,7 +7,7 @@ from google.generativeai.protos import FunctionCall, Part
 
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import AIConfigType, FunctionToolList
+from rpi_ai.types import AIConfigType, FunctionToolList
 
 
 # Config fixtures
@@ -29,7 +29,7 @@ def mock_config(config_data: dict[str, str | float]) -> AIConfigType:
 
 @pytest.fixture
 def mock_load_config(mock_config: AIConfigType) -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.models.types.AIConfigType.load") as mock:
+    with patch("rpi_ai.types.AIConfigType.load") as mock:
         mock.return_value = mock_config
         yield mock
 
@@ -60,6 +60,13 @@ def mock_response_command_with_args() -> MagicMock:
     mock_function_call = FunctionCall(name=function_with_args.__name__, args={})
     mock_part = Part(function_call=mock_function_call)
     return MagicMock(parts=[mock_part])
+
+
+# Types fixtures
+@pytest.fixture
+def mock_extract_parts() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.types.Message.extract_parts") as mock:
+        yield mock
 
 
 # Chatbot fixtures

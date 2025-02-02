@@ -5,7 +5,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from rpi_ai.main import AIApp, main
-from rpi_ai.models.types import AIConfigType
+from rpi_ai.types import AIConfigType
 
 SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
