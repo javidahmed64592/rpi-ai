@@ -133,7 +133,7 @@ class TestChatbot:
 
         mock_chatbot.start_chat()
         response = mock_chatbot.send_message(mock_msg)
-        mock_chat_instance.send_message.assert_called_once_with(mock_msg)
+        mock_chat_instance.send_message.assert_called_once_with([mock_msg])
         assert response.message == "Hi user!"
 
     def test_send_message_with_commands(
@@ -157,5 +157,5 @@ class TestChatbot:
 
         mock_chatbot.start_chat()
         response = mock_chatbot.send_message(mock_msg)
-        mock_chat_instance.send_message.assert_called_once_with(mock_msg)
+        mock_chat_instance.send_message.assert_called_once_with([mock_msg])
         assert response.message == "An error occurred! Please try again."
