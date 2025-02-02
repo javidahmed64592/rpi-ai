@@ -38,7 +38,6 @@ class AIApp:
 
         self.chatbot = Chatbot(self.api_key, config, FUNCTIONS)
 
-        self.token = self.generate_token()
         logger.info(f"Generated token: {self.token}")
 
         self.app = Flask(__name__)
@@ -66,6 +65,15 @@ class AIApp:
             self._api_key = os.environ.get("GEMINI_API_KEY")
             return self._api_key
 
+    @property
+    def token(self) -> str:
+        try:
+            return self._token
+        except AttributeError:
+            self._token = self.create_new_token()
+            self.write_token_to_file(self._token)
+            return self._token
+
     def get_request_json(self) -> dict[str, str]:
         return request.json
 
@@ -79,12 +87,6 @@ class AIApp:
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         with (self.logs_dir / "token.txt").open("w") as file:
             file.write(token)
-
-    def generate_token(self) -> str:
-        """Generate a secure token for client authentication."""
-        token = self.create_new_token()
-        self.write_token_to_file(token)
-        return token
 
     def authenticate(self) -> bool:
         return self.get_request_headers().get("Authorization") == self.token

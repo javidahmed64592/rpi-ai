@@ -200,7 +200,6 @@ def mock_ai_app(
     mock_write_token_to_file: MagicMock,
 ) -> AIApp:
     app = AIApp()
-    app.token = mock_create_new_token.return_value
     app.chatbot = mock_chatbot
     return app
 
