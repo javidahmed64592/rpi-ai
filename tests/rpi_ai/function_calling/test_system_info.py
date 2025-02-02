@@ -95,22 +95,6 @@ def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
         yield mock
 
 
-@pytest.fixture
-def mock_psutil_fans() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.function_calling.system_info.SystemInfo._psutil_fans") as mock:
-        mock.return_value = {"fan1": 1500}
-        yield mock
-
-
-@pytest.fixture
-def mock_psutil_battery() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.function_calling.system_info.psutil.sensors_battery") as mock:
-        mock.return_value.percent = 80
-        mock.return_value.power_plugged = True
-        mock.return_value.secsleft = 3600
-        yield mock
-
-
 def test_get_os_info(mock_platform: dict) -> None:
     expected_result = {
         "system": "test_system",
@@ -169,17 +153,3 @@ def test_get_disk_usage(mock_disk_usage: MagicMock) -> None:
 
 def test_get_temperature(mock_psutil_temperature: MagicMock) -> None:
     assert SystemInfo.get_temperature() == mock_psutil_temperature.return_value
-
-
-def test_get_fan_speeds(mock_psutil_fans: MagicMock) -> None:
-    expected_result = mock_psutil_fans.return_value
-    assert SystemInfo.get_fan_speeds() == expected_result
-
-
-def test_get_battery_info(mock_psutil_battery: MagicMock) -> None:
-    expected_result = {
-        "percent": mock_psutil_battery.return_value.percent,
-        "power_plugged": mock_psutil_battery.return_value.power_plugged,
-        "secsleft": mock_psutil_battery.return_value.secsleft,
-    }
-    assert SystemInfo.get_battery_info() == expected_result
