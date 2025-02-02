@@ -30,6 +30,7 @@ class AIConfigType:
         )
 
 
+# Messages
 @dataclass
 class Message:
     message: str
@@ -59,7 +60,8 @@ class MessageList:
         return cls([Message.from_dict(item) for item in data])
 
 
-class CallableFunctionResponse:
+# Functions
+class FunctionTool:
     def __init__(self, fn: FunctionCall, callable_fn: Callable) -> None:
         self.function = fn
         self.callable_fn = callable_fn
@@ -84,7 +86,7 @@ class CallableFunctionResponse:
 
 
 @dataclass
-class FunctionsList:
+class FunctionToolList:
     functions: list[Callable]
 
     @property

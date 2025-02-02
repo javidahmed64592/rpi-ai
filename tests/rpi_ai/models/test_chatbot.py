@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from google.generativeai.protos import FunctionCall
 
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import AIConfigType, CallableFunctionResponse, FunctionsList
+from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList
 
 
 class TestChatbot:
@@ -28,7 +28,10 @@ class TestChatbot:
         assert isinstance(mock_chatbot.first_message["parts"], str)
 
     def test_extract_command_without_args_from_part_with_valid_function(
-        self, mock_chatbot: Chatbot, mock_functions_list: FunctionsList, mock_response_command_without_args: MagicMock
+        self,
+        mock_chatbot: Chatbot,
+        mock_functions_list: FunctionToolList,
+        mock_response_command_without_args: MagicMock,
     ) -> None:
         part = mock_response_command_without_args.parts[0]
         command = mock_chatbot._extract_command_from_part(part)
@@ -38,7 +41,7 @@ class TestChatbot:
         assert command.callable_fn == mock_functions_list[part.function_call.name]
 
     def test_extract_command_with_args_from_part_with_valid_function(
-        self, mock_chatbot: Chatbot, mock_functions_list: FunctionsList, mock_response_command_with_args: MagicMock
+        self, mock_chatbot: Chatbot, mock_functions_list: FunctionToolList, mock_response_command_with_args: MagicMock
     ) -> None:
         part = mock_response_command_with_args.parts[0]
         command = mock_chatbot._extract_command_from_part(part)
@@ -55,7 +58,10 @@ class TestChatbot:
         assert command is None
 
     def test_get_commands_without_args_from_response(
-        self, mock_chatbot: Chatbot, mock_functions_list: FunctionsList, mock_response_command_without_args: MagicMock
+        self,
+        mock_chatbot: Chatbot,
+        mock_functions_list: FunctionToolList,
+        mock_response_command_without_args: MagicMock,
     ) -> None:
         commands = list(mock_chatbot._get_commands_from_response(mock_response_command_without_args))
         assert len(commands) == 1
@@ -65,7 +71,7 @@ class TestChatbot:
         assert commands[0].callable_fn == mock_functions_list[function_name]
 
     def test_get_commands_with_args_from_response(
-        self, mock_chatbot: Chatbot, mock_functions_list: FunctionsList, mock_response_command_with_args: MagicMock
+        self, mock_chatbot: Chatbot, mock_functions_list: FunctionToolList, mock_response_command_with_args: MagicMock
     ) -> None:
         commands = list(mock_chatbot._get_commands_from_response(mock_response_command_with_args))
         assert len(commands) == 1
@@ -76,14 +82,14 @@ class TestChatbot:
         assert commands[0].function.args == mock_response_command_with_args.parts[0].function_call.args
 
     def test_get_response_parts_from_commands_with_valid_commands(
-        self, mock_chatbot: Chatbot, mock_functions_list: FunctionsList
+        self, mock_chatbot: Chatbot, mock_functions_list: FunctionToolList
     ) -> None:
         commands = [
-            CallableFunctionResponse(
+            FunctionTool(
                 fn=FunctionCall(name=mock_functions_list.functions[0].__name__, args={}),
                 callable_fn=mock_functions_list.functions[0],
             ),
-            CallableFunctionResponse(
+            FunctionTool(
                 fn=FunctionCall(name=mock_functions_list.functions[1].__name__, args={"data": "test"}),
                 callable_fn=mock_functions_list.functions[1],
             ),
@@ -95,7 +101,7 @@ class TestChatbot:
             assert response_parts[i].function_response.response["result"] == command.response
 
     def test_get_response_parts_from_commands_with_invalid_commands(self, mock_chatbot: Chatbot) -> None:
-        commands = [CallableFunctionResponse(fn=None, callable_fn=None)]
+        commands = [FunctionTool(fn=None, callable_fn=None)]
         response_parts = mock_chatbot._get_response_parts_from_commands(commands)
         assert response_parts == []
 

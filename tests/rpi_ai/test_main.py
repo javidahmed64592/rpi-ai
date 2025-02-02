@@ -5,7 +5,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from rpi_ai.main import AIApp, main
-from rpi_ai.models.types import AIConfigType
+from rpi_ai.types import AIConfigType
 
 SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
@@ -22,9 +22,13 @@ class TestAIApp:
         with pytest.raises(ValueError, match="GEMINI_API_KEY variable not set!"):
             AIApp()
 
-    def test_init(self, mock_ai_app: AIApp, mock_app_path: MagicMock, mock_create_new_token: MagicMock) -> None:
+    def test_init(
+        self, mock_ai_app: AIApp, mock_api_key: MagicMock, mock_app_path: MagicMock, mock_create_new_token: MagicMock
+    ) -> None:
         assert mock_ai_app.logs_dir == Path(f"{mock_app_path.return_value}/logs")
         assert mock_ai_app.token == mock_create_new_token.return_value
+        assert mock_ai_app.root_dir == mock_app_path.return_value
+        assert mock_ai_app.api_key == mock_api_key.return_value
 
     def test_generating_token_writes_to_file(self, mock_ai_app: AIApp, mock_write_token_to_file: MagicMock) -> None:
         mock_write_token_to_file.assert_called_once_with(mock_ai_app.token)

@@ -10,7 +10,7 @@ from flask import Flask, Response, jsonify, request
 from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models.chatbot import Chatbot
 from rpi_ai.models.logger import Logger
-from rpi_ai.models.types import AIConfigType
+from rpi_ai.types import AIConfigType
 
 logger = Logger(__name__)
 
@@ -20,26 +20,17 @@ class AIApp:
         logger.debug("Loading environment variables...")
         load_dotenv()
 
-        if not (app_path := self.get_app_path()):
+        if not self.root_dir:
             msg = "RPI_AI_PATH variable not set!"
             logger.error(msg)
             raise ValueError(msg)
 
-        config_dir = Path(app_path) / "config"
-        self.logs_dir = Path(app_path) / "logs"
-
-        if not (api_key := self.get_api_key()):
+        if not self.api_key:
             msg = "GEMINI_API_KEY variable not set!"
             logger.error(msg)
             raise ValueError(msg)
 
-        logger.debug("Loading config...")
-        config = AIConfigType.load(str(config_dir / "ai_config.json"))
-
-        self.chatbot = Chatbot(api_key, config, FUNCTIONS)
-
-        self.token = self.generate_token()
-        logger.info(f"Generated token: {self.token}")
+        self.chatbot = Chatbot(self.api_key, self.config, FUNCTIONS)
 
         self.app = Flask(__name__)
         self.app.add_url_rule("/", "is_alive", self.is_alive, methods=["GET"])
@@ -50,11 +41,50 @@ class AIApp:
         )
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
 
-    def get_app_path(self) -> str:
-        return os.environ.get("RPI_AI_PATH")
+    @property
+    def root_dir(self) -> Path:
+        try:
+            return Path(self._root_dir)
+        except AttributeError:
+            self._root_dir = Path(os.environ.get("RPI_AI_PATH"))
+            logger.debug(f"Root directory: {self._root_dir}")
+            return self._root_dir
 
-    def get_api_key(self) -> str:
-        return os.environ.get("GEMINI_API_KEY")
+    @property
+    def config_dir(self) -> Path:
+        return self.root_dir / "config"
+
+    @property
+    def logs_dir(self) -> Path:
+        return self.root_dir / "logs"
+
+    @property
+    def api_key(self) -> str:
+        try:
+            return self._api_key
+        except AttributeError:
+            self._api_key = os.environ.get("GEMINI_API_KEY")
+            logger.debug("Successfully loaded API key")
+            return self._api_key
+
+    @property
+    def config(self) -> AIConfigType:
+        try:
+            return self._config
+        except AttributeError:
+            logger.debug("Loading config...")
+            self._config = AIConfigType.load(str(self.config_dir / "ai_config.json"))
+            return self._config
+
+    @property
+    def token(self) -> str:
+        try:
+            return self._token
+        except AttributeError:
+            self._token = self.create_new_token()
+            self.write_token_to_file(self._token)
+            logger.info(f"Generated token: {self._token}")
+            return self._token
 
     def get_request_json(self) -> dict[str, str]:
         return request.json
@@ -69,12 +99,6 @@ class AIApp:
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         with (self.logs_dir / "token.txt").open("w") as file:
             file.write(token)
-
-    def generate_token(self) -> str:
-        """Generate a secure token for client authentication."""
-        token = self.create_new_token()
-        self.write_token_to_file(token)
-        return token
 
     def authenticate(self) -> bool:
         return self.get_request_headers().get("Authorization") == self.token

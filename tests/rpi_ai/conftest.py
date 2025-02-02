@@ -1,5 +1,6 @@
 from collections.abc import Generator
-from unittest.mock import MagicMock, patch
+from pathlib import Path
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 from flask.testing import FlaskClient
@@ -7,7 +8,7 @@ from google.generativeai.protos import FunctionCall, Part
 
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import AIConfigType, FunctionsList
+from rpi_ai.types import AIConfigType, FunctionToolList
 
 
 # Config fixtures
@@ -29,7 +30,7 @@ def mock_config(config_data: dict[str, str | float]) -> AIConfigType:
 
 @pytest.fixture
 def mock_load_config(mock_config: AIConfigType) -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.models.types.AIConfigType.load") as mock:
+    with patch("rpi_ai.types.AIConfigType.load") as mock:
         mock.return_value = mock_config
         yield mock
 
@@ -44,8 +45,8 @@ def function_with_args(data: str) -> str:
 
 
 @pytest.fixture
-def mock_functions_list() -> FunctionsList:
-    return FunctionsList([function_without_args, function_with_args])
+def mock_functions_list() -> FunctionToolList:
+    return FunctionToolList([function_without_args, function_with_args])
 
 
 @pytest.fixture
@@ -60,6 +61,13 @@ def mock_response_command_with_args() -> MagicMock:
     mock_function_call = FunctionCall(name=function_with_args.__name__, args={})
     mock_part = Part(function_call=mock_function_call)
     return MagicMock(parts=[mock_part])
+
+
+# Types fixtures
+@pytest.fixture
+def mock_extract_parts() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.types.Message.extract_parts") as mock:
+        yield mock
 
 
 # Chatbot fixtures
@@ -103,7 +111,7 @@ def mock_chatbot(
     mock_config: AIConfigType,
     mock_genai_configure: MagicMock,
     mock_chat_instance: MagicMock,
-    mock_functions_list: FunctionsList,
+    mock_functions_list: FunctionToolList,
 ) -> Chatbot:
     return Chatbot(mock_api_key.return_value, mock_config, mock_functions_list)
 
@@ -148,14 +156,14 @@ def mock_ai_app_class() -> Generator[MagicMock, None, None]:
 
 @pytest.fixture
 def mock_app_path() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.get_app_path") as mock:
-        mock.return_value = "/test/app/path"
+    with patch("rpi_ai.main.AIApp.root_dir", new_callable=PropertyMock) as mock:
+        mock.return_value = Path("/test/app/path")
         yield mock
 
 
 @pytest.fixture
 def mock_api_key() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.get_api_key") as mock:
+    with patch("rpi_ai.main.AIApp.api_key", new_callable=PropertyMock) as mock:
         mock.return_value = "test_api_key"
         yield mock
 
@@ -193,7 +201,6 @@ def mock_ai_app(
     mock_write_token_to_file: MagicMock,
 ) -> AIApp:
     app = AIApp()
-    app.token = mock_create_new_token.return_value
     app.chatbot = mock_chatbot
     return app
 
