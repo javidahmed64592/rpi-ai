@@ -124,7 +124,7 @@ jobs:
             exit 1
           fi
 
-          if [ ! -f "service/create_service.sh" ]; then
+          if [ ! -f "service/start_service.sh" ]; then
             echo "Service creation file not found"
             exit 1
           fi
