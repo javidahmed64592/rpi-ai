@@ -23,6 +23,8 @@ class SystemInfo(FunctionsListBase):
             SystemInfo.get_memory_usage,
             SystemInfo.get_disk_usage,
             SystemInfo.get_temperature,
+            SystemInfo.get_fan_speeds,
+            SystemInfo.get_battery_info,
         ]
 
     @staticmethod
