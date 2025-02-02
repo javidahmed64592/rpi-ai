@@ -38,15 +38,6 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleActivePage() {
-    if (_activePage == PageType.chat) {
-      setActivePage(PageType.command);
-    } else if (_activePage == PageType.command) {
-      setActivePage(PageType.chat);
-    }
-    notifyListeners();
-  }
-
   void setConnected(bool newConnected) {
     _connected = newConnected;
     notifyListeners();

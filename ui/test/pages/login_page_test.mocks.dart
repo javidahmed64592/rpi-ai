@@ -211,25 +211,6 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
         returnValue:
             _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i4.Future<Map<String, dynamic>>);
-
-  @override
-  _i4.Future<Map<String, dynamic>> command(
-    String? url,
-    String? authToken,
-    String? message,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #command,
-          [
-            url,
-            authToken,
-            message,
-          ],
-        ),
-        returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
 }
 
 /// A class which mocks [Client].

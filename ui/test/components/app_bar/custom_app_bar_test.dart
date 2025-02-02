@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:ui/components/app_bar/custom_app_bar.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/app_bar/settings_dialog.dart';
-import 'package:ui/components/app_bar/switch_chat_mode.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/types.dart';
 
@@ -49,17 +48,6 @@ void main() {
     expect(find.text(PageType.chat.title), findsOneWidget);
   });
 
-  testWidgets('CustomAppBar displays title for command page',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(createCustomAppBar());
-    final appState = Provider.of<AppState>(
-        tester.element(find.byType(CustomAppBar)),
-        listen: false);
-    appState.setActivePage(PageType.command);
-    await tester.pump();
-    expect(find.text(PageType.command.title), findsOneWidget);
-  });
-
   testWidgets('CustomAppBar displays SettingsButton',
       (WidgetTester tester) async {
     await tester.pumpWidget(createCustomAppBar());
@@ -80,28 +68,6 @@ void main() {
     appState.setActivePage(PageType.login);
     await tester.pump();
     expect(find.byType(SettingsButton), findsNothing);
-  });
-
-  testWidgets('CustomAppBar displays SwitchChatMode',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(createCustomAppBar());
-    final appState = Provider.of<AppState>(
-        tester.element(find.byType(CustomAppBar)),
-        listen: false);
-    appState.setActivePage(PageType.chat);
-    await tester.pump();
-    expect(find.byType(SwitchChatMode), findsOneWidget);
-  });
-
-  testWidgets('CustomAppBar does not display SwitchChatMode on login page',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(createCustomAppBar());
-    final appState = Provider.of<AppState>(
-        tester.element(find.byType(CustomAppBar)),
-        listen: false);
-    appState.setActivePage(PageType.login);
-    await tester.pump();
-    expect(find.byType(SwitchChatMode), findsNothing);
   });
 
   testWidgets('CustomAppBar displays LogoutButton',

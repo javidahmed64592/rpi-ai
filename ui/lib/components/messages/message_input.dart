@@ -85,8 +85,6 @@ class _MessageInputState extends State<MessageInput> {
     if (widget.messageType == MessageType.chat) {
       messageState.addMessage(message);
       scrollToBottom();
-    } else if (widget.messageType == MessageType.command) {
-      messageState.setBotMessage(message);
     }
   }
 
