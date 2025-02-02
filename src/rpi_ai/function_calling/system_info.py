@@ -22,7 +22,7 @@ class SystemInfo(FunctionsListBase):
             SystemInfo.get_cpu_percent,
             SystemInfo.get_memory_usage,
             SystemInfo.get_disk_usage,
-            SystemInfo.temperature,
+            SystemInfo.get_temperature,
         ]
 
     @staticmethod
@@ -156,3 +156,42 @@ class SystemInfo(FunctionsListBase):
             return SystemInfo._psutil_temperature()
         except (KeyError, IndexError, AttributeError):
             logger.exception("Failed to get CPU temperature.")
+
+    @staticmethod
+    def _psutil_fans() -> dict:
+        """
+        Get the fan speeds using `psutil`.
+
+        Returns:
+            dict: A dictionary containing fan labels and speeds.
+        """
+        return {f.label: f.current for f in psutil.sensors_fans().values()}
+
+    @staticmethod
+    def get_fan_speeds() -> dict:
+        """
+        Get the system fan speeds.
+
+        Returns:
+            dict: A dictionary containing fan labels and speeds.
+            `None` is returned if the fan speeds cannot be retrieved.
+        """
+        try:
+            return SystemInfo._psutil_fans()
+        except (KeyError, IndexError, AttributeError):
+            logger.exception("Failed to get fan speeds.")
+
+    @staticmethod
+    def get_battery_info() -> dict:
+        """
+        Get the battery information.
+
+        Returns:
+            dict: A dictionary containing battery information.
+        """
+        battery = psutil.sensors_battery()
+        return {
+            "percent": battery.percent,
+            "power_plugged": battery.power_plugged,
+            "secsleft": battery.secsleft,
+        }

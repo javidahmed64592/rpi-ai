@@ -95,6 +95,22 @@ def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
         yield mock
 
 
+@pytest.fixture
+def mock_psutil_fans() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.function_calling.system_info.SystemInfo._psutil_fans") as mock:
+        mock.return_value = {"fan1": 1500}
+        yield mock
+
+
+@pytest.fixture
+def mock_psutil_battery() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.function_calling.system_info.psutil.sensors_battery") as mock:
+        mock.return_value.percent = 80
+        mock.return_value.power_plugged = True
+        mock.return_value.secsleft = 3600
+        yield mock
+
+
 def test_get_os_info(mock_platform: dict) -> None:
     expected_result = {
         "system": "test_system",
@@ -131,7 +147,7 @@ def test_cpu_percent(mock_cpu_percent: MagicMock) -> None:
     assert SystemInfo.get_cpu_percent() == mock_cpu_percent.return_value
 
 
-def test_memory_percent(mock_virtual_memory: MagicMock) -> None:
+def test_get_memory_usage(mock_virtual_memory: MagicMock) -> None:
     expected_result = {
         "total": mock_virtual_memory.return_value.total,
         "available": mock_virtual_memory.return_value.available,
@@ -141,7 +157,7 @@ def test_memory_percent(mock_virtual_memory: MagicMock) -> None:
     assert SystemInfo.get_memory_usage() == expected_result
 
 
-def test_disk_usage(mock_disk_usage: MagicMock) -> None:
+def test_get_disk_usage(mock_disk_usage: MagicMock) -> None:
     expected_result = {
         "total": mock_disk_usage.return_value.total,
         "used": mock_disk_usage.return_value.used,
@@ -151,5 +167,19 @@ def test_disk_usage(mock_disk_usage: MagicMock) -> None:
     assert SystemInfo.get_disk_usage() == expected_result
 
 
-def test_temperature(mock_psutil_temperature: MagicMock) -> None:
-    assert SystemInfo.temperature() == mock_psutil_temperature.return_value
+def test_get_temperature(mock_psutil_temperature: MagicMock) -> None:
+    assert SystemInfo.get_temperature() == mock_psutil_temperature.return_value
+
+
+def test_get_fan_speeds(mock_psutil_fans: MagicMock) -> None:
+    expected_result = {"fan1": 1500}
+    assert SystemInfo.get_fan_speeds() == expected_result
+
+
+def test_get_battery_info(mock_psutil_battery: MagicMock) -> None:
+    expected_result = {
+        "percent": 80,
+        "power_plugged": True,
+        "secsleft": 3600,
+    }
+    assert SystemInfo.get_battery_info() == expected_result
