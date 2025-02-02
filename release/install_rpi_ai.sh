@@ -15,7 +15,6 @@ STDERR_FILE="rpi_ai.err"
 SERVICE_FILE="rpi-ai.service"
 CREATE_SERVICE_FILE="create_service.sh"
 STOP_SERVICE_FILE="stop_service.sh"
-INSTALL_FILE="install_rpi_ai.sh"
 UNINSTALL_FILE="uninstall_rpi_ai.sh"
 README_FILE="README.txt"
 
@@ -32,7 +31,6 @@ STDERR_LOG="${LOGS_DIR}/${STDERR_FILE}"
 SERVICE_PATH="${SERVICE_DIR}/${SERVICE_FILE}"
 CREATE_SERVICE_PATH="${SERVICE_DIR}/${CREATE_SERVICE_FILE}"
 STOP_SERVICE_PATH="${SERVICE_DIR}/${STOP_SERVICE_FILE}"
-INSTALL_PATH="${WD}/${INSTALL_FILE}"
 UNINSTALL_PATH="${WD}/${UNINSTALL_FILE}"
 README_PATH="${WD}/${README_FILE}"
 
@@ -123,7 +121,6 @@ rm -f ${README_PATH}
 rm -rf ${CONFIG_DIR}
 rm -rf ${LOGS_DIR}
 rm -rf ${SERVICE_DIR}
-rm -f ${INSTALL_PATH}
 rm -- "\$0"
 EOF
 chmod +x "${UNINSTALL_PATH}"
@@ -148,3 +145,5 @@ To uninstall, run: './${UNINSTALL_FILE}'
 EOF
 
 cat "${README_PATH}"
+
+rm -- "$0"
