@@ -25,6 +25,7 @@ class AIApp:
             logger.error(msg)
             raise ValueError(msg)
 
+        config_dir = Path(app_path) / "config"
         self.logs_dir = Path(app_path) / "logs"
 
         if not (api_key := self.get_api_key()):
@@ -33,7 +34,7 @@ class AIApp:
             raise ValueError(msg)
 
         logger.debug("Loading config...")
-        config = AIConfigType.load("config/ai_config.json")
+        config = AIConfigType.load(str(config_dir / "ai_config.json"))
 
         self.chatbot = Chatbot(api_key, config, FUNCTIONS)
 
