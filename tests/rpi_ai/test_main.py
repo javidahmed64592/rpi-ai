@@ -69,72 +69,6 @@ class TestAIApp:
         mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
         assert response.status_code == UNAUTHORIZED_CODE
 
-    def test_chat(
-        self,
-        mock_client: FlaskClient,
-        mock_request_headers: MagicMock,
-        mock_request_json: MagicMock,
-        mock_send_message: MagicMock,
-        mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
-    ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
-        user_message = "Hello, World!"
-        mock_request_json.return_value = {"message": user_message}
-
-        response = mock_client.post("/chat")
-        mock_send_message.assert_called_once_with(user_message)
-        mock_jsonify.assert_called_once_with(mock_send_message.return_value)
-        assert response.status_code == SUCCESS_CODE
-
-    def test_chat_unauthorized(
-        self,
-        mock_client: FlaskClient,
-        mock_request_headers: MagicMock,
-        mock_request_json: MagicMock,
-        mock_jsonify: MagicMock,
-    ) -> None:
-        mock_request_headers.return_value = {"Authorization": "wrong_token"}
-        user_message = "Hello, World!"
-        mock_request_json.return_value = {"message": user_message}
-
-        response = mock_client.post("/chat")
-        mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
-        assert response.status_code == UNAUTHORIZED_CODE
-
-    def test_command(
-        self,
-        mock_client: FlaskClient,
-        mock_request_headers: MagicMock,
-        mock_request_json: MagicMock,
-        mock_send_command: MagicMock,
-        mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
-    ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
-        user_message = "Hello, World!"
-        mock_request_json.return_value = {"message": user_message}
-
-        response = mock_client.post("/command")
-        mock_send_command.assert_called_once_with(user_message)
-        mock_jsonify.assert_called_once_with(mock_send_command.return_value)
-        assert response.status_code == SUCCESS_CODE
-
-    def test_command_unauthorized(
-        self,
-        mock_client: FlaskClient,
-        mock_request_headers: MagicMock,
-        mock_request_json: MagicMock,
-        mock_jsonify: MagicMock,
-    ) -> None:
-        mock_request_headers.return_value = {"Authorization": "wrong_token"}
-        user_message = "Hello, World!"
-        mock_request_json.return_value = {"message": user_message}
-
-        response = mock_client.post("/command")
-        mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
-        assert response.status_code == UNAUTHORIZED_CODE
-
     def test_get_config(
         self,
         mock_client: FlaskClient,
@@ -203,6 +137,39 @@ class TestAIApp:
         mock_request_json.return_value = new_config
 
         response = mock_client.post("/update-config")
+        mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
+        assert response.status_code == UNAUTHORIZED_CODE
+
+    def test_chat(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_json: MagicMock,
+        mock_send_message: MagicMock,
+        mock_jsonify: MagicMock,
+        mock_create_new_token: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        user_message = "Hello, World!"
+        mock_request_json.return_value = {"message": user_message}
+
+        response = mock_client.post("/chat")
+        mock_send_message.assert_called_once_with(user_message)
+        mock_jsonify.assert_called_once_with(mock_send_message.return_value)
+        assert response.status_code == SUCCESS_CODE
+
+    def test_chat_unauthorized(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_json: MagicMock,
+        mock_jsonify: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": "wrong_token"}
+        user_message = "Hello, World!"
+        mock_request_json.return_value = {"message": user_message}
+
+        response = mock_client.post("/chat")
         mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
         assert response.status_code == UNAUTHORIZED_CODE
 

@@ -133,12 +133,6 @@ def mock_send_message() -> Generator[MagicMock, None, None]:
         yield mock
 
 
-@pytest.fixture
-def mock_send_command() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.Chatbot.send_command") as mock:
-        yield mock
-
-
 # AIApp fixtures
 @pytest.fixture
 def mock_jsonify() -> Generator[MagicMock, None, None]:
