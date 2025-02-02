@@ -1,4 +1,5 @@
 from collections.abc import Generator
+from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
@@ -156,7 +157,7 @@ def mock_ai_app_class() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_app_path() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.AIApp.root_dir", new_callable=PropertyMock) as mock:
-        mock.return_value = "/test/app/path"
+        mock.return_value = Path("/test/app/path")
         yield mock
 
 
