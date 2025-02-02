@@ -7,7 +7,7 @@ from google.generativeai.protos import FunctionCall, Part
 
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.models.types import AIConfigType, FunctionsList
+from rpi_ai.models.types import AIConfigType, FunctionToolList
 
 
 # Config fixtures
@@ -44,8 +44,8 @@ def function_with_args(data: str) -> str:
 
 
 @pytest.fixture
-def mock_functions_list() -> FunctionsList:
-    return FunctionsList([function_without_args, function_with_args])
+def mock_functions_list() -> FunctionToolList:
+    return FunctionToolList([function_without_args, function_with_args])
 
 
 @pytest.fixture
@@ -103,7 +103,7 @@ def mock_chatbot(
     mock_config: AIConfigType,
     mock_genai_configure: MagicMock,
     mock_chat_instance: MagicMock,
-    mock_functions_list: FunctionsList,
+    mock_functions_list: FunctionToolList,
 ) -> Chatbot:
     return Chatbot(mock_api_key.return_value, mock_config, mock_functions_list)
 

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, mock_open, patch
 
 from google.generativeai.protos import FunctionCall
 
-from rpi_ai.models.types import AIConfigType, CallableFunctionResponse, FunctionsList, Message, MessageList
+from rpi_ai.models.types import AIConfigType, FunctionTool, FunctionToolList, Message, MessageList
 
 
 class TestAIConfigType:
@@ -54,34 +54,34 @@ class TestMessageList:
         assert not message_list.messages[1].is_user_message
 
 
-class TestFunctionResponse:
+class TestFunctionTool:
     def test_name(self) -> None:
         fn = FunctionCall(name="test_function", args={})
-        response = CallableFunctionResponse(fn, lambda: {})
+        response = FunctionTool(fn, lambda: {})
         assert response.name == "test_function"
 
     def test_args(self) -> None:
         fn = FunctionCall(name="test_function", args={"arg1": "value1", "arg2": "value2"})
-        response = CallableFunctionResponse(fn, lambda: {})
+        response = FunctionTool(fn, lambda: {})
         assert set(response.args.split(", ")) == {"arg1=value1", "arg2=value2"}
 
     def test_response_without_args(self) -> None:
         fn = FunctionCall(name="test_function", args={})
-        response = CallableFunctionResponse(fn, lambda: {"result": "success"})
+        response = FunctionTool(fn, lambda: {"result": "success"})
         assert response.response == {"result": "success"}
 
     def test_response_with_args(self) -> None:
         fn = FunctionCall(name="test_function", args={"arg1": "value1"})
-        response = CallableFunctionResponse(fn, lambda arg1: {"result": f"success with {arg1}"})
+        response = FunctionTool(fn, lambda arg1: {"result": f"success with {arg1}"})
         assert response.response == {"result": "success with value1"}
 
     def test_output(self) -> None:
         fn = FunctionCall(name="test_function", args={"arg1": "value1"})
-        response = CallableFunctionResponse(fn, lambda arg1: {"result": f"success with {arg1}"})
+        response = FunctionTool(fn, lambda arg1: {"result": f"success with {arg1}"})
         assert response.output == "test_function(arg1=value1)={'result': 'success with value1'}"
 
 
-class TestFunctionsList:
+class TestFunctionToolList:
     def test_dictionary(self) -> None:
         def fn1() -> None:
             pass
@@ -89,7 +89,7 @@ class TestFunctionsList:
         def fn2() -> None:
             pass
 
-        functions_list = FunctionsList([fn1, fn2])
+        functions_list = FunctionToolList([fn1, fn2])
         assert functions_list.dictionary == {"fn1": fn1, "fn2": fn2}
 
     def test_getitem(self) -> None:
@@ -99,6 +99,6 @@ class TestFunctionsList:
         def fn2() -> None:
             pass
 
-        functions_list = FunctionsList([fn1, fn2])
+        functions_list = FunctionToolList([fn1, fn2])
         assert functions_list["fn1"] == fn1
         assert functions_list["fn2"] == fn2

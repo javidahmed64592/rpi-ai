@@ -5,11 +5,11 @@ from google.generativeai.protos import FunctionResponse, Part
 from google.generativeai.types.generation_types import GenerateContentResponse
 from pydantic import ValidationError
 
-from rpi_ai.models.types import AIConfigType, CallableFunctionResponse, FunctionsList, Message
+from rpi_ai.models.types import AIConfigType, FunctionTool, FunctionToolList, Message
 
 
 class Chatbot:
-    def __init__(self, api_key: str, config: AIConfigType, functions: FunctionsList) -> None:
+    def __init__(self, api_key: str, config: AIConfigType, functions: FunctionToolList) -> None:
         genai.configure(api_key=api_key)
         self._config = config
         self._functions = functions
@@ -19,20 +19,20 @@ class Chatbot:
     def first_message(self) -> dict[str, str]:
         return {"role": "model", "parts": "What's on your mind today?"}
 
-    def _extract_command_from_part(self, part: Part) -> CallableFunctionResponse:
+    def _extract_command_from_part(self, part: Part) -> FunctionTool:
         try:
-            return CallableFunctionResponse(fn=part.function_call, callable_fn=self._functions[part.function_call.name])
+            return FunctionTool(fn=part.function_call, callable_fn=self._functions[part.function_call.name])
         except (AttributeError, KeyError):
             return None
 
-    def _get_commands_from_response(self, response: GenerateContentResponse) -> Iterable[CallableFunctionResponse]:
+    def _get_commands_from_response(self, response: GenerateContentResponse) -> Iterable[FunctionTool]:
         commands: Iterable[FunctionResponse] = []
         for part in response.parts:
             if command := self._extract_command_from_part(part):
                 commands.append(command)
         return commands
 
-    def _get_response_parts_from_commands(self, commands: Iterable[CallableFunctionResponse]) -> list[Part]:
+    def _get_response_parts_from_commands(self, commands: Iterable[FunctionTool]) -> list[Part]:
         try:
             return [
                 Part(function_response=FunctionResponse(name=fn.name, response={"result": fn.response}))
