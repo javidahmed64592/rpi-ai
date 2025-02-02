@@ -88,6 +88,7 @@ jobs:
       - name: Run installer script
         run: |
           cd rpi_ai
+          export GEMINI_API_KEY="test"
           ./install_rpi_ai.sh
 
           echo "rpi_ai/"
