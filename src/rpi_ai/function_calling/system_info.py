@@ -27,20 +27,18 @@ class SystemInfo(FunctionsListBase):
         ]
 
     @staticmethod
-    def os_info() -> str:
+    def os_info() -> dict:
         """
         Get the operating system information.
         """
-        return str(
-            {
-                "system": platform.system(),
-                "node": platform.node(),
-                "release": platform.release(),
-                "version": platform.version(),
-                "machine": platform.machine(),
-                "processor": platform.processor(),
-            }
-        )
+        return {
+            "system": platform.system(),
+            "node": platform.node(),
+            "release": platform.release(),
+            "version": platform.version(),
+            "machine": platform.machine(),
+            "processor": platform.processor(),
+        }
 
     @staticmethod
     def hostname() -> str:
@@ -69,7 +67,7 @@ class SystemInfo(FunctionsListBase):
         """
         Get the running processes.
         """
-        return str({p.pid: p.info for p in psutil.process_iter(["pid", "name", "username"])})
+        return {p.pid: p.info for p in psutil.process_iter(["pid", "name", "username"])}
 
     @staticmethod
     def get_process_name_by_pid(pid: int) -> str:

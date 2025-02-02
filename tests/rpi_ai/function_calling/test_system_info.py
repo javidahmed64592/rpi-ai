@@ -112,7 +112,7 @@ def test_os_info(mock_platform: dict) -> None:
         "machine": "armv7l",
         "processor": "ARMv7 Processor rev 4 (v7l)",
     }
-    assert SystemInfo.os_info() == str(expected_result)
+    assert SystemInfo.os_info() == expected_result
 
 
 def test_hostname(mock_hostname: MagicMock) -> None:
@@ -131,7 +131,7 @@ def test_get_running_processes(mock_process_iter: MagicMock) -> None:
     expected_result = {
         mock_process_iter.return_value[0].pid: {"pid": 1234, "name": "test_process", "username": "test_user"}
     }
-    assert SystemInfo.get_running_processes() == str(expected_result)
+    assert SystemInfo.get_running_processes() == expected_result
 
 
 def test_get_process_name_by_pid(mock_process: MagicMock) -> None:
