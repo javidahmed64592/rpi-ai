@@ -172,14 +172,14 @@ def test_get_temperature(mock_psutil_temperature: MagicMock) -> None:
 
 
 def test_get_fan_speeds(mock_psutil_fans: MagicMock) -> None:
-    expected_result = {"fan1": 1500}
+    expected_result = mock_psutil_fans.return_value
     assert SystemInfo.get_fan_speeds() == expected_result
 
 
 def test_get_battery_info(mock_psutil_battery: MagicMock) -> None:
     expected_result = {
-        "percent": 80,
-        "power_plugged": True,
-        "secsleft": 3600,
+        "percent": mock_psutil_battery.return_value.percent,
+        "power_plugged": mock_psutil_battery.return_value.power_plugged,
+        "secsleft": mock_psutil_battery.return_value.secsleft,
     }
     assert SystemInfo.get_battery_info() == expected_result
