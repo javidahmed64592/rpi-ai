@@ -20,15 +20,15 @@ class AIApp:
         logger.debug("Loading environment variables...")
         load_dotenv()
 
-        if not (app_path := self.get_app_path()):
+        if not self.root_dir:
             msg = "RPI_AI_PATH variable not set!"
             logger.error(msg)
             raise ValueError(msg)
 
-        config_dir = Path(app_path) / "config"
-        self.logs_dir = Path(app_path) / "logs"
+        config_dir = Path(self.root_dir) / "config"
+        self.logs_dir = Path(self.root_dir) / "logs"
 
-        if not (api_key := self.get_api_key()):
+        if not self.api_key:
             msg = "GEMINI_API_KEY variable not set!"
             logger.error(msg)
             raise ValueError(msg)
@@ -36,7 +36,7 @@ class AIApp:
         logger.debug("Loading config...")
         config = AIConfigType.load(str(config_dir / "ai_config.json"))
 
-        self.chatbot = Chatbot(api_key, config, FUNCTIONS)
+        self.chatbot = Chatbot(self.api_key, config, FUNCTIONS)
 
         self.token = self.generate_token()
         logger.info(f"Generated token: {self.token}")
@@ -50,11 +50,21 @@ class AIApp:
         )
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
 
-    def get_app_path(self) -> str:
-        return os.environ.get("RPI_AI_PATH")
+    @property
+    def root_dir(self) -> str:
+        try:
+            return self._root_dir
+        except AttributeError:
+            self._root_dir = os.environ.get("RPI_AI_PATH")
+            return self._root_dir
 
-    def get_api_key(self) -> str:
-        return os.environ.get("GEMINI_API_KEY")
+    @property
+    def api_key(self) -> str:
+        try:
+            return self._api_key
+        except AttributeError:
+            self._api_key = os.environ.get("GEMINI_API_KEY")
+            return self._api_key
 
     def get_request_json(self) -> dict[str, str]:
         return request.json

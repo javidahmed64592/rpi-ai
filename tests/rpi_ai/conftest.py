@@ -1,5 +1,5 @@
 from collections.abc import Generator
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 from flask.testing import FlaskClient
@@ -155,14 +155,14 @@ def mock_ai_app_class() -> Generator[MagicMock, None, None]:
 
 @pytest.fixture
 def mock_app_path() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.get_app_path") as mock:
+    with patch("rpi_ai.main.AIApp.root_dir", new_callable=PropertyMock) as mock:
         mock.return_value = "/test/app/path"
         yield mock
 
 
 @pytest.fixture
 def mock_api_key() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.get_api_key") as mock:
+    with patch("rpi_ai.main.AIApp.api_key", new_callable=PropertyMock) as mock:
         mock.return_value = "test_api_key"
         yield mock
 
