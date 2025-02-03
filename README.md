@@ -118,11 +118,12 @@ To format the code:
     python -m ruff format .
 
 ## Installing and Running the API
-To install the API, download the release tarball and extract it. Then, run the `install_rpi_ai.sh` script:
+To install the API, download the release tarball and extract it.
+Before running the installer, ensure you have set the `GEMINI_API_KEY` environment variable.
+Run the `install_rpi_ai.sh` script:
 
     tar -xzf rpi_ai.tar.gz
     cd rpi_ai
-    export GEMINI_API_KEY=<Your API Key>
     ./install_rpi_ai.sh
 
 This script will create a virtual environment, install the API from the wheel file, and set up the necessary directories and files.
@@ -140,6 +141,8 @@ To stop the service, run the `stop_service.sh` script:
 To uninstall the API, run the `uninstall_rpi_ai.sh` script:
 
     ./uninstall_rpi_ai.sh
+    cd ..
+    rm -rf rpi_ai
 
 This will remove the virtual environment, executable, and all related files and directories.
 The folder can then safely be deleted.
