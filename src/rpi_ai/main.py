@@ -6,6 +6,7 @@ from types import FrameType
 
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
+from waitress import serve
 
 from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models.chatbot import Chatbot
@@ -148,7 +149,7 @@ class AIApp:
 
     def run(self, host: str, port: int) -> None:
         signal.signal(signal.SIGINT, self.shutdown_handler)
-        self.app.run(host=host, port=port)
+        serve(self.app, host=host, port=port)
 
 
 def main() -> None:
