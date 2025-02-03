@@ -20,6 +20,7 @@ classifiers = [
 ]
 dependencies = [
     "flask",
+    "waitress",
     "google-generativeai",
     "grpcio==1.60.1",
     "python-dotenv",

@@ -177,6 +177,10 @@ class TestAIApp:
         mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
         assert response.status_code == UNAUTHORIZED_CODE
 
+    def test_run_with_waitress(self, mock_ai_app: AIApp, mock_waitress_serve: MagicMock) -> None:
+        mock_ai_app.run(host="0.0.0.0", port=8080)
+        mock_waitress_serve.assert_called_once_with(mock_ai_app.app, host="0.0.0.0", port=8080)
+
 
 def test_main(mock_ai_app_class: MagicMock) -> None:
     main()

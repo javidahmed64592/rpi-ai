@@ -209,3 +209,9 @@ def mock_ai_app(
 def mock_client(mock_ai_app: AIApp) -> Generator[FlaskClient, None, None]:
     with mock_ai_app.app.test_client() as client:
         yield client
+
+
+@pytest.fixture
+def mock_waitress_serve() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.serve") as mock:
+        yield mock
