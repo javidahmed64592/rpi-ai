@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:ui/components/app_bar/custom_app_bar.dart';
 import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/timeout_dialog.dart';
-import 'package:ui/pages/home_page.dart';
+import 'package:ui/pages/main_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
@@ -25,7 +25,7 @@ void main() {
     notificationState = NotificationState();
   });
 
-  Widget createHomePage() {
+  Widget createMainPage() {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => appState),
@@ -34,58 +34,58 @@ void main() {
         ChangeNotifierProvider(create: (context) => SettingsState()),
       ],
       child: const MaterialApp(
-        home: HomePage(),
+        home: MainPage(),
       ),
     );
   }
 
-  testWidgets('HomePage displays CustomAppBar', (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+  testWidgets('MainPage displays CustomAppBar', (WidgetTester tester) async {
+    await tester.pumpWidget(createMainPage());
     expect(find.byType(CustomAppBar), findsOneWidget);
   });
 
-  testWidgets('HomePage displays LogoutButton', (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+  testWidgets('MainPage displays LogoutButton', (WidgetTester tester) async {
+    await tester.pumpWidget(createMainPage());
     appState.setActivePage(PageType.chat);
     await tester.pump();
     expect(find.byType(LogoutButton), findsOneWidget);
   });
 
-  testWidgets('HomePage does not display LogoutButton on login page',
+  testWidgets('MainPage does not display LogoutButton on login page',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+    await tester.pumpWidget(createMainPage());
     appState.setActivePage(PageType.login);
     await tester.pump();
     expect(find.byType(LogoutButton), findsNothing);
   });
 
-  testWidgets('HomePage displays error notification',
+  testWidgets('MainPage displays error notification',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+    await tester.pumpWidget(createMainPage());
     notificationState.setNotificationError('Test error');
     await tester.pump();
     expect(find.text('Test error'), findsOneWidget);
   });
 
-  testWidgets('HomePage displays info notification',
+  testWidgets('MainPage displays info notification',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+    await tester.pumpWidget(createMainPage());
     notificationState.setNotificationInfo('Test info');
     await tester.pump();
     expect(find.text('Test info'), findsOneWidget);
   });
 
-  testWidgets('HomePage displays warning notification',
+  testWidgets('MainPage displays warning notification',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+    await tester.pumpWidget(createMainPage());
     notificationState.setNotificationWarning('Test warning');
     await tester.pump();
     expect(find.text('Test warning'), findsOneWidget);
   });
 
-  testWidgets('HomePage displays TimeoutDialog when disconnected',
+  testWidgets('MainPage displays TimeoutDialog when disconnected',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createHomePage());
+    await tester.pumpWidget(createMainPage());
     appState.setActivePage(PageType.chat);
     appState.setConnected(false);
     await tester.pump();

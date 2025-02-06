@@ -18,14 +18,14 @@ import 'package:ui/state/app_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'package:ui/types.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MainPageState extends State<MainPage> {
   Timer? timer;
   final httpHelper = HttpHelper();
 
