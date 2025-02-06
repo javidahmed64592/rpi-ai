@@ -13,11 +13,19 @@ class Chatbot:
         genai.configure(api_key=api_key)
         self._config = config
         self._functions = functions
-        self.initialise_model()
+        self._initialise_model()
 
     @property
     def first_message(self) -> dict[str, str]:
         return {"role": "model", "parts": "What's on your mind today?"}
+
+    def _initialise_model(self) -> None:
+        self._model = genai.GenerativeModel(
+            model_name=self._config.model,
+            system_instruction=self._config.system_instruction,
+            generation_config=self._config.generation_config,
+            tools=self._functions.functions,
+        )
 
     def _extract_command_from_part(self, part: Part) -> FunctionTool:
         try:
@@ -41,20 +49,12 @@ class Chatbot:
         except AttributeError:
             return []
 
-    def initialise_model(self) -> None:
-        self._model = genai.GenerativeModel(
-            model_name=self._config.model,
-            system_instruction=self._config.system_instruction,
-            generation_config=self._config.generation_config,
-            tools=self._functions.functions,
-        )
-
     def get_config(self) -> AIConfigType:
         return self._config
 
     def update_config(self, config: AIConfigType) -> None:
         self._config = config
-        self.initialise_model()
+        self._initialise_model()
 
     def start_chat(self) -> Message:
         self._chat = self._model.start_chat(history=[self.first_message])
