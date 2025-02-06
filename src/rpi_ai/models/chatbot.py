@@ -1,7 +1,8 @@
 from collections.abc import Iterable
 
 import google.generativeai as genai
-from google.generativeai.protos import FunctionResponse, Part
+from google.generativeai.protos import FunctionResponse, GoogleSearchRetrieval, Part
+from google.generativeai.types.content_types import Tool
 from google.generativeai.types.generation_types import GenerateContentResponse
 from pydantic import ValidationError
 
@@ -13,7 +14,16 @@ class Chatbot:
         genai.configure(api_key=api_key)
         self._config = config
         self._functions = functions
-        self.initialise_model()
+        self._web_search_tool = Tool(google_search_retrieval=GoogleSearchRetrieval())
+        self._initialise_model()
+
+    def _initialise_model(self) -> None:
+        self._model = genai.GenerativeModel(
+            model_name=self._config.model,
+            system_instruction=self._config.system_instruction,
+            generation_config=self._config.generation_config,
+            tools=[*self._functions.functions, self._web_search_tool],
+        )
 
     @property
     def first_message(self) -> dict[str, str]:
@@ -41,20 +51,12 @@ class Chatbot:
         except AttributeError:
             return []
 
-    def initialise_model(self) -> None:
-        self._model = genai.GenerativeModel(
-            model_name=self._config.model,
-            system_instruction=self._config.system_instruction,
-            generation_config=self._config.generation_config,
-            tools=self._functions.functions,
-        )
-
     def get_config(self) -> AIConfigType:
         return self._config
 
     def update_config(self, config: AIConfigType) -> None:
         self._config = config
-        self.initialise_model()
+        self._initialise_model()
 
     def start_chat(self) -> Message:
         self._chat = self._model.start_chat(history=[self.first_message])

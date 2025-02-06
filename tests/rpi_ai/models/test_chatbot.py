@@ -20,7 +20,7 @@ class TestChatbot:
             model_name=mock_config.model,
             system_instruction=mock_config.system_instruction,
             generation_config=mock_config.generation_config,
-            tools=mock_chatbot._functions.functions,
+            tools=[*mock_chatbot._functions.functions, mock_chatbot._web_search_tool],
         )
 
     def test_first_message(self, mock_chatbot: Chatbot) -> None:
@@ -117,7 +117,7 @@ class TestChatbot:
             model_name="new-model",
             system_instruction=mock_config.system_instruction,
             generation_config=mock_config.generation_config,
-            tools=mock_chatbot._functions.functions,
+            tools=[*mock_chatbot._functions.functions, mock_chatbot._web_search_tool],
         )
 
     def test_start_chat(self, mock_chatbot: Chatbot, mock_start_chat_method: MagicMock) -> None:
