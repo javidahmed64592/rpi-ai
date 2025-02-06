@@ -105,6 +105,28 @@ class TestChatbot:
         response_parts = mock_chatbot._get_response_parts_from_commands(commands)
         assert response_parts == []
 
+    def test_handle_commands_with_valid_commands(
+        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock, mock_chat_instance: MagicMock
+    ) -> None:
+        mock_chatbot.start_chat()
+        mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="Command executed")])
+        response = mock_chatbot._handle_commands(mock_response_command_without_args)
+        assert response.parts[0].text == "Command executed"
+
+    def test_handle_commands_with_no_commands(
+        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock
+    ) -> None:
+        mock_response_command_without_args.parts = []
+        response = mock_chatbot._handle_commands(mock_response_command_without_args)
+        assert response == mock_response_command_without_args
+
+    def test_handle_commands_with_invalid_commands(
+        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock
+    ) -> None:
+        mock_response_command_without_args.parts[0].function_call = None
+        response = mock_chatbot._handle_commands(mock_response_command_without_args)
+        assert response == mock_response_command_without_args
+
     def test_get_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         assert mock_chatbot.get_config() == mock_config
 
