@@ -8,13 +8,13 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:ui/components/conversation/text_input.dart';
 import 'package:ui/components/messages/message_list.dart';
-import 'package:ui/pages/conversation_page.dart';
+import 'package:ui/pages/text_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 
 void main() {
-  Widget createConversationPage() {
+  Widget createTextPage() {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
@@ -23,21 +23,19 @@ void main() {
       ],
       child: const MaterialApp(
         home: Scaffold(
-          body: ConversationPage(),
+          body: TextPage(),
         ),
       ),
     );
   }
 
-  testWidgets('ConversationPage displays TextInput',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(createConversationPage());
+  testWidgets('TextPage displays TextInput', (WidgetTester tester) async {
+    await tester.pumpWidget(createTextPage());
     expect(find.byType(TextInput), findsOneWidget);
   });
 
-  testWidgets('ConversationPage displays MessageList',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(createConversationPage());
+  testWidgets('TextPage displays MessageList', (WidgetTester tester) async {
+    await tester.pumpWidget(createTextPage());
     expect(find.byType(MessageList), findsOneWidget);
   });
 }

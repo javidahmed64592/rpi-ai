@@ -9,14 +9,14 @@ import 'package:ui/components/conversation/text_input.dart';
 import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/state/message_state.dart';
 
-class ConversationPage extends StatefulWidget {
-  const ConversationPage({super.key});
+class TextPage extends StatefulWidget {
+  const TextPage({super.key});
 
   @override
-  State<ConversationPage> createState() => _ConversationPageState();
+  State<TextPage> createState() => _TextPageState();
 }
 
-class _ConversationPageState extends State<ConversationPage> {
+class _TextPageState extends State<TextPage> {
   final ScrollController scrollController = ScrollController();
 
   @override
