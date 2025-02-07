@@ -43,9 +43,9 @@ void main() {
     final appState = Provider.of<AppState>(
         tester.element(find.byType(CustomAppBar)),
         listen: false);
-    appState.setActivePage(PageType.chat);
+    appState.setActivePage(PageType.text);
     await tester.pump();
-    expect(find.text(PageType.chat.title), findsOneWidget);
+    expect(find.text(PageType.text.title), findsOneWidget);
   });
 
   testWidgets('CustomAppBar displays SettingsButton',
@@ -54,7 +54,7 @@ void main() {
     final appState = Provider.of<AppState>(
         tester.element(find.byType(CustomAppBar)),
         listen: false);
-    appState.setActivePage(PageType.chat);
+    appState.setActivePage(PageType.text);
     await tester.pump();
     expect(find.byType(SettingsButton), findsOneWidget);
   });
@@ -76,7 +76,7 @@ void main() {
     final appState = Provider.of<AppState>(
         tester.element(find.byType(CustomAppBar)),
         listen: false);
-    appState.setActivePage(PageType.chat);
+    appState.setActivePage(PageType.text);
     await tester.pump();
     expect(find.byType(LogoutButton), findsOneWidget);
   });

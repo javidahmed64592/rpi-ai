@@ -20,7 +20,7 @@ void main() {
   group('PageType', () {
     test('title returns correct values', () {
       expect(PageType.login.title, 'Login');
-      expect(PageType.chat.title, 'Chat Mode');
+      expect(PageType.text.title, 'Chat');
     });
   });
 
@@ -40,7 +40,7 @@ void main() {
       when(mockHttpHelper.chat(any, any, any))
           .thenAnswer((_) async => {'response': 'chat'});
 
-      var chatResponse = await MessageType.chat
+      var chatResponse = await MessageType.text
           .sendMessage(mockHttpHelper, 'url', 'token', 'message');
 
       expect(chatResponse, {'response': 'chat'});
@@ -49,12 +49,12 @@ void main() {
     test('handleAddMessage calls correct methods', () {
       var userMessageDict = {'message': 'test'};
 
-      MessageType.chat.handleAddMessage(mockMessageState, userMessageDict);
+      MessageType.text.handleAddMessage(mockMessageState, userMessageDict);
       verify(mockMessageState.addMessage(userMessageDict)).called(1);
     });
 
     test('handleFailedMessage calls correct methods', () {
-      MessageType.chat.handleFailedMessage(mockMessageState);
+      MessageType.text.handleFailedMessage(mockMessageState);
       verify(mockMessageState.removeLastMessage()).called(1);
     });
   });

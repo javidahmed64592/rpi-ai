@@ -4,7 +4,8 @@ import 'package:ui/state/message_state.dart';
 
 enum PageType {
   login,
-  chat,
+  text,
+  speech,
 }
 
 extension PageTypeExtension on PageType {
@@ -12,8 +13,10 @@ extension PageTypeExtension on PageType {
     switch (this) {
       case PageType.login:
         return 'Login';
-      case PageType.chat:
-        return 'Chat Mode';
+      case PageType.text:
+        return 'Chat';
+      case PageType.speech:
+        return 'Speech';
     }
   }
 }
@@ -25,12 +28,12 @@ enum NotificationType {
 }
 
 enum MessageType {
-  chat;
+  text;
 
   Future<Map<String, dynamic>> sendMessage(HttpHelper httpHelper, String url,
       String token, String userMessage) async {
     switch (this) {
-      case MessageType.chat:
+      case MessageType.text:
         return await httpHelper.chat(url, token, userMessage);
     }
   }
@@ -38,7 +41,7 @@ enum MessageType {
   void handleAddMessage(
       MessageState messageState, Map<String, dynamic> userMessageDict) {
     switch (this) {
-      case MessageType.chat:
+      case MessageType.text:
         messageState.addMessage(userMessageDict);
         break;
     }
@@ -46,7 +49,7 @@ enum MessageType {
 
   void handleFailedMessage(MessageState messageState) {
     switch (this) {
-      case MessageType.chat:
+      case MessageType.text:
         messageState.removeLastMessage();
         break;
     }

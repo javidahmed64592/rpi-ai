@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Project imports:
 import 'package:ui/components/messages/message_list.dart';
-import 'package:ui/types.dart';
 
 void main() {
   Widget createMessageList(
@@ -16,7 +15,6 @@ void main() {
         body: MessageList(
           messages: messages,
           scrollController: scrollController ?? ScrollController(),
-          messageType: MessageType.chat,
         ),
       ),
     );

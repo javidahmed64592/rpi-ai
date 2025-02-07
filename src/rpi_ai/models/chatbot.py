@@ -49,6 +49,15 @@ class Chatbot:
         except AttributeError:
             return []
 
+    def _handle_commands(self, response: GenerateContentResponse) -> GenerateContentResponse:
+        if not (commands := self._get_commands_from_response(response)):
+            return response
+
+        if not (response_parts := self._get_response_parts_from_commands(commands)):
+            return response
+
+        return self._chat.send_message(response_parts)
+
     def get_config(self) -> AIConfigType:
         return self._config
 
@@ -62,10 +71,8 @@ class Chatbot:
 
     def send_message(self, text: str) -> Message:
         response = self._chat.send_message([text])
+        response = self._handle_commands(response)
 
-        if commands := self._get_commands_from_response(response):
-            if response_parts := self._get_response_parts_from_commands(commands):
-                response = self._chat.send_message(response_parts)
         try:
             return Message(message=response.parts[0].text)
         except (AttributeError, ValidationError):

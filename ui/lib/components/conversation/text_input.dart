@@ -11,24 +11,25 @@ import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'package:ui/types.dart';
 
-class MessageInput extends StatefulWidget {
-  final MessageType messageType;
+class TextInput extends StatefulWidget {
   final ScrollController? scrollController;
   final HttpHelper? httpHelper;
 
-  const MessageInput({
+  const TextInput({
     Key? key,
-    required this.messageType,
     this.httpHelper,
     this.scrollController,
   }) : super(key: key);
 
   @override
-  State<MessageInput> createState() => _MessageInputState();
+  State<TextInput> createState() => _TextInputState();
 }
 
-class _MessageInputState extends State<MessageInput> {
+class _TextInputState extends State<TextInput> {
   late TextEditingController textController;
+  late AppState appState;
+  late MessageState messageState;
+  late NotificationState notificationState;
   late HttpHelper httpHelper;
 
   @override
@@ -36,6 +37,13 @@ class _MessageInputState extends State<MessageInput> {
     super.initState();
     httpHelper = widget.httpHelper ?? HttpHelper();
     textController = TextEditingController();
+    appState = Provider.of<AppState>(context, listen: false);
+    messageState = Provider.of<MessageState>(context, listen: false);
+    notificationState = Provider.of<NotificationState>(context, listen: false);
+  }
+
+  MessageType getMessageType() {
+    return MessageType.text;
   }
 
   void scrollToBottom() {
@@ -49,15 +57,12 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   void sendMessage() async {
-    final appState = Provider.of<AppState>(context, listen: false);
-    final messageState = Provider.of<MessageState>(context, listen: false);
-    final notificationState =
-        Provider.of<NotificationState>(context, listen: false);
-
     final String userMessage = textController.text.trim();
     if (userMessage.isEmpty) {
       return;
     }
+
+    final MessageType messageType = getMessageType();
 
     final Map<String, dynamic> userMessageDict = {
       'text': userMessage,
@@ -65,11 +70,11 @@ class _MessageInputState extends State<MessageInput> {
       'timestamp': DateTime.now()
     };
 
-    widget.messageType.handleAddMessage(messageState, userMessageDict);
+    messageType.handleAddMessage(messageState, userMessageDict);
     textController.clear();
     scrollToBottom();
 
-    Map<String, dynamic> message = await widget.messageType.sendMessage(
+    Map<String, dynamic> message = await messageType.sendMessage(
       httpHelper,
       appState.fullUrl,
       appState.authToken,
@@ -77,13 +82,13 @@ class _MessageInputState extends State<MessageInput> {
     );
 
     if (message.isEmpty) {
-      widget.messageType.handleFailedMessage(messageState);
+      messageType.handleFailedMessage(messageState);
       textController.text = userMessage;
       notificationState.setNotificationError('Failed to send message!');
       return;
     }
 
-    if (widget.messageType == MessageType.chat) {
+    if (messageType == MessageType.text) {
       messageState.addMessage(message);
       scrollToBottom();
     }

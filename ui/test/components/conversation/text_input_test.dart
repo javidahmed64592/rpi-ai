@@ -8,13 +8,12 @@ import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/components/messages/message_input.dart';
+import 'package:ui/components/conversation/text_input.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
-import 'package:ui/types.dart';
-import 'message_input_test.mocks.dart';
+import 'text_input_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, AppState, MessageState, NotificationState])
 void main() {
@@ -30,8 +29,7 @@ void main() {
     mockNotificationState = MockNotificationState();
   });
 
-  Widget createWidgetUnderTest(MessageType messageType,
-      {ScrollController? scrollController}) {
+  Widget createWidgetUnderTest({ScrollController? scrollController}) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: mockAppState),
@@ -44,8 +42,7 @@ void main() {
           body: ListView(
             controller: scrollController,
             children: [
-              MessageInput(
-                messageType: messageType,
+              TextInput(
                 httpHelper: mockHttpHelper,
                 scrollController: scrollController,
               ),
@@ -56,7 +53,7 @@ void main() {
     );
   }
 
-  testWidgets('MessageInput sends a message when send button is pressed',
+  testWidgets('TextInput sends a message when send button is pressed',
       (WidgetTester tester) async {
     when(mockAppState.fullUrl).thenReturn('http://example.com');
     when(mockAppState.authToken).thenReturn('token');
@@ -66,7 +63,7 @@ void main() {
           'timestamp': DateTime.now()
         });
 
-    await tester.pumpWidget(createWidgetUnderTest(MessageType.chat));
+    await tester.pumpWidget(createWidgetUnderTest());
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.tap(find.byIcon(Icons.send));
@@ -76,13 +73,13 @@ void main() {
         .called(1);
   });
 
-  testWidgets('MessageInput shows error notification on failure',
+  testWidgets('TextInput shows error notification on failure',
       (WidgetTester tester) async {
     when(mockAppState.fullUrl).thenReturn('http://example.com');
     when(mockAppState.authToken).thenReturn('token');
     when(mockHttpHelper.chat(any, any, any)).thenAnswer((_) async => {});
 
-    await tester.pumpWidget(createWidgetUnderTest(MessageType.chat));
+    await tester.pumpWidget(createWidgetUnderTest());
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.tap(find.byIcon(Icons.send));
@@ -93,7 +90,7 @@ void main() {
         .called(1);
   });
 
-  testWidgets('MessageInput scrolls to bottom when message is sent',
+  testWidgets('TextInput scrolls to bottom when message is sent',
       (WidgetTester tester) async {
     final ScrollController scrollController = ScrollController();
     when(mockAppState.fullUrl).thenReturn('http://example.com');
@@ -104,8 +101,8 @@ void main() {
           'timestamp': DateTime.now()
         });
 
-    await tester.pumpWidget(createWidgetUnderTest(MessageType.chat,
-        scrollController: scrollController));
+    await tester
+        .pumpWidget(createWidgetUnderTest(scrollController: scrollController));
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.tap(find.byIcon(Icons.send));
