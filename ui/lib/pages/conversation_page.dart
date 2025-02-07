@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/components/messages/message_input.dart';
+import 'package:ui/components/conversation/text_input.dart';
 import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/state/message_state.dart';
 
@@ -44,7 +44,7 @@ class _ConversationPageState extends State<ConversationPage> {
             },
           ),
         ),
-        MessageInput(scrollController: scrollController),
+        TextInput(scrollController: scrollController),
       ],
     );
   }

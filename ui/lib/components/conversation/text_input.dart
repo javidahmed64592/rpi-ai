@@ -11,21 +11,21 @@ import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'package:ui/types.dart';
 
-class MessageInput extends StatefulWidget {
+class TextInput extends StatefulWidget {
   final ScrollController? scrollController;
   final HttpHelper? httpHelper;
 
-  const MessageInput({
+  const TextInput({
     Key? key,
     this.httpHelper,
     this.scrollController,
   }) : super(key: key);
 
   @override
-  State<MessageInput> createState() => _MessageInputState();
+  State<TextInput> createState() => _TextInputState();
 }
 
-class _MessageInputState extends State<MessageInput> {
+class _TextInputState extends State<TextInput> {
   late TextEditingController textController;
   late HttpHelper httpHelper;
 

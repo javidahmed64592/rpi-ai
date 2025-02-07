@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/components/messages/message_input.dart';
+import 'package:ui/components/conversation/text_input.dart';
 import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/pages/conversation_page.dart';
 import 'package:ui/state/message_state.dart';
@@ -25,10 +25,10 @@ void main() {
     );
   }
 
-  testWidgets('ConversationPage displays MessageInput',
+  testWidgets('ConversationPage displays TextInput',
       (WidgetTester tester) async {
     await tester.pumpWidget(createConversationPage());
-    expect(find.byType(MessageInput), findsOneWidget);
+    expect(find.byType(TextInput), findsOneWidget);
   });
 
   testWidgets('ConversationPage displays MessageList',
