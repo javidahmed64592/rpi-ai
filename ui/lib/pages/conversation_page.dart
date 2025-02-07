@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:ui/components/messages/message_input.dart';
 import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/state/message_state.dart';
-import 'package:ui/types.dart';
 
 class ConversationPage extends StatefulWidget {
   const ConversationPage({super.key});
@@ -40,16 +39,12 @@ class _ConversationPageState extends State<ConversationPage> {
             builder: (context, messageState, child) {
               return MessageList(
                 messages: messageState.messages,
-                messageType: MessageType.chat,
                 scrollController: scrollController,
               );
             },
           ),
         ),
-        MessageInput(
-          messageType: MessageType.chat,
-          scrollController: scrollController,
-        ),
+        MessageInput(scrollController: scrollController),
       ],
     );
   }

@@ -13,7 +13,6 @@ import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
-import 'package:ui/types.dart';
 import 'message_input_test.mocks.dart';
 
 @GenerateMocks([HttpHelper, AppState, MessageState, NotificationState])
@@ -30,8 +29,7 @@ void main() {
     mockNotificationState = MockNotificationState();
   });
 
-  Widget createWidgetUnderTest(MessageType messageType,
-      {ScrollController? scrollController}) {
+  Widget createWidgetUnderTest({ScrollController? scrollController}) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: mockAppState),
@@ -45,7 +43,6 @@ void main() {
             controller: scrollController,
             children: [
               MessageInput(
-                messageType: messageType,
                 httpHelper: mockHttpHelper,
                 scrollController: scrollController,
               ),
@@ -66,7 +63,7 @@ void main() {
           'timestamp': DateTime.now()
         });
 
-    await tester.pumpWidget(createWidgetUnderTest(MessageType.chat));
+    await tester.pumpWidget(createWidgetUnderTest());
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.tap(find.byIcon(Icons.send));
@@ -82,7 +79,7 @@ void main() {
     when(mockAppState.authToken).thenReturn('token');
     when(mockHttpHelper.chat(any, any, any)).thenAnswer((_) async => {});
 
-    await tester.pumpWidget(createWidgetUnderTest(MessageType.chat));
+    await tester.pumpWidget(createWidgetUnderTest());
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.tap(find.byIcon(Icons.send));
@@ -104,8 +101,8 @@ void main() {
           'timestamp': DateTime.now()
         });
 
-    await tester.pumpWidget(createWidgetUnderTest(MessageType.chat,
-        scrollController: scrollController));
+    await tester
+        .pumpWidget(createWidgetUnderTest(scrollController: scrollController));
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.tap(find.byIcon(Icons.send));

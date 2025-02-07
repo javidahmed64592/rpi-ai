@@ -12,13 +12,11 @@ import 'package:ui/state/notification_state.dart';
 import 'package:ui/types.dart';
 
 class MessageInput extends StatefulWidget {
-  final MessageType messageType;
   final ScrollController? scrollController;
   final HttpHelper? httpHelper;
 
   const MessageInput({
     Key? key,
-    required this.messageType,
     this.httpHelper,
     this.scrollController,
   }) : super(key: key);
@@ -36,6 +34,10 @@ class _MessageInputState extends State<MessageInput> {
     super.initState();
     httpHelper = widget.httpHelper ?? HttpHelper();
     textController = TextEditingController();
+  }
+
+  MessageType getMessageType() {
+    return MessageType.text;
   }
 
   void scrollToBottom() {
@@ -59,17 +61,19 @@ class _MessageInputState extends State<MessageInput> {
       return;
     }
 
+    final MessageType messageType = getMessageType();
+
     final Map<String, dynamic> userMessageDict = {
       'text': userMessage,
       'isUserMessage': true,
       'timestamp': DateTime.now()
     };
 
-    widget.messageType.handleAddMessage(messageState, userMessageDict);
+    messageType.handleAddMessage(messageState, userMessageDict);
     textController.clear();
     scrollToBottom();
 
-    Map<String, dynamic> message = await widget.messageType.sendMessage(
+    Map<String, dynamic> message = await messageType.sendMessage(
       httpHelper,
       appState.fullUrl,
       appState.authToken,
@@ -77,13 +81,13 @@ class _MessageInputState extends State<MessageInput> {
     );
 
     if (message.isEmpty) {
-      widget.messageType.handleFailedMessage(messageState);
+      messageType.handleFailedMessage(messageState);
       textController.text = userMessage;
       notificationState.setNotificationError('Failed to send message!');
       return;
     }
 
-    if (widget.messageType == MessageType.chat) {
+    if (messageType == MessageType.text) {
       messageState.addMessage(message);
       scrollToBottom();
     }
