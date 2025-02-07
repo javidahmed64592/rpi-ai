@@ -46,6 +46,14 @@ void main() {
       expect(appState.connected, true);
     });
 
+    test('toggleActivePage toggles between text and speech', () {
+      appState.setActivePage(PageType.text);
+      appState.toggleActivePage();
+      expect(appState.activePage, PageType.speech);
+      appState.toggleActivePage();
+      expect(appState.activePage, PageType.text);
+    });
+
     test('getFullUrl returns the correct URL', () {
       expect(appState.fullUrl, 'http://127.0.0.1:5000');
       appState.setIp('192.168.1.1');
