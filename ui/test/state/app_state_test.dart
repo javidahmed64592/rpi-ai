@@ -37,8 +37,8 @@ void main() {
     });
 
     test('setActivePage updates the active page', () {
-      appState.setActivePage(PageType.chat);
-      expect(appState.activePage, PageType.chat);
+      appState.setActivePage(PageType.text);
+      expect(appState.activePage, PageType.text);
     });
 
     test('setConnected updates the connection status', () {

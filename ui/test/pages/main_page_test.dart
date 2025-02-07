@@ -46,7 +46,7 @@ void main() {
 
   testWidgets('MainPage displays LogoutButton', (WidgetTester tester) async {
     await tester.pumpWidget(createMainPage());
-    appState.setActivePage(PageType.chat);
+    appState.setActivePage(PageType.text);
     await tester.pump();
     expect(find.byType(LogoutButton), findsOneWidget);
   });
@@ -86,7 +86,7 @@ void main() {
   testWidgets('MainPage displays TimeoutDialog when disconnected',
       (WidgetTester tester) async {
     await tester.pumpWidget(createMainPage());
-    appState.setActivePage(PageType.chat);
+    appState.setActivePage(PageType.text);
     appState.setConnected(false);
     await tester.pump();
     expect(find.byType(TimeoutDialog), findsOneWidget);

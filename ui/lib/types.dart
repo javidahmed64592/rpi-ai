@@ -4,7 +4,8 @@ import 'package:ui/state/message_state.dart';
 
 enum PageType {
   login,
-  chat,
+  text,
+  speech,
 }
 
 extension PageTypeExtension on PageType {
@@ -12,8 +13,10 @@ extension PageTypeExtension on PageType {
     switch (this) {
       case PageType.login:
         return 'Login';
-      case PageType.chat:
-        return 'Chat Mode';
+      case PageType.text:
+        return 'Chat';
+      case PageType.speech:
+        return 'Speech';
     }
   }
 }

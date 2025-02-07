@@ -20,7 +20,7 @@ void main() {
   group('PageType', () {
     test('title returns correct values', () {
       expect(PageType.login.title, 'Login');
-      expect(PageType.chat.title, 'Chat Mode');
+      expect(PageType.text.title, 'Chat');
     });
   });
 

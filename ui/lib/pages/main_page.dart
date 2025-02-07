@@ -76,7 +76,7 @@ class _MainPageState extends State<MainPage> {
 
     Widget getPage() {
       switch (appState.activePage) {
-        case PageType.chat:
+        case PageType.text:
           return const ConversationPage();
         case PageType.login:
         default:
