@@ -78,7 +78,6 @@ class _MainPageState extends State<MainPage> {
       switch (appState.activePage) {
         case PageType.text:
           return const TextPage();
-          return const ConversationPage();
         case PageType.login:
         default:
           return const LoginPage();
