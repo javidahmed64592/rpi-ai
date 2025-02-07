@@ -27,6 +27,9 @@ class TextInput extends StatefulWidget {
 
 class _TextInputState extends State<TextInput> {
   late TextEditingController textController;
+  late AppState appState;
+  late MessageState messageState;
+  late NotificationState notificationState;
   late HttpHelper httpHelper;
 
   @override
@@ -34,6 +37,9 @@ class _TextInputState extends State<TextInput> {
     super.initState();
     httpHelper = widget.httpHelper ?? HttpHelper();
     textController = TextEditingController();
+    appState = Provider.of<AppState>(context, listen: false);
+    messageState = Provider.of<MessageState>(context, listen: false);
+    notificationState = Provider.of<NotificationState>(context, listen: false);
   }
 
   MessageType getMessageType() {
@@ -51,11 +57,6 @@ class _TextInputState extends State<TextInput> {
   }
 
   void sendMessage() async {
-    final appState = Provider.of<AppState>(context, listen: false);
-    final messageState = Provider.of<MessageState>(context, listen: false);
-    final notificationState =
-        Provider.of<NotificationState>(context, listen: false);
-
     final String userMessage = textController.text.trim();
     if (userMessage.isEmpty) {
       return;
