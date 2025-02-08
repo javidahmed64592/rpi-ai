@@ -200,7 +200,7 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<Map<String, dynamic>>);
 
   @override
-  _i4.Future<void> sendAudio(
+  _i4.Future<Map<String, dynamic>> sendAudio(
     String? url,
     String? authToken,
     _i5.Uint8List? audioBytes,
@@ -214,7 +214,7 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
             audioBytes,
           ],
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
 }
