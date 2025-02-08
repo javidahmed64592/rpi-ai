@@ -148,6 +148,12 @@ def mock_gtts() -> Generator[MagicMock, None, None]:
         yield mock
 
 
+@pytest.fixture
+def mock_get_audio_bytes_from_text() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.models.audiobot.get_audio_bytes_from_text") as mock:
+        yield mock
+
+
 # AIApp fixtures
 @pytest.fixture
 def mock_jsonify() -> Generator[MagicMock, None, None]:
