@@ -8,6 +8,7 @@ from google.generativeai.types import GenerationConfig
 from pydantic.dataclasses import dataclass
 
 
+# Config
 @dataclass
 class AIConfigType:
     model: str
@@ -30,7 +31,7 @@ class AIConfigType:
         )
 
 
-# Messages
+# Chatbot responses
 @dataclass
 class Message:
     message: str
@@ -58,6 +59,12 @@ class MessageList:
     @classmethod
     def from_history(cls, data: list[dict[str, str]]) -> MessageList:
         return cls([Message.from_dict(item) for item in data])
+
+
+@dataclass
+class SpeechResponse:
+    bytes: str
+    message: str
 
 
 # Functions
