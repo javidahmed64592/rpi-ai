@@ -21,22 +21,9 @@ class MicrophoneButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final speechState = Provider.of<SpeechState>(context);
 
-    void handleStartRecording() {
-      speechState.setIsRecording(true);
-      onStartRecording();
-    }
-
-    void handleStopRecording() {
-      speechState.setIsRecording(false);
-      speechState.setIsBusy(true);
-      onStopRecording();
-      speechState.setIsBusy(false);
-    }
-
     return GestureDetector(
-      onLongPressStart:
-          speechState.isBusy ? null : (_) => handleStartRecording(),
-      onLongPressEnd: speechState.isBusy ? null : (_) => handleStopRecording(),
+      onLongPressStart: speechState.isBusy ? null : (_) => onStartRecording(),
+      onLongPressEnd: speechState.isBusy ? null : (_) => onStopRecording(),
       child: Container(
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
