@@ -17,17 +17,15 @@ import 'package:ui/state/app_state.dart';
 import 'package:ui/types.dart';
 import 'http_helper_test.mocks.dart';
 
-// Generate a MockClient using the Mockito package.
-// Create new instances of this class in each test.
 @GenerateMocks([http.Client])
 void main() {
+  late MockClient client;
+
+  setUp(() {
+    client = MockClient();
+  });
+
   group('HttpHelper', () {
-    late MockClient client;
-
-    setUp(() {
-      client = MockClient();
-    });
-
     testWidgets(
         'checkApiConnection sets activePage to login if the http call completes with an error',
         (WidgetTester tester) async {
@@ -50,7 +48,7 @@ void main() {
         ),
       );
 
-      await tester.pump(); // Rebuild the widget tree
+      await tester.pump();
 
       expect(appState.activePage, PageType.login);
     });
@@ -61,8 +59,6 @@ void main() {
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
 
-      // Use Mockito to return a successful response when it calls the
-      // provided http.Client.
       when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
           .thenAnswer((_) async => http.Response('OK', 200));
 
@@ -75,8 +71,6 @@ void main() {
       final httpHelper = HttpHelper(client: client);
       const uri = 'http://example.com';
 
-      // Use Mockito to return an unsuccessful response when it calls the
-      // provided http.Client.
       when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
           .thenAnswer((_) async => http.Response('Not Found', 404));
 
@@ -90,8 +84,6 @@ void main() {
       const uri = 'http://example.com';
       const authToken = 'testToken';
 
-      // Use Mockito to return a successful response when it calls the
-      // provided http.Client.
       when(client.get(
         Uri.parse('$uri/login'),
         headers: {'Authorization': authToken},
@@ -112,8 +104,6 @@ void main() {
       const uri = 'http://example.com';
       const authToken = 'testToken';
 
-      // Use Mockito to return an unsuccessful response when it calls the
-      // provided http.Client.
       when(client.get(
         Uri.parse('$uri/login'),
         headers: {'Authorization': authToken},
@@ -128,8 +118,6 @@ void main() {
       const uri = 'http://example.com';
       const authToken = 'testToken';
 
-      // Use Mockito to return a successful response when it calls the
-      // provided http.Client.
       when(client.get(
         Uri.parse('$uri/get-config'),
         headers: {'Authorization': authToken},
@@ -159,8 +147,6 @@ void main() {
       const uri = 'http://example.com';
       const authToken = 'testToken';
 
-      // Use Mockito to return an unsuccessful response when it calls the
-      // provided http.Client.
       when(client.get(
         Uri.parse('$uri/get-config'),
         headers: {'Authorization': authToken},
@@ -183,8 +169,6 @@ void main() {
         'temperature': 0.9,
       };
 
-      // Use Mockito to return a successful response when it calls the
-      // provided http.Client.
       when(client.post(
         Uri.parse('$uri/update-config'),
         headers: {
@@ -220,8 +204,6 @@ void main() {
         'temperature': 0.9,
       };
 
-      // Use Mockito to return an unsuccessful response when it calls the
-      // provided http.Client.
       when(client.post(
         Uri.parse('$uri/update-config'),
         headers: {
@@ -241,8 +223,6 @@ void main() {
       const message = 'Hello';
       const authToken = 'testToken';
 
-      // Use Mockito to return a successful response when it calls the
-      // provided http.Client.
       when(client.post(
         Uri.parse('$uri/chat'),
         headers: {
@@ -267,8 +247,6 @@ void main() {
       const message = 'Hello';
       const authToken = 'testToken';
 
-      // Use Mockito to return an unsuccessful response when it calls the
-      // provided http.Client.
       when(client.post(
         Uri.parse('$uri/chat'),
         headers: {
