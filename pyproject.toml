@@ -23,6 +23,7 @@ dependencies = [
     "waitress",
     "google-generativeai",
     "grpcio==1.60.1",
+    "gTTS",
     "python-dotenv",
     "pydantic",
     "psutil",
