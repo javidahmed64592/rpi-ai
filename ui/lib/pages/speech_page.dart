@@ -1,4 +1,5 @@
 // Dart imports:
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -6,6 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 // Package imports:
+import 'package:audioplayers/audioplayers.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
@@ -31,6 +33,7 @@ class SpeechPage extends StatefulWidget {
 
 class _SpeechPageState extends State<SpeechPage> {
   final Record _audioRecorder = Record();
+  final AudioPlayer _audioPlayer = AudioPlayer();
   late AppState appState;
   late NotificationState notificationState;
   late SpeechState speechState;
@@ -56,6 +59,7 @@ class _SpeechPageState extends State<SpeechPage> {
 
   void _startRecording() async {
     try {
+      speechState.setIsRecording(true);
       await _audioRecorder.start(
         encoder: AudioEncoder.opus,
         samplingRate: 48000,
@@ -68,6 +72,8 @@ class _SpeechPageState extends State<SpeechPage> {
   void _stopRecording() async {
     try {
       final path = await _audioRecorder.stop();
+      speechState.setIsRecording(false);
+      speechState.setIsBusy(true);
 
       if (path == null) {
         notificationState.setNotificationError('No audio recorded.');
@@ -75,10 +81,19 @@ class _SpeechPageState extends State<SpeechPage> {
       }
 
       final Uint8List audioBytes = await File(path).readAsBytes();
-      await httpHelper.sendAudio(
+      final response = await httpHelper.sendAudio(
           appState.fullUrl, appState.authToken, audioBytes);
+
+      if (response['bytes'] != null) {
+        final decodedBytes = base64Decode(response['bytes']);
+        await _audioPlayer.play(BytesSource(decodedBytes));
+      } else {
+        throw Exception(response['text']);
+      }
     } catch (e) {
       notificationState.setNotificationError('Error stopping recording: $e');
+    } finally {
+      speechState.setIsBusy(false);
     }
   }
 
@@ -90,6 +105,12 @@ class _SpeechPageState extends State<SpeechPage> {
     speechState = Provider.of<SpeechState>(context, listen: false);
     httpHelper = widget.httpHelper ?? HttpHelper();
     _checkPermissions();
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
   }
 
   @override

@@ -143,7 +143,7 @@ class HttpHelper {
     }
   }
 
-  Future<void> sendAudio(
+  Future<Map<String, dynamic>> sendAudio(
       String url, String authToken, Uint8List audioBytes) async {
     final headers = <String, String>{
       'Authorization': authToken,
@@ -167,12 +167,20 @@ class HttpHelper {
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
 
-      if (response.statusCode != 200) {
-        throw Exception(
-            'Sending audio failed: (${response.statusCode}) ${response.body}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> body = jsonDecode(response.body);
+        return {
+          'text': body['message'].toString().trim(),
+          'bytes': body['bytes'],
+        };
       }
+
+      // Raise exception if response status code is not 200
+      throw Exception(
+          'Sending audio failed: (${response.statusCode}) ${response.body}');
     } catch (e) {
       _logger.severe('Failed to send audio: $e');
+      return {};
     }
   }
 }
