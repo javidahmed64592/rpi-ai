@@ -60,7 +60,6 @@ class _SpeechPageState extends State<SpeechPage> {
         encoder: AudioEncoder.opus,
         samplingRate: 48000,
       );
-      speechState.setIsRecording(true);
     } catch (e) {
       notificationState.setNotificationError('Error starting recording: $e');
     }
@@ -69,8 +68,6 @@ class _SpeechPageState extends State<SpeechPage> {
   void _stopRecording() async {
     try {
       final path = await _audioRecorder.stop();
-      speechState.setIsRecording(false);
-      speechState.setIsBusy(true);
 
       if (path == null) {
         notificationState.setNotificationError('No audio recorded.');
@@ -82,8 +79,6 @@ class _SpeechPageState extends State<SpeechPage> {
           appState.fullUrl, appState.authToken, audioBytes);
     } catch (e) {
       notificationState.setNotificationError('Error stopping recording: $e');
-    } finally {
-      speechState.setIsBusy(false);
     }
   }
 
