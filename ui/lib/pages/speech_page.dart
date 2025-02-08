@@ -86,13 +86,14 @@ class _SpeechPageState extends State<SpeechPage> {
 
       if (response['bytes'] != null) {
         final decodedBytes = base64Decode(response['bytes']);
-        await _audioPlayer.play(BytesSource(decodedBytes));
+        await _audioPlayer.play(BytesSource(decodedBytes)).whenComplete(() {
+          speechState.setIsBusy(false);
+        });
       } else {
         throw Exception(response['text']);
       }
     } catch (e) {
       notificationState.setNotificationError('Error stopping recording: $e');
-    } finally {
       speechState.setIsBusy(false);
     }
   }
