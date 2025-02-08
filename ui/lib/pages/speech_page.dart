@@ -13,11 +13,17 @@ import 'package:record/record.dart';
 // Project imports:
 import 'package:ui/components/audio/status_display_box.dart';
 import 'package:ui/components/conversation/speech_input.dart';
+import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/state/app_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'package:ui/state/speech_state.dart';
 
 class SpeechPage extends StatefulWidget {
-  const SpeechPage({super.key});
+  final HttpHelper? httpHelper;
+  const SpeechPage({
+    Key? key,
+    this.httpHelper,
+  }) : super(key: key);
 
   @override
   State<SpeechPage> createState() => _SpeechPageState();
@@ -25,8 +31,10 @@ class SpeechPage extends StatefulWidget {
 
 class _SpeechPageState extends State<SpeechPage> {
   final Record _audioRecorder = Record();
+  late AppState appState;
   late NotificationState notificationState;
   late SpeechState speechState;
+  late HttpHelper httpHelper;
 
   Future<void> _requestPermissions() async {
     if (await Permission.microphone.request().isGranted) {
@@ -70,6 +78,8 @@ class _SpeechPageState extends State<SpeechPage> {
       }
 
       final Uint8List audioBytes = await File(path).readAsBytes();
+      await httpHelper.sendAudio(
+          appState.fullUrl, appState.authToken, audioBytes);
     } catch (e) {
       notificationState.setNotificationError('Error stopping recording: $e');
     } finally {
@@ -80,8 +90,10 @@ class _SpeechPageState extends State<SpeechPage> {
   @override
   void initState() {
     super.initState();
+    appState = Provider.of<AppState>(context, listen: false);
     notificationState = Provider.of<NotificationState>(context, listen: false);
     speechState = Provider.of<SpeechState>(context, listen: false);
+    httpHelper = widget.httpHelper ?? HttpHelper();
     _checkPermissions();
   }
 

@@ -1,8 +1,10 @@
 // Dart imports:
 import 'dart:convert';
+import 'dart:typed_data';
 
 // Package imports:
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:logging/logging.dart';
 
 class HttpHelper {
@@ -134,10 +136,43 @@ class HttpHelper {
 
       // Raise exception if response status code is not 200
       throw Exception(
-          'Login failed: (${response.statusCode}) ${response.body}');
+          'Sending message failed: (${response.statusCode}) ${response.body}'); // Updated message
     } catch (e) {
       _logger.severe('Failed to send message: $e');
       return {};
+    }
+  }
+
+  Future<void> sendAudio(
+      String url, String authToken, Uint8List audioBytes) async {
+    final headers = <String, String>{
+      'Authorization': authToken,
+    };
+
+    String mimeType = 'audio/ogg';
+
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse('$url/send-audio'));
+      request.headers.addAll(headers);
+
+      final contentType = MediaType.parse(mimeType);
+
+      request.files.add(http.MultipartFile.fromBytes(
+        'audio',
+        audioBytes,
+        contentType: contentType,
+        filename: 'audio.ogg',
+      ));
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Sending audio failed: (${response.statusCode}) ${response.body}');
+      }
+    } catch (e) {
+      _logger.severe('Failed to send audio: $e');
     }
   }
 }
