@@ -29,7 +29,7 @@ void main() {
     mockNotificationState = MockNotificationState();
   });
 
-  Widget createWidgetUnderTest({ScrollController? scrollController}) {
+  Widget createTextInput({ScrollController? scrollController}) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: mockAppState),
@@ -63,7 +63,7 @@ void main() {
           'timestamp': DateTime.now()
         });
 
-    await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpWidget(createTextInput());
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.tap(find.byIcon(Icons.send));
@@ -79,7 +79,7 @@ void main() {
     when(mockAppState.authToken).thenReturn('token');
     when(mockHttpHelper.chat(any, any, any)).thenAnswer((_) async => {});
 
-    await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpWidget(createTextInput());
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.tap(find.byIcon(Icons.send));
@@ -102,7 +102,7 @@ void main() {
         });
 
     await tester
-        .pumpWidget(createWidgetUnderTest(scrollController: scrollController));
+        .pumpWidget(createTextInput(scrollController: scrollController));
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.tap(find.byIcon(Icons.send));
