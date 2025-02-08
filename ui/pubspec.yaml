@@ -37,6 +37,7 @@ dependencies:
   http_parser: ^4.0.2
   mime: ^1.0.4
   record: ^4.4.4
+  audioplayers: ^1.1.1
 
 
   # The following adds the Cupertino Icons font to your application.
