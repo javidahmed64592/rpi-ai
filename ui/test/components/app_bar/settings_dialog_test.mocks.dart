@@ -6,6 +6,7 @@
 
 // Dart imports:
 import 'dart:async' as _i4;
+import 'dart:typed_data' as _i5;
 
 // Package imports:
 import 'package:http/http.dart' as _i2;
@@ -197,4 +198,23 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
         returnValue:
             _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i4.Future<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<void> sendAudio(
+    String? url,
+    String? authToken,
+    _i5.Uint8List? audioBytes,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #sendAudio,
+          [
+            url,
+            authToken,
+            audioBytes,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
