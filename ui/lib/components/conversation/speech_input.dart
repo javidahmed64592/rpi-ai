@@ -9,7 +9,7 @@ import 'package:ui/components/audio/microphone_button.dart';
 import 'package:ui/components/audio/microphone_permission_button.dart';
 import 'package:ui/state/speech_state.dart';
 
-class SpeechInput extends StatefulWidget {
+class SpeechInput extends StatelessWidget {
   final VoidCallback onRequestPermissions;
   final VoidCallback onStartRecording;
   final VoidCallback onStopRecording;
@@ -22,21 +22,16 @@ class SpeechInput extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SpeechInput> createState() => _SpeechInputState();
-}
-
-class _SpeechInputState extends State<SpeechInput> {
-  @override
   Widget build(BuildContext context) {
     return Consumer<SpeechState>(
       builder: (context, speechState, child) {
         return speechState.microphonePermissionGranted
             ? MicrophoneButton(
-                onStartRecording: widget.onStartRecording,
-                onStopRecording: widget.onStopRecording,
+                onStartRecording: onStartRecording,
+                onStopRecording: onStopRecording,
               )
             : MicrophonePermissionButton(
-                onRequestPermissions: widget.onRequestPermissions,
+                onRequestPermissions: onRequestPermissions,
               );
       },
     );
