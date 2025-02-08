@@ -141,6 +141,12 @@ def mock_send_message() -> Generator[MagicMock, None, None]:
         yield mock
 
 
+@pytest.fixture
+def mock_send_audio() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.Chatbot.send_audio") as mock:
+        yield mock
+
+
 # Audiobot fixtures
 @pytest.fixture
 def mock_gtts() -> Generator[MagicMock, None, None]:
@@ -182,14 +188,20 @@ def mock_api_key() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
+def mock_request_headers() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.AIApp.get_request_headers") as mock:
+        yield mock
+
+
+@pytest.fixture
 def mock_request_json() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.AIApp.get_request_json") as mock:
         yield mock
 
 
 @pytest.fixture
-def mock_request_headers() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.get_request_headers") as mock:
+def mock_request_files() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.AIApp.get_request_files") as mock:
         yield mock
 
 
