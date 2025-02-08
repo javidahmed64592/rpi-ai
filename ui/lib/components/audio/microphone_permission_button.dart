@@ -1,10 +1,10 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-class RequestMicrophonePermissionButton extends StatelessWidget {
+class MicrophonePermissionButton extends StatelessWidget {
   final VoidCallback onRequestPermissions;
 
-  const RequestMicrophonePermissionButton({
+  const MicrophonePermissionButton({
     Key? key,
     required this.onRequestPermissions,
   }) : super(key: key);

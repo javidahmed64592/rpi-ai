@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/components/audio/microphone_button.dart';
-import 'package:ui/components/audio/request_microphone_permission_button.dart';
+import 'package:ui/components/audio/microphone_permission_button.dart';
 import 'package:ui/state/speech_state.dart';
 
 class SpeechInput extends StatefulWidget {
@@ -35,7 +35,7 @@ class _SpeechInputState extends State<SpeechInput> {
                 onStartRecording: widget.onStartRecording,
                 onStopRecording: widget.onStopRecording,
               )
-            : RequestMicrophonePermissionButton(
+            : MicrophonePermissionButton(
                 onRequestPermissions: widget.onRequestPermissions,
               );
       },
