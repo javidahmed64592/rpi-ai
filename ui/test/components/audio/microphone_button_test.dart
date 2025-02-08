@@ -38,6 +38,38 @@ void main() {
     final iconFinder = find.byIcon(Icons.mic);
     expect(iconFinder, findsOneWidget);
   });
+  testWidgets('MicrophoneButton displays correctly when recording',
+      (WidgetTester tester) async {
+    speechState.setIsRecording(true);
+    await tester.pumpWidget(createMicrophoneButton(() {}, () {}));
+
+    final iconFinder = find.byIcon(Icons.mic);
+    expect(iconFinder, findsOneWidget);
+  });
+
+  testWidgets('MicrophoneButton starts and stops recording when not busy',
+      (WidgetTester tester) async {
+    bool startRecordingCalled = false;
+    bool stopRecordingCalled = false;
+
+    void onStartRecording() {
+      startRecordingCalled = true;
+    }
+
+    void onStopRecording() {
+      stopRecordingCalled = true;
+    }
+
+    await tester
+        .pumpWidget(createMicrophoneButton(onStartRecording, onStopRecording));
+
+    final iconFinder = find.byIcon(Icons.mic);
+    expect(iconFinder, findsOneWidget);
+
+    await tester.longPress(find.byType(GestureDetector));
+    expect(startRecordingCalled, isTrue);
+    expect(stopRecordingCalled, isTrue);
+  });
 
   testWidgets('MicrophoneButton does not start recording when busy',
       (WidgetTester tester) async {
@@ -55,6 +87,9 @@ void main() {
     speechState.setIsBusy(true);
     await tester
         .pumpWidget(createMicrophoneButton(onStartRecording, onStopRecording));
+
+    final iconFinder = find.byIcon(Icons.mic);
+    expect(iconFinder, findsOneWidget);
 
     await tester.longPress(find.byType(GestureDetector));
     expect(startRecordingCalled, isFalse);
