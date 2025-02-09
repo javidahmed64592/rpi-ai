@@ -1,118 +1,15 @@
 from unittest.mock import MagicMock
 
-from google.genai.types import FunctionCall, GenerateContentConfig, GoogleSearch
+from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList
+from rpi_ai.types import AIConfigType
 
 
 class TestChatbot:
     def test_init(self, mock_chatbot: Chatbot, mock_api_key: MagicMock, mock_genai_client: MagicMock) -> None:
         mock_genai_client.assert_called_once_with(api_key=mock_api_key.return_value)
-
-    def test_extract_command_without_args_from_part_with_valid_function(
-        self,
-        mock_chatbot: Chatbot,
-        mock_functions_list: FunctionToolList,
-        mock_response_command_without_args: MagicMock,
-    ) -> None:
-        part = mock_response_command_without_args.candidates[0].content.parts[0]
-        command = mock_chatbot._extract_command_from_part(part)
-
-        assert command is not None
-        assert command.function.name == part.function_call.name
-        assert command.callable_fn == mock_functions_list[part.function_call.name]
-
-    def test_extract_command_with_args_from_part_with_valid_function(
-        self, mock_chatbot: Chatbot, mock_functions_list: FunctionToolList, mock_response_command_with_args: MagicMock
-    ) -> None:
-        part = mock_response_command_with_args.candidates[0].content.parts[0]
-        command = mock_chatbot._extract_command_from_part(part)
-
-        assert command is not None
-        assert command.function.name == part.function_call.name
-        assert command.callable_fn == mock_functions_list[part.function_call.name]
-        assert command.function.args == part.function_call.args
-
-    def test_extract_command_from_part_with_invalid_function(self, mock_chatbot: Chatbot) -> None:
-        mock_part = MagicMock(function_call=None)
-
-        command = mock_chatbot._extract_command_from_part(mock_part)
-        assert command is None
-
-    def test_get_commands_without_args_from_response(
-        self,
-        mock_chatbot: Chatbot,
-        mock_functions_list: FunctionToolList,
-        mock_response_command_without_args: MagicMock,
-    ) -> None:
-        commands = list(mock_chatbot._get_commands_from_response(mock_response_command_without_args))
-        assert len(commands) == 1
-
-        function_name = mock_response_command_without_args.candidates[0].content.parts[0].function_call.name
-        assert commands[0].name == function_name
-        assert commands[0].callable_fn == mock_functions_list[function_name]
-
-    def test_get_commands_with_args_from_response(
-        self, mock_chatbot: Chatbot, mock_functions_list: FunctionToolList, mock_response_command_with_args: MagicMock
-    ) -> None:
-        commands = list(mock_chatbot._get_commands_from_response(mock_response_command_with_args))
-        assert len(commands) == 1
-
-        function_name = mock_response_command_with_args.candidates[0].content.parts[0].function_call.name
-        assert commands[0].name == function_name
-        assert commands[0].callable_fn == mock_functions_list[function_name]
-        assert (
-            commands[0].function.args
-            == mock_response_command_with_args.candidates[0].content.parts[0].function_call.args
-        )
-
-    def test_get_response_parts_from_commands_with_valid_commands(
-        self, mock_chatbot: Chatbot, mock_functions_list: FunctionToolList
-    ) -> None:
-        commands = [
-            FunctionTool(
-                fn=FunctionCall(name=mock_functions_list.functions[0].__name__, args={}),
-                callable_fn=mock_functions_list.functions[0],
-            ),
-            FunctionTool(
-                fn=FunctionCall(name=mock_functions_list.functions[1].__name__, args={"data": "test"}),
-                callable_fn=mock_functions_list.functions[1],
-            ),
-        ]
-        response_parts = mock_chatbot._get_response_parts_from_commands(commands)
-        assert len(response_parts) == len(commands)
-        for i, command in enumerate(commands):
-            assert response_parts[i].function_response.name == command.name
-            assert response_parts[i].function_response.response["result"] == command.response
-
-    def test_get_response_parts_from_commands_with_invalid_commands(self, mock_chatbot: Chatbot) -> None:
-        commands = [FunctionTool(fn=None, callable_fn=None)]
-        response_parts = mock_chatbot._get_response_parts_from_commands(commands)
-        assert response_parts == []
-
-    def test_handle_commands_with_valid_commands(
-        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock, mock_chat_instance: MagicMock
-    ) -> None:
-        mock_chatbot.start_chat()
-        mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="Command executed")])
-        response = mock_chatbot._handle_commands(mock_response_command_without_args)
-        assert response.parts[0].text == "Command executed"
-
-    def test_handle_commands_with_no_commands(
-        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock
-    ) -> None:
-        mock_response_command_without_args.candidates[0].content.parts = []
-        response = mock_chatbot._handle_commands(mock_response_command_without_args)
-        assert response == mock_response_command_without_args
-
-    def test_handle_commands_with_invalid_commands(
-        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock
-    ) -> None:
-        mock_response_command_without_args.candidates[0].content.parts[0].function_call = None
-        response = mock_chatbot._handle_commands(mock_response_command_without_args)
-        assert response == mock_response_command_without_args
 
     def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         config = mock_chatbot._web_search_config()
@@ -157,7 +54,7 @@ class TestChatbot:
                 candidate_count=mock_chatbot._config.candidate_count,
                 max_output_tokens=mock_chatbot._config.max_output_tokens,
                 temperature=mock_chatbot._config.temperature,
-                tools=mock_chatbot._functions.functions,
+                tools=mock_chatbot._functions,
             ),
         )
         assert response.message == "What's on your mind today?"
@@ -171,21 +68,6 @@ class TestChatbot:
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
         assert response.message == "Hi user!"
-
-    def test_send_message_with_commands(
-        self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_response_command_without_args: MagicMock
-    ) -> None:
-        mock_msg = "Hi model!"
-        mock_responses = [
-            mock_response_command_without_args,
-            MagicMock(text="Command executed"),
-        ]
-        mock_chat_instance.send_message.side_effect = mock_responses
-
-        mock_chatbot.start_chat()
-        response = mock_chatbot.send_message(mock_msg)
-        assert mock_chat_instance.send_message.call_count == len(mock_responses)
-        assert response.message == "Command executed"
 
     def test_send_message_with_error(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
         mock_msg = "Hi model!"

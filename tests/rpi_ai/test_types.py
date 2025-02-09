@@ -1,9 +1,7 @@
 import json
 from unittest.mock import mock_open, patch
 
-from google.genai.types import FunctionCall
-
-from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList, Message, SpeechResponse
+from rpi_ai.types import AIConfigType, Message, SpeechResponse
 
 
 # Config
@@ -38,45 +36,3 @@ class TestSpeechResponse:
         response = SpeechResponse(**data)
         assert response.message == "Hello, world!"
         assert response.bytes == "audio_data"
-
-
-# Functions
-class TestFunctionTool:
-    def test_name(self) -> None:
-        fn = FunctionCall(name="test_function", args={})
-        response = FunctionTool(fn, lambda: {})
-        assert response.name == "test_function"
-
-    def test_args(self) -> None:
-        fn = FunctionCall(name="test_function", args={"arg1": "value1", "arg2": "value2"})
-        response = FunctionTool(fn, lambda: {})
-        assert set(response.args.split(", ")) == {"arg1=value1", "arg2=value2"}
-
-    def test_response_without_args(self) -> None:
-        fn = FunctionCall(name="test_function", args={})
-        response = FunctionTool(fn, lambda: {"result": "success"})
-        assert response.response == {"result": "success"}
-
-    def test_response_with_args(self) -> None:
-        fn = FunctionCall(name="test_function", args={"arg1": "value1"})
-        response = FunctionTool(fn, lambda arg1: {"result": f"success with {arg1}"})
-        assert response.response == {"result": "success with value1"}
-
-    def test_output(self) -> None:
-        fn = FunctionCall(name="test_function", args={"arg1": "value1"})
-        response = FunctionTool(fn, lambda arg1: {"result": f"success with {arg1}"})
-        assert response.output == "test_function(arg1=value1)={'result': 'success with value1'}"
-
-
-class TestFunctionToolList:
-    def test_dictionary(self) -> None:
-        def fn1() -> None:
-            return "fn1"
-
-        def fn2() -> None:
-            return "fn2"
-
-        functions_list = FunctionToolList([fn1, fn2])
-        assert functions_list.dictionary == {"fn1": fn1, "fn2": fn2}
-        assert functions_list["fn1"]() == "fn1"
-        assert functions_list["fn2"]() == "fn2"
