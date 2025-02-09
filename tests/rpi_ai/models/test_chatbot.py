@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from google.genai.types import FunctionCall, GenerateContentConfig
+from google.genai.types import FunctionCall, GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
 from rpi_ai.models.chatbot import Chatbot
@@ -113,6 +113,28 @@ class TestChatbot:
         mock_response_command_without_args.candidates[0].content.parts[0].function_call = None
         response = mock_chatbot._handle_commands(mock_response_command_without_args)
         assert response == mock_response_command_without_args
+
+    def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+        config = mock_chatbot._web_search_config()
+        assert config.system_instruction == mock_config.system_instruction
+        assert config.candidate_count == mock_config.candidate_count
+        assert config.max_output_tokens == mock_config.max_output_tokens
+        assert config.temperature == mock_config.temperature
+        assert len(config.tools) == 1
+        assert config.tools[0].google_search == GoogleSearch()
+
+    def test_web_search(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
+        query = "test query"
+        mock_response = MagicMock(text="search results")
+        mock_genai_client.return_value.models.generate_content.return_value = mock_response
+
+        result = mock_chatbot._web_search(query)
+        mock_genai_client.return_value.models.generate_content.assert_called_once_with(
+            contents=query,
+            model=mock_chatbot._config.model,
+            config=mock_chatbot._web_search_config(),
+        )
+        assert result == "search results"
 
     def test_get_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         assert mock_chatbot.get_config() == mock_config
