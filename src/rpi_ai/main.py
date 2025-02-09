@@ -43,6 +43,7 @@ class AIApp:
             "/update-config", "update-config", self.token_required(self.update_config), methods=["POST"]
         )
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
+        self.app.add_url_rule("/send-audio", "send_audio", self.token_required(self.send_audio), methods=["POST"])
 
     @property
     def root_dir(self) -> Path:
@@ -88,11 +89,14 @@ class AIApp:
             self.write_token_to_file(self._token)
             return self._token
 
+    def get_request_headers(self) -> dict[str, str]:
+        return request.headers
+
     def get_request_json(self) -> dict[str, str]:
         return request.json
 
-    def get_request_headers(self) -> dict[str, str]:
-        return request.headers
+    def get_request_files(self) -> dict[str, str]:
+        return request.files
 
     def create_new_token(self) -> str:
         return secrets.token_urlsafe(32)
@@ -139,6 +143,14 @@ class AIApp:
         user_message = self.get_request_json().get("message")
         logger.info(user_message)
         response = self.chatbot.send_message(user_message)
+        logger.info(response.message)
+        return jsonify(response)
+
+    def send_audio(self) -> Response:
+        audio_file = self.get_request_files().get("audio")
+        audio_data = audio_file.read()
+        logger.info("Received audio data...")
+        response = self.chatbot.send_audio(audio_data)
         logger.info(response.message)
         return jsonify(response)
 

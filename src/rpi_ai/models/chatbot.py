@@ -3,9 +3,11 @@ from collections.abc import Iterable
 import google.generativeai as genai
 from google.generativeai.protos import FunctionResponse, Part
 from google.generativeai.types.generation_types import GenerateContentResponse
+from gtts import gTTSError
 from pydantic import ValidationError
 
-from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList, Message
+from rpi_ai.models import audiobot
+from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList, Message, SpeechResponse
 
 
 class Chatbot:
@@ -71,10 +73,41 @@ class Chatbot:
 
     def send_message(self, text: str) -> Message:
         response = self._chat.send_message([text])
-        response = self._handle_commands(response)
+        has_called_function = False
+
+        if response := self._handle_commands(response):
+            has_called_function = True
 
         try:
             return Message(message=response.parts[0].text)
         except (AttributeError, ValidationError):
             self._chat.rewind()
+            if has_called_function:
+                self._chat.rewind()
             return Message(message="An error occurred! Please try again.")
+
+    def send_audio(self, audio_data: bytes) -> SpeechResponse:
+        request_body = audiobot.get_request_body_from_audio(audio_data)
+
+        response = self._chat.send_message(request_body)
+        has_called_function = False
+
+        if response := self._handle_commands(response):
+            has_called_function = True
+
+        try:
+            reply = response.parts[0].text
+            audio = audiobot.get_audio_bytes_from_text(reply.replace("*", ""))
+            return SpeechResponse(bytes=audio, message=reply)
+        except (AttributeError, ValidationError):
+            self._chat.rewind()
+            if has_called_function:
+                self._chat.rewind()
+            reply = "Failed to send message to chatbot!"
+            audio = audiobot.get_audio_bytes_from_text(reply)
+            return SpeechResponse(bytes=audio, message=reply)
+        except gTTSError as e:
+            self._chat.rewind()
+            if has_called_function:
+                self._chat.rewind()
+            return SpeechResponse(bytes="", message=str(e))

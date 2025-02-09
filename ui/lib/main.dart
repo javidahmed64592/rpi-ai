@@ -10,6 +10,7 @@ import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'package:ui/state/settings_state.dart';
+import 'package:ui/state/speech_state.dart';
 
 void main() {
   runApp(
@@ -19,6 +20,7 @@ void main() {
         ChangeNotifierProvider(create: (context) => MessageState()),
         ChangeNotifierProvider(create: (context) => NotificationState()),
         ChangeNotifierProvider(create: (context) => SettingsState()),
+        ChangeNotifierProvider(create: (context) => SpeechState()),
       ],
       child: const AIApp(),
     ),

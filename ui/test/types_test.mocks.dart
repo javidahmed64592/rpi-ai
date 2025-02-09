@@ -6,7 +6,8 @@
 
 // Dart imports:
 import 'dart:async' as _i4;
-import 'dart:ui' as _i6;
+import 'dart:typed_data' as _i5;
+import 'dart:ui' as _i7;
 
 // Package imports:
 import 'package:http/http.dart' as _i2;
@@ -14,7 +15,7 @@ import 'package:mockito/mockito.dart' as _i1;
 
 // Project imports:
 import 'package:ui/helpers/http_helper.dart' as _i3;
-import 'package:ui/state/message_state.dart' as _i5;
+import 'package:ui/state/message_state.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -199,12 +200,31 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
         returnValue:
             _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i4.Future<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<Map<String, dynamic>> sendAudio(
+    String? url,
+    String? authToken,
+    _i5.Uint8List? audioBytes,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #sendAudio,
+          [
+            url,
+            authToken,
+            audioBytes,
+          ],
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
 }
 
 /// A class which mocks [MessageState].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMessageState extends _i1.Mock implements _i5.MessageState {
+class MockMessageState extends _i1.Mock implements _i6.MessageState {
   MockMessageState() {
     _i1.throwOnMissingStub(this);
   }
@@ -258,7 +278,7 @@ class MockMessageState extends _i1.Mock implements _i5.MessageState {
       );
 
   @override
-  void addListener(_i6.VoidCallback? listener) => super.noSuchMethod(
+  void addListener(_i7.VoidCallback? listener) => super.noSuchMethod(
         Invocation.method(
           #addListener,
           [listener],
@@ -267,7 +287,7 @@ class MockMessageState extends _i1.Mock implements _i5.MessageState {
       );
 
   @override
-  void removeListener(_i6.VoidCallback? listener) => super.noSuchMethod(
+  void removeListener(_i7.VoidCallback? listener) => super.noSuchMethod(
         Invocation.method(
           #removeListener,
           [listener],

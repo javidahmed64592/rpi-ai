@@ -13,6 +13,7 @@ import 'package:ui/components/notifications.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
+import 'package:ui/pages/speech_page.dart';
 import 'package:ui/pages/text_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/notification_state.dart';
@@ -78,6 +79,8 @@ class _MainPageState extends State<MainPage> {
       switch (appState.activePage) {
         case PageType.text:
           return const TextPage();
+        case PageType.speech:
+          return const SpeechPage();
         case PageType.login:
         default:
           return const LoginPage();
