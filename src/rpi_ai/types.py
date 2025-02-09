@@ -3,8 +3,7 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 
-from google.generativeai.protos import FunctionCall
-from google.generativeai.types import GenerationConfig
+from google.genai.types import FunctionCall
 from pydantic.dataclasses import dataclass
 
 
@@ -21,14 +20,6 @@ class AIConfigType:
     def load(cls, path: str) -> AIConfigType:
         with open(path) as file:
             return cls(**json.load(file))
-
-    @property
-    def generation_config(self) -> GenerationConfig:
-        return GenerationConfig(
-            candidate_count=self.candidate_count,
-            max_output_tokens=self.max_output_tokens,
-            temperature=self.temperature,
-        )
 
 
 # Chatbot responses
