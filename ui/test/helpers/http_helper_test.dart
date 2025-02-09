@@ -1,5 +1,6 @@
 // Dart imports:
 import 'dart:convert';
+import 'dart:typed_data';
 
 // Flutter imports:
 import 'package:flutter/widgets.dart';
@@ -255,5 +256,22 @@ void main() {
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
     expect(await httpHelper.chat(uri, authToken, message), {});
+  });
+
+  test('sendAudio returns empty dict if the http call completes with an error',
+      () async {
+    final httpHelper = HttpHelper(client: client);
+    const uri = 'http://example.com';
+    const authToken = 'testToken';
+    final Uint8List audioData = Uint8List.fromList([1, 2, 3, 4]);
+
+    when(client.send(any)).thenAnswer((_) async {
+      final response =
+          http.Response(jsonEncode({'message': 'Error', 'bytes': ''}), 404);
+      return http.StreamedResponse(
+          Stream.fromIterable([response.bodyBytes]), response.statusCode);
+    });
+
+    expect(await httpHelper.sendAudio(uri, authToken, audioData), {});
   });
 }
