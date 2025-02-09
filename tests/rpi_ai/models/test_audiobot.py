@@ -2,22 +2,21 @@ import base64
 from io import BytesIO
 from unittest.mock import MagicMock
 
-from rpi_ai.models.audiobot import get_audio_bytes_from_text, get_request_body_from_audio
+from google.genai.types import Part
+
+from rpi_ai.models.audiobot import get_audio_bytes_from_text, get_audio_request
 
 
-def test_get_request_body_from_audio() -> None:
+def test_get_audio_request() -> None:
     audio_data = b"test_audio_data"
-    expected_result = {
-        "parts": [
-            {
-                "inline_data": {
-                    "mime_type": "audio/ogg",
-                    "data": audio_data,
-                }
-            }
-        ]
-    }
-    result = get_request_body_from_audio(audio_data)
+    expected_result = [
+        "Respond to the voice message.",
+        Part.from_bytes(
+            data=audio_data,
+            mime_type="audio/mp3",
+        ),
+    ]
+    result = get_audio_request(audio_data)
     assert result == expected_result
 
 

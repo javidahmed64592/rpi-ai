@@ -134,16 +134,6 @@ class SystemInfo(FunctionsListBase):
         }
 
     @staticmethod
-    def _psutil_temperature() -> float:
-        """
-        Get the CPU temperature using `psutil`.
-
-        Returns:
-            float: The CPU temperature in degrees Celsius.
-        """
-        return psutil.sensors_temperatures()["cpu_thermal"][0].current
-
-    @staticmethod
     def get_temperature() -> float:
         """
         Get the CPU temperature in degrees Celsius.
@@ -153,6 +143,6 @@ class SystemInfo(FunctionsListBase):
             `None` is returned if the temperature cannot be retrieved.
         """
         try:
-            return SystemInfo._psutil_temperature()
+            return psutil.sensors_temperatures()["cpu_thermal"][0].current
         except (KeyError, IndexError, AttributeError):
             logger.exception("Failed to get CPU temperature.")

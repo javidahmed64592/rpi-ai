@@ -27,6 +27,8 @@ class TestFunctionsListBase:
             return "dummy"
 
         flb.functions.append(dummy_function)
+        assert len(flb.functions) == 1
+        assert flb.functions[0]() == "dummy"
         flb.functions.remove(dummy_function)
         assert len(flb.functions) == 0
 
@@ -37,5 +39,7 @@ class TestFunctionsListBase:
             return "dummy"
 
         flb.functions.append(dummy_function)
+        assert len(flb.functions) == 1
+        assert flb.functions[0]() == "dummy"
         flb.functions.clear()
         assert len(flb.functions) == 0

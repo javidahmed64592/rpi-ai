@@ -2,6 +2,7 @@ from collections.abc import Generator
 from datetime import datetime
 from unittest.mock import MagicMock, Mock, patch
 
+import psutil
 import pytest
 
 from rpi_ai.function_calling.system_info import SystemInfo
@@ -90,8 +91,8 @@ def mock_disk_usage() -> Generator[MagicMock, None, None]:
 
 @pytest.fixture
 def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.function_calling.system_info.SystemInfo._psutil_temperature") as mock:
-        mock.return_value = 45.0
+    with patch("rpi_ai.function_calling.system_info.psutil") as mock:
+        mock.sensors_temperatures.return_value = {"cpu_thermal": [Mock(current=45.0)]}
         yield mock
 
 
@@ -127,6 +128,11 @@ def test_get_process_name_by_pid(mock_process: MagicMock) -> None:
     mock_process.assert_called_once_with(1234)
 
 
+def test_get_process_by_name_returns_none_on_error(mock_process: MagicMock) -> None:
+    mock_process.side_effect = psutil.NoSuchProcess(1234)
+    assert SystemInfo.get_process_name_by_pid(1234) is None
+
+
 def test_cpu_percent(mock_cpu_percent: MagicMock) -> None:
     assert SystemInfo.get_cpu_percent() == mock_cpu_percent.return_value
 
@@ -152,4 +158,12 @@ def test_get_disk_usage(mock_disk_usage: MagicMock) -> None:
 
 
 def test_get_temperature(mock_psutil_temperature: MagicMock) -> None:
-    assert SystemInfo.get_temperature() == mock_psutil_temperature.return_value
+    assert (
+        SystemInfo.get_temperature()
+        == mock_psutil_temperature.sensors_temperatures.return_value["cpu_thermal"][0].current
+    )
+
+
+def test_get_temperature_returns_none_on_error(mock_psutil_temperature: MagicMock) -> None:
+    mock_psutil_temperature.sensors_temperatures.side_effect = KeyError
+    assert SystemInfo.get_temperature() is None
