@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
               settingsState.updateConfig(config);
               appState.setConnected(true);
               messageState.initialiseChat(message);
-              appState.setActivePage(PageType.chat);
+              appState.setActivePage(PageType.text);
               notificationState.clearNotification();
             }
           } catch (e) {

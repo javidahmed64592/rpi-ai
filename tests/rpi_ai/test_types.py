@@ -3,9 +3,10 @@ from unittest.mock import MagicMock, mock_open, patch
 
 from google.generativeai.protos import FunctionCall
 
-from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList, Message, MessageList
+from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList, Message, MessageList, SpeechResponse
 
 
+# Config
 class TestAIConfigType:
     def test_load(self, config_data: dict[str, str | float]) -> None:
         with patch("builtins.open", new_callable=mock_open, read_data=json.dumps(config_data)):
@@ -23,6 +24,7 @@ class TestAIConfigType:
         assert gen_config.temperature == config_data["temperature"]
 
 
+# Chatbot responses
 class TestMessage:
     def test_from_dict_user_message(self, mock_extract_parts: MagicMock) -> None:
         data = {"role": "user", "parts": "Hello, world!"}
@@ -54,6 +56,15 @@ class TestMessageList:
         assert not message_list.messages[1].is_user_message
 
 
+class TestSpeechResponse:
+    def test_from_dict(self) -> None:
+        data = {"message": "Hello, world!", "bytes": "audio_data"}
+        response = SpeechResponse(**data)
+        assert response.message == "Hello, world!"
+        assert response.bytes == "audio_data"
+
+
+# Functions
 class TestFunctionTool:
     def test_name(self) -> None:
         fn = FunctionCall(name="test_function", args={})

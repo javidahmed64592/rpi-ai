@@ -12,20 +12,21 @@ import 'package:ui/components/app_bar/custom_app_bar.dart';
 import 'package:ui/components/notifications.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
-import 'package:ui/pages/conversation_page.dart';
 import 'package:ui/pages/login_page.dart';
+import 'package:ui/pages/speech_page.dart';
+import 'package:ui/pages/text_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'package:ui/types.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MainPageState extends State<MainPage> {
   Timer? timer;
   final httpHelper = HttpHelper();
 
@@ -76,8 +77,10 @@ class _HomePageState extends State<HomePage> {
 
     Widget getPage() {
       switch (appState.activePage) {
-        case PageType.chat:
-          return const ConversationPage();
+        case PageType.text:
+          return const TextPage();
+        case PageType.speech:
+          return const SpeechPage();
         case PageType.login:
         default:
           return const LoginPage();

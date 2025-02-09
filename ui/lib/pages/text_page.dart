@@ -5,19 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
-import 'package:ui/components/messages/message_input.dart';
+import 'package:ui/components/conversation/text_input.dart';
 import 'package:ui/components/messages/message_list.dart';
 import 'package:ui/state/message_state.dart';
-import 'package:ui/types.dart';
 
-class ConversationPage extends StatefulWidget {
-  const ConversationPage({super.key});
+class TextPage extends StatefulWidget {
+  const TextPage({super.key});
 
   @override
-  State<ConversationPage> createState() => _ConversationPageState();
+  State<TextPage> createState() => _TextPageState();
 }
 
-class _ConversationPageState extends State<ConversationPage> {
+class _TextPageState extends State<TextPage> {
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -40,16 +39,12 @@ class _ConversationPageState extends State<ConversationPage> {
             builder: (context, messageState, child) {
               return MessageList(
                 messages: messageState.messages,
-                messageType: MessageType.chat,
                 scrollController: scrollController,
               );
             },
           ),
         ),
-        MessageInput(
-          messageType: MessageType.chat,
-          scrollController: scrollController,
-        ),
+        TextInput(scrollController: scrollController),
       ],
     );
   }

@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 from google.generativeai.protos import FunctionCall
+from gtts import gTTSError
 
 from rpi_ai.models.chatbot import Chatbot
 from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList
@@ -105,6 +106,28 @@ class TestChatbot:
         response_parts = mock_chatbot._get_response_parts_from_commands(commands)
         assert response_parts == []
 
+    def test_handle_commands_with_valid_commands(
+        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock, mock_chat_instance: MagicMock
+    ) -> None:
+        mock_chatbot.start_chat()
+        mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="Command executed")])
+        response = mock_chatbot._handle_commands(mock_response_command_without_args)
+        assert response.parts[0].text == "Command executed"
+
+    def test_handle_commands_with_no_commands(
+        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock
+    ) -> None:
+        mock_response_command_without_args.parts = []
+        response = mock_chatbot._handle_commands(mock_response_command_without_args)
+        assert response == mock_response_command_without_args
+
+    def test_handle_commands_with_invalid_commands(
+        self, mock_chatbot: Chatbot, mock_response_command_without_args: MagicMock
+    ) -> None:
+        mock_response_command_without_args.parts[0].function_call = None
+        response = mock_chatbot._handle_commands(mock_response_command_without_args)
+        assert response == mock_response_command_without_args
+
     def test_get_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         assert mock_chatbot.get_config() == mock_config
 
@@ -159,3 +182,46 @@ class TestChatbot:
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with([mock_msg])
         assert response.message == "An error occurred! Please try again."
+
+    def test_send_audio_with_valid_response(
+        self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
+    ) -> None:
+        mock_response = MagicMock()
+        mock_response.parts = [MagicMock(text="Hi user!")]
+        mock_chat_instance.send_message.return_value = mock_response
+
+        mock_audio = "test_audio_response"
+        mock_get_audio_bytes_from_text.return_value = mock_audio
+        mock_chatbot.start_chat()
+        response = mock_chatbot.send_audio(b"test_audio_data")
+        mock_chat_instance.send_message.assert_called_once()
+        assert response.message == "Hi user!"
+        assert response.bytes == mock_audio
+
+    def test_send_audio_with_error(
+        self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
+    ) -> None:
+        mock_response = MagicMock()
+        mock_response.parts = [MagicMock(text=None)]
+        mock_chat_instance.send_message.return_value = mock_response
+
+        mock_audio = "Failed to send messages to chatbot!"
+        mock_get_audio_bytes_from_text.return_value = mock_audio
+
+        mock_chatbot.start_chat()
+        response = mock_chatbot.send_audio(b"test_audio_data")
+        mock_chat_instance.send_message.assert_called_once()
+        assert response.message == "Failed to send message to chatbot!"
+        assert response.bytes == mock_audio
+
+    def test_send_audio_with_gtts_error(
+        self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
+    ) -> None:
+        mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="Hi user!")])
+        mock_get_audio_bytes_from_text.side_effect = gTTSError("gTTS error")
+
+        mock_chatbot.start_chat()
+        response = mock_chatbot.send_audio(b"test_audio_data")
+        mock_chat_instance.send_message.assert_called_once()
+        assert response.message == "gTTS error"
+        assert response.bytes == ""

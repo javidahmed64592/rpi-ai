@@ -177,6 +177,37 @@ class TestAIApp:
         mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
         assert response.status_code == UNAUTHORIZED_CODE
 
+    def test_send_audio(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_files: MagicMock,
+        mock_send_audio: MagicMock,
+        mock_jsonify: MagicMock,
+        mock_create_new_token: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_files.return_value = {"audio": MagicMock(read=MagicMock(return_value="audio_data"))}
+
+        response = mock_client.post("/send-audio")
+        mock_send_audio.assert_called_once_with("audio_data")
+        mock_jsonify.assert_called_once_with(mock_send_audio.return_value)
+        assert response.status_code == SUCCESS_CODE
+
+    def test_send_audio_unauthorized(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_files: MagicMock,
+        mock_jsonify: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": "wrong_token"}
+        mock_request_files.return_value = {"audio": MagicMock(read=MagicMock(return_value="audio_data"))}
+
+        response = mock_client.post("/send-audio")
+        mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
+        assert response.status_code == UNAUTHORIZED_CODE
+
     def test_run_with_waitress(self, mock_ai_app: AIApp, mock_waitress_serve: MagicMock) -> None:
         mock_ai_app.run(host="0.0.0.0", port=8080)
         mock_waitress_serve.assert_called_once_with(mock_ai_app.app, host="0.0.0.0", port=8080)
