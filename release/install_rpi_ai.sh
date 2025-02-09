@@ -147,10 +147,10 @@ The AI executable is located at: '${EXE_PATH}'
 Configure the AI model: '${CONFIG_PATH}'
 Add the following line to your '.bashrc' file: 'export GEMINI_API_KEY=<Your API Key>'
 
-To create a start-up service for the AI, run: './${CREATE_SERVICE_FILE}'
-To stop the service, run: './${STOP_SERVICE_FILE}'
+To create a start-up service for the AI, run: './service/${CREATE_SERVICE_FILE}'
+To stop the service, run: './service/${STOP_SERVICE_FILE}'
 
-To view the logs: 'cat ${LOG_PATH}'
+To view the logs: 'cat logs/${LOG_FILE}'
 
 To uninstall, run: './${UNINSTALL_FILE}'
 ===================================================================================================

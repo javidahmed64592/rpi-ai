@@ -3,8 +3,7 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 
-from google.generativeai.protos import FunctionCall
-from google.generativeai.types import GenerationConfig
+from google.genai.types import FunctionCall
 from pydantic.dataclasses import dataclass
 
 
@@ -22,14 +21,6 @@ class AIConfigType:
         with open(path) as file:
             return cls(**json.load(file))
 
-    @property
-    def generation_config(self) -> GenerationConfig:
-        return GenerationConfig(
-            candidate_count=self.candidate_count,
-            max_output_tokens=self.max_output_tokens,
-            temperature=self.temperature,
-        )
-
 
 # Chatbot responses
 @dataclass
@@ -39,26 +30,11 @@ class Message:
 
     @classmethod
     def from_dict(cls, data: dict[str, str]) -> Message:
-        parts = Message.extract_parts(data).strip()
-        is_user = Message.is_user(data)
-        return cls(parts, is_user)
-
-    @staticmethod
-    def extract_parts(data: dict[str, str]) -> str:
-        return "".join([part.text for part in data["parts"]])
+        return cls(message=data["parts"], is_user_message=cls.is_user(data))
 
     @staticmethod
     def is_user(data: dict[str, str]) -> bool:
         return data["role"] == "user"
-
-
-@dataclass
-class MessageList:
-    messages: list[Message]
-
-    @classmethod
-    def from_history(cls, data: list[dict[str, str]]) -> MessageList:
-        return cls([Message.from_dict(item) for item in data])
 
 
 @dataclass

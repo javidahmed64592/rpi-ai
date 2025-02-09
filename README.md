@@ -31,7 +31,7 @@ To install with `dev` dependencies:
     pip install -e .[dev]
 
 ### Configuration
-Add your Gemini API key to `.env`:
+Set the following environment variable before running the application:
 
     GEMINI_API_KEY=<Gemini API key here>
 
@@ -96,6 +96,20 @@ and return payload:
 {
     "message": "<Model response>",
     "is_user_message": false
+}
+```
+
+`/send-audio`: POST method, send voice message to model by sending request with file:
+```json
+{
+    "audio": "<Audio bytes here>"
+}
+```
+and return payload:
+```json
+{
+    "text": "<Model response>",
+    "bytes": "<Audio bytes>"
 }
 ```
 

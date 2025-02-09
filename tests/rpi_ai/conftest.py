@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 from flask.testing import FlaskClient
-from google.generativeai.protos import FunctionCall, Part
+from google.genai.types import FunctionCall, Part
 
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
@@ -53,53 +53,39 @@ def mock_functions_list() -> FunctionToolList:
 def mock_response_command_without_args() -> MagicMock:
     mock_function_call = FunctionCall(name=function_without_args.__name__, args={})
     mock_part = Part(function_call=mock_function_call)
-    return MagicMock(parts=[mock_part])
+    mock_response = MagicMock()
+    mock_response.candidates = [MagicMock(content=MagicMock(parts=[mock_part]))]
+    return mock_response
 
 
 @pytest.fixture
 def mock_response_command_with_args() -> MagicMock:
-    mock_function_call = FunctionCall(name=function_with_args.__name__, args={})
+    mock_function_call = FunctionCall(name=function_with_args.__name__, args={"data": "test"})
     mock_part = Part(function_call=mock_function_call)
-    return MagicMock(parts=[mock_part])
-
-
-# Types fixtures
-@pytest.fixture
-def mock_extract_parts() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.types.Message.extract_parts") as mock:
-        yield mock
+    mock_response = MagicMock()
+    mock_response.candidates = [MagicMock(content=MagicMock(parts=[mock_part]))]
+    return mock_response
 
 
 # Chatbot fixtures
 @pytest.fixture
-def mock_genai_configure() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.models.chatbot.genai.configure") as mock:
+def mock_genai_client() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.models.chatbot.Client") as mock:
         yield mock
 
 
 @pytest.fixture
-def mock_generative_model() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.models.chatbot.genai.GenerativeModel") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_start_chat_method(mock_generative_model: MagicMock) -> MagicMock:
+def mock_start_chat_method(mock_genai_client: MagicMock) -> MagicMock:
     mock_chat_instance = MagicMock()
-    mock_generative_model.return_value.start_chat.return_value = mock_chat_instance
-    return mock_generative_model.return_value.start_chat
-
-
-@pytest.fixture
-def mock_generate_content(mock_generative_model: MagicMock) -> MagicMock:
-    mock_generative_model.return_value.generate_content.return_value = MagicMock()
-    return mock_generative_model.return_value.generate_content
+    mock_genai_client.return_value.chats.create.return_value = mock_chat_instance
+    mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="What's on your mind today?")])
+    return mock_genai_client.return_value.chats.create
 
 
 @pytest.fixture
 def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
     mock_chat_instance = MagicMock()
-    mock_chat_instance.history = [MagicMock(role="model", parts=[MagicMock(text="What's on your mind today")])]
+    mock_chat_instance.history = [MagicMock(role="model", parts=[MagicMock(text="What's on your mind today?")])]
     mock_start_chat_method.return_value = mock_chat_instance
     return mock_chat_instance
 
@@ -109,7 +95,7 @@ def mock_chatbot(
     mock_app_path: MagicMock,
     mock_api_key: MagicMock,
     mock_config: AIConfigType,
-    mock_genai_configure: MagicMock,
+    mock_genai_client: MagicMock,
     mock_chat_instance: MagicMock,
     mock_functions_list: FunctionToolList,
 ) -> Chatbot:
