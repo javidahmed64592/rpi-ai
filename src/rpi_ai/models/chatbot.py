@@ -1,7 +1,14 @@
 from collections.abc import Iterable
 
 from google.genai import Client
-from google.genai.types import FunctionResponse, GenerateContentConfig, GenerateContentResponse, Part
+from google.genai.types import (
+    FunctionResponse,
+    GenerateContentConfig,
+    GenerateContentResponse,
+    GoogleSearchRetrieval,
+    Part,
+    Tool,
+)
 from gtts import gTTSError
 from pydantic import ValidationError
 
@@ -13,6 +20,7 @@ class Chatbot:
     def __init__(self, api_key: str, config: AIConfigType, functions: FunctionToolList) -> None:
         self._client = Client(api_key=api_key)
         self._config = config
+        functions.functions.append(self._web_search)
         self._functions = functions
 
     def _extract_command_from_part(self, part: Part) -> FunctionTool:
@@ -45,6 +53,32 @@ class Chatbot:
             return response
 
         return self._chat.send_message(response_parts)
+
+    def _web_search_config(self) -> Tool:
+        return GenerateContentConfig(
+            system_instruction=self._config.system_instruction,
+            candidate_count=self._config.candidate_count,
+            max_output_tokens=self._config.max_output_tokens,
+            temperature=self._config.temperature,
+            tools=[Tool(google_search=GoogleSearchRetrieval)],
+        )
+
+    def _web_search(self, query: str) -> str:
+        """
+        Search the web for the given query.
+
+        Args:
+            query (str): The search query.
+
+        Returns:
+            str: The search results.
+        """
+        response = self._client.models.generate_content(
+            contents=query,
+            model=self._config.model,
+            config=self._web_search_config(),
+        )
+        return response.text
 
     def get_config(self) -> AIConfigType:
         return self._config
