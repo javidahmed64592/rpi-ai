@@ -85,8 +85,9 @@ class _SpeechPageState extends State<SpeechPage> {
           appState.fullUrl, appState.authToken, audioBytes);
 
       if (response['bytes'] != null) {
-        final decodedBytes = base64Decode(response['bytes']);
-        await _audioPlayer.play(BytesSource(decodedBytes)).whenComplete(() {
+        final decodedBytes = BytesSource(base64Decode(response['bytes']));
+        await _audioPlayer.play(decodedBytes);
+        _audioPlayer.onPlayerComplete.listen((event) {
           speechState.setIsBusy(false);
         });
       } else {
