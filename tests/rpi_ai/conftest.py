@@ -67,13 +67,6 @@ def mock_response_command_with_args() -> MagicMock:
     return mock_response
 
 
-# Types fixtures
-@pytest.fixture
-def mock_extract_parts() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.types.Message.extract_parts") as mock:
-        yield mock
-
-
 # Chatbot fixtures
 @pytest.fixture
 def mock_genai_client() -> Generator[MagicMock, None, None]:
@@ -87,12 +80,6 @@ def mock_start_chat_method(mock_genai_client: MagicMock) -> MagicMock:
     mock_genai_client.return_value.chats.create.return_value = mock_chat_instance
     mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="What's on your mind today?")])
     return mock_genai_client.return_value.chats.create
-
-
-@pytest.fixture
-def mock_generate_content(mock_genai_client: MagicMock) -> MagicMock:
-    mock_genai_client.return_value.generate_content.return_value = MagicMock()
-    return mock_genai_client.return_value.generate_content
 
 
 @pytest.fixture
