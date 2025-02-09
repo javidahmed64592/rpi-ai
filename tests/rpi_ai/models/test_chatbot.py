@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+from google.genai.errors import ServerError
 from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
@@ -78,6 +79,17 @@ class TestChatbot:
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
         assert response.message == "An error occurred! Please try again."
 
+    def test_send_message_with_server_error(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
+        mock_msg = "Hi model!"
+        mock_chat_instance.send_message.side_effect = ServerError(
+            code=503, response=MagicMock(body_segments=[{"error": {"message": "Model overloaded!"}}])
+        )
+
+        mock_chatbot.start_chat()
+        response = mock_chatbot.send_message(mock_msg)
+        mock_chat_instance.send_message.assert_called_once_with(mock_msg)
+        assert response.message == "Model overloaded! Please try again."
+
     def test_send_audio_with_valid_response(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
     ) -> None:
@@ -107,6 +119,22 @@ class TestChatbot:
         response = mock_chatbot.send_audio(b"test_audio_data")
         mock_chat_instance.send_message.assert_called_once()
         assert response.message == "Failed to send message to chatbot!"
+        assert response.bytes == mock_audio
+
+    def test_send_audio_with_server_error(
+        self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
+    ) -> None:
+        mock_chat_instance.send_message.side_effect = ServerError(
+            code=503, response=MagicMock(body_segments=[{"error": {"message": "Model overloaded!"}}])
+        )
+
+        mock_audio = "Model overloaded! Please try again."
+        mock_get_audio_bytes_from_text.return_value = mock_audio
+
+        mock_chatbot.start_chat()
+        response = mock_chatbot.send_audio(b"test_audio_data")
+        mock_chat_instance.send_message.assert_called_once()
+        assert response.message == "Model overloaded! Please try again."
         assert response.bytes == mock_audio
 
     def test_send_audio_with_gtts_error(

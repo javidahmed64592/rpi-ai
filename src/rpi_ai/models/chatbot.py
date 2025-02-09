@@ -1,6 +1,7 @@
 from collections.abc import Callable
 
 from google.genai import Client
+from google.genai.errors import ServerError
 from google.genai.types import GenerateContentConfig, GoogleSearchRetrieval, Tool
 from gtts import gTTSError
 from pydantic import ValidationError
@@ -67,6 +68,8 @@ class Chatbot:
             return Message(message=response.text)
         except (AttributeError, ValidationError):
             return Message(message="An error occurred! Please try again.")
+        except ServerError:
+            return Message(message="Model overloaded! Please try again.")
 
     def send_audio(self, audio_data: bytes) -> SpeechResponse:
         try:
@@ -77,6 +80,10 @@ class Chatbot:
             return SpeechResponse(bytes=audio, message=reply)
         except (AttributeError, ValidationError):
             reply = "Failed to send message to chatbot!"
+            audio = audiobot.get_audio_bytes_from_text(reply)
+            return SpeechResponse(bytes=audio, message=reply)
+        except ServerError:
+            reply = "Model overloaded! Please try again."
             audio = audiobot.get_audio_bytes_from_text(reply)
             return SpeechResponse(bytes=audio, message=reply)
         except gTTSError as e:
