@@ -26,19 +26,10 @@ class Chatbot:
             generation_config=self._config.generation_config,
             tools=[*self._functions.functions, self._web_search_tool],
         )
-        self._initialise_model()
 
     @property
     def first_message(self) -> dict[str, str]:
         return {"role": "model", "parts": "What's on your mind today?"}
-
-    def _initialise_model(self) -> None:
-        self._model = genai.GenerativeModel(
-            model_name=self._config.model,
-            system_instruction=self._config.system_instruction,
-            generation_config=self._config.generation_config,
-            tools=self._functions.functions,
-        )
 
     def _extract_command_from_part(self, part: Part) -> FunctionTool:
         try:
