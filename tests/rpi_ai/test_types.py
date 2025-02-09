@@ -1,7 +1,7 @@
 import json
 from unittest.mock import mock_open, patch
 
-from google.generativeai.protos import FunctionCall
+from google.genai.types import FunctionCall
 
 from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList, Message, SpeechResponse
 

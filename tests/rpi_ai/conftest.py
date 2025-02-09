@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 from flask.testing import FlaskClient
-from google.generativeai.protos import FunctionCall, Part
+from google.genai.types import FunctionCall, Part
 
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
