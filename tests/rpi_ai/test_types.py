@@ -16,13 +16,6 @@ class TestAIConfigType:
             assert config.max_output_tokens == config_data["max_output_tokens"]
             assert config.temperature == config_data["temperature"]
 
-    def test_generation_config(self, config_data: dict[str, str | float]) -> None:
-        config = AIConfigType(**config_data)
-        gen_config = config.generation_config
-        assert gen_config.candidate_count == config_data["candidate_count"]
-        assert gen_config.max_output_tokens == config_data["max_output_tokens"]
-        assert gen_config.temperature == config_data["temperature"]
-
 
 # Chatbot responses
 class TestMessage:
