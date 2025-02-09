@@ -1,5 +1,5 @@
 {
-    "model": "gemini-1.5-flash",
+    "model": "gemini-2.0-flash",
     "system_instruction": "You are a friendly AI assistant. You are designed to help the user with daily tasks.",
     "candidate_count": 1,
     "max_output_tokens": 1000,
