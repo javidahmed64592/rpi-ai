@@ -72,8 +72,8 @@ def mock_extract_parts() -> Generator[MagicMock, None, None]:
 
 # Chatbot fixtures
 @pytest.fixture
-def mock_genai_configure() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.models.chatbot.genai.configure") as mock:
+def mock_genai_client() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.models.chatbot.Client") as mock:
         yield mock
 
 

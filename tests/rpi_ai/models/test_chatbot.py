@@ -8,25 +8,8 @@ from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList
 
 
 class TestChatbot:
-    def test_init(
-        self,
-        mock_chatbot: Chatbot,
-        mock_config: AIConfigType,
-        mock_api_key: MagicMock,
-        mock_genai_configure: MagicMock,
-        mock_generative_model: MagicMock,
-    ) -> None:
-        mock_genai_configure.assert_called_once_with(api_key=mock_api_key.return_value)
-        mock_generative_model.assert_called_once_with(
-            model_name=mock_config.model,
-            system_instruction=mock_config.system_instruction,
-            generation_config=mock_config.generation_config,
-            tools=mock_chatbot._functions.functions,
-        )
-
-    def test_first_message(self, mock_chatbot: Chatbot) -> None:
-        assert mock_chatbot.first_message["role"] == "model"
-        assert isinstance(mock_chatbot.first_message["parts"], str)
+    def test_init(self, mock_chatbot: Chatbot, mock_api_key: MagicMock, mock_genai_client: MagicMock) -> None:
+        mock_genai_client.assert_called_once_with(api_key=mock_api_key.return_value)
 
     def test_extract_command_without_args_from_part_with_valid_function(
         self,
