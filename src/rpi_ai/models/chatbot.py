@@ -79,15 +79,8 @@ class Chatbot:
             return Message(message="An error occurred! Please try again.")
 
     def send_audio(self, audio_data: bytes) -> SpeechResponse:
-        response = self._chat.send_message(
-            [
-                "Respond to the following voice message:",
-                Part.from_bytes(
-                    data=audio_data,
-                    mime_type="audio/mp3",
-                ),
-            ]
-        )
+        audio_request = audiobot.get_audio_request(audio_data)
+        response = self._chat.send_message(audio_request)
 
         response = self._handle_commands(response)
 
