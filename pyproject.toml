@@ -47,8 +47,6 @@ addopts = [
     "--cov",
     "--cov-report",
     "term-missing",
-    "--cov-report",
-    "html",
 ]
 
 [tool.ruff]
