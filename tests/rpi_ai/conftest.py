@@ -4,11 +4,10 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 from flask.testing import FlaskClient
-from google.genai.types import FunctionCall, Part
 
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.types import AIConfigType, FunctionToolList
+from rpi_ai.types import AIConfigType
 
 
 # Config fixtures
@@ -33,38 +32,6 @@ def mock_load_config(mock_config: AIConfigType) -> Generator[MagicMock, None, No
     with patch("rpi_ai.types.AIConfigType.load") as mock:
         mock.return_value = mock_config
         yield mock
-
-
-# Function fixtures
-def function_without_args() -> str:
-    return "Function without args"
-
-
-def function_with_args(data: str) -> str:
-    return f"Function with args: {data}"
-
-
-@pytest.fixture
-def mock_functions_list() -> FunctionToolList:
-    return FunctionToolList([function_without_args, function_with_args])
-
-
-@pytest.fixture
-def mock_response_command_without_args() -> MagicMock:
-    mock_function_call = FunctionCall(name=function_without_args.__name__, args={})
-    mock_part = Part(function_call=mock_function_call)
-    mock_response = MagicMock()
-    mock_response.candidates = [MagicMock(content=MagicMock(parts=[mock_part]))]
-    return mock_response
-
-
-@pytest.fixture
-def mock_response_command_with_args() -> MagicMock:
-    mock_function_call = FunctionCall(name=function_with_args.__name__, args={"data": "test"})
-    mock_part = Part(function_call=mock_function_call)
-    mock_response = MagicMock()
-    mock_response.candidates = [MagicMock(content=MagicMock(parts=[mock_part]))]
-    return mock_response
 
 
 # Chatbot fixtures
@@ -97,9 +64,8 @@ def mock_chatbot(
     mock_config: AIConfigType,
     mock_genai_client: MagicMock,
     mock_chat_instance: MagicMock,
-    mock_functions_list: FunctionToolList,
 ) -> Chatbot:
-    return Chatbot(mock_api_key.return_value, mock_config, mock_functions_list)
+    return Chatbot(mock_api_key.return_value, mock_config, [])
 
 
 @pytest.fixture

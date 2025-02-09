@@ -1,58 +1,20 @@
-from collections.abc import Iterable
+from collections.abc import Callable
 
 from google.genai import Client
-from google.genai.types import (
-    FunctionResponse,
-    GenerateContentConfig,
-    GenerateContentResponse,
-    GoogleSearchRetrieval,
-    Part,
-    Tool,
-)
+from google.genai.types import GenerateContentConfig, GoogleSearchRetrieval, Tool
 from gtts import gTTSError
 from pydantic import ValidationError
 
 from rpi_ai.models import audiobot
-from rpi_ai.types import AIConfigType, FunctionTool, FunctionToolList, Message, SpeechResponse
+from rpi_ai.types import AIConfigType, Message, SpeechResponse
 
 
 class Chatbot:
-    def __init__(self, api_key: str, config: AIConfigType, functions: FunctionToolList) -> None:
+    def __init__(self, api_key: str, config: AIConfigType, functions: list[Callable]) -> None:
         self._client = Client(api_key=api_key)
         self._config = config
-        functions.functions.append(self._web_search)
+        functions.append(self._web_search)
         self._functions = functions
-
-    def _extract_command_from_part(self, part: Part) -> FunctionTool:
-        try:
-            return FunctionTool(fn=part.function_call, callable_fn=self._functions[part.function_call.name])
-        except (AttributeError, KeyError):
-            return None
-
-    def _get_commands_from_response(self, response: GenerateContentResponse) -> Iterable[FunctionTool]:
-        commands: Iterable[FunctionResponse] = []
-        for part in response.candidates[0].content.parts:
-            if command := self._extract_command_from_part(part):
-                commands.append(command)
-        return commands
-
-    def _get_response_parts_from_commands(self, commands: Iterable[FunctionTool]) -> list[Part]:
-        try:
-            return [
-                Part(function_response=FunctionResponse(name=fn.name, response={"result": fn.response}))
-                for fn in commands
-            ]
-        except AttributeError:
-            return []
-
-    def _handle_commands(self, response: GenerateContentResponse) -> GenerateContentResponse:
-        if not (commands := self._get_commands_from_response(response)):
-            return response
-
-        if not (response_parts := self._get_response_parts_from_commands(commands)):
-            return response
-
-        return self._chat.send_message(response_parts)
 
     def _web_search_config(self) -> Tool:
         return GenerateContentConfig(
@@ -94,27 +56,22 @@ class Chatbot:
                 candidate_count=self._config.candidate_count,
                 max_output_tokens=self._config.max_output_tokens,
                 temperature=self._config.temperature,
-                tools=self._functions.functions,
+                tools=self._functions,
             ),
         )
         return Message(message="What's on your mind today?")
 
     def send_message(self, text: str) -> Message:
-        response = self._chat.send_message(text)
-        response = self._handle_commands(response)
-
         try:
+            response = self._chat.send_message(text)
             return Message(message=response.text)
         except (AttributeError, ValidationError):
             return Message(message="An error occurred! Please try again.")
 
     def send_audio(self, audio_data: bytes) -> SpeechResponse:
-        audio_request = audiobot.get_audio_request(audio_data)
-        response = self._chat.send_message(audio_request)
-
-        response = self._handle_commands(response)
-
         try:
+            audio_request = audiobot.get_audio_request(audio_data)
+            response = self._chat.send_message(audio_request)
             reply = response.text
             audio = audiobot.get_audio_bytes_from_text(reply.replace("*", ""))
             return SpeechResponse(bytes=audio, message=reply)
