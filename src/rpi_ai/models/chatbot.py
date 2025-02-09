@@ -97,7 +97,7 @@ class Chatbot:
 
         try:
             reply = response.parts[0].text
-            audio = audiobot.get_audio_bytes_from_text(reply)
+            audio = audiobot.get_audio_bytes_from_text(reply.replace("*", ""))
             return SpeechResponse(bytes=audio, message=reply)
         except (AttributeError, ValidationError):
             self._chat.rewind()
