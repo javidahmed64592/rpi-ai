@@ -23,13 +23,9 @@ class Chatbot:
 
     def _get_commands_from_response(self, response: GenerateContentResponse) -> Iterable[FunctionTool]:
         commands: Iterable[FunctionResponse] = []
-        try:
-            for candidate in response.candidates:
-                for part in candidate.content.parts:
-                    if command := self._extract_command_from_part(part):
-                        commands.append(command)
-        except AttributeError:
-            return []
+        for part in response.candidates[0].content.parts:
+            if command := self._extract_command_from_part(part):
+                commands.append(command)
         return commands
 
     def _get_response_parts_from_commands(self, commands: Iterable[FunctionTool]) -> list[Part]:
