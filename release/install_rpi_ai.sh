@@ -2,8 +2,23 @@
 set -eu
 
 if [ -z "${GEMINI_API_KEY}" ]; then
-    echo "GEMINI_API_KEY environment variable is not set. Please set it before running the script."
-    exit 1
+    read -p "(Gemini) Enter Gemini API key: " GEMINI_API_KEY
+fi
+
+if [ -z "${VYBRA_SPIRE_ID}" ]; then
+    read -p "(Tuya) Enter Vybra Spire ID: " VYBRA_SPIRE_ID
+fi
+
+if [ -z "${VYBRA_SPIRE_ADDRESS}" ]; then
+    read -p "(Tuya) Enter Vybra Spire Address: " VYBRA_SPIRE_ADDRESS
+fi
+
+if [ -z "${VYBRA_SPIRE_KEY}" ]; then
+    read -p "(Tuya) Enter Vybra Spire Local Key: " VYBRA_SPIRE_KEY
+fi
+
+if [ -z "${VYBRA_SPIRE_VERSION}" ]; then
+    read -p "(Tuya) Enter Vybra Spire Version: " VYBRA_SPIRE_VERSION
 fi
 
 WD=$(pwd)
@@ -48,6 +63,10 @@ cat > "${EXE_PATH}" << EOF
 #!/bin/bash
 export RPI_AI_PATH=${WD}
 export GEMINI_API_KEY=${GEMINI_API_KEY}
+export VYBRA_SPIRE_ID=${VYBRA_SPIRE_ID}
+export VYBRA_SPIRE_ADDRESS=${VYBRA_SPIRE_ADDRESS}
+export VYBRA_SPIRE_KEY=${VYBRA_SPIRE_KEY}
+export VYBRA_SPIRE_VERSION=${VYBRA_SPIRE_VERSION}
 "${BIN_DIR}/run_rpi_ai"
 EOF
 chmod +x "${EXE_PATH}"
@@ -145,7 +164,6 @@ cat > "${README_PATH}" << EOF
 RPi-AI has been installed successfully.
 The AI executable is located at: '${EXE_PATH}'
 Configure the AI model: '${CONFIG_PATH}'
-Add the following line to your '.bashrc' file: 'export GEMINI_API_KEY=<Your API Key>'
 
 To create a start-up service for the AI, run: './service/${CREATE_SERVICE_FILE}'
 To stop the service, run: './service/${STOP_SERVICE_FILE}'
