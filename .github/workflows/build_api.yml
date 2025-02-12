@@ -88,7 +88,11 @@ jobs:
       - name: Run installer script
         run: |
           cd rpi_ai
-          export GEMINI_API_KEY="test"
+          export GEMINI_API_KEY="test_api_key"
+          export VYBRA_SPIRE_ID="test_spire_id"
+          export VYBRA_SPIRE_ADDRESS="test_spire_address"
+          export VYBRA_SPIRE_KEY="test_spire_key"
+          export VYBRA_SPIRE_VERSION=3.3
           ./install_rpi_ai.sh
 
           echo "rpi_ai/"
