@@ -1,7 +1,7 @@
 import json
 from unittest.mock import mock_open, patch
 
-from rpi_ai.types import AIConfigType, Message, SpeechResponse
+from rpi_ai.api_types import AIConfigType, Message, SpeechResponse
 
 
 # Config
