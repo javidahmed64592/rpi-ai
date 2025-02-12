@@ -1,7 +1,7 @@
 import base64
 from io import BytesIO
 
-from google.genai.api_types import Part
+from google.genai.types import Part
 from gtts import gTTS
 
 

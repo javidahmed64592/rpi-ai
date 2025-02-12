@@ -2,7 +2,7 @@ import base64
 from io import BytesIO
 from unittest.mock import MagicMock
 
-from google.genai.api_types import Part
+from google.genai.types import Part
 
 from rpi_ai.models.audiobot import get_audio_bytes_from_text, get_audio_request
 
