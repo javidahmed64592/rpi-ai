@@ -1,23 +1,23 @@
 #!/bin/bash
 set -eu
 
-if [ -z "${GEMINI_API_KEY}" ]; then
+if [ -z "${GEMINI_API_KEY:-}" ]; then
     read -p "(Gemini) Enter Gemini API key: " GEMINI_API_KEY
 fi
 
-if [ -z "${VYBRA_SPIRE_ID}" ]; then
+if [ -z "${VYBRA_SPIRE_ID:-}" ]; then
     read -p "(Tuya) Enter Vybra Spire ID: " VYBRA_SPIRE_ID
 fi
 
-if [ -z "${VYBRA_SPIRE_ADDRESS}" ]; then
+if [ -z "${VYBRA_SPIRE_ADDRESS:-}" ]; then
     read -p "(Tuya) Enter Vybra Spire Address: " VYBRA_SPIRE_ADDRESS
 fi
 
-if [ -z "${VYBRA_SPIRE_KEY}" ]; then
+if [ -z "${VYBRA_SPIRE_KEY:-}" ]; then
     read -p "(Tuya) Enter Vybra Spire Local Key: " VYBRA_SPIRE_KEY
 fi
 
-if [ -z "${VYBRA_SPIRE_VERSION}" ]; then
+if [ -z "${VYBRA_SPIRE_VERSION:-}" ]; then
     read -p "(Tuya) Enter Vybra Spire Version: " VYBRA_SPIRE_VERSION
 fi
 
