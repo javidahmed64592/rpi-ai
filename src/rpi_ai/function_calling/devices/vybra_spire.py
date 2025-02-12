@@ -118,7 +118,9 @@ class VybraSpire(FunctionsListBase):
         """Get the current temperature in the room."""
         try:
             if status := VybraSpire.status():
-                return f"Current temperature: {status["dps"][str(VybraSpireOptions.CURRENT_TEMPERATURE.value)]}"
+                dps = status.get("dps")
+                current_temperature = dps[str(VybraSpireOptions.CURRENT_TEMPERATURE.value)]
+                return f"Current temperature: {current_temperature}"
         except Exception as e:
             return str("Failed to get current temperature: " + str(e))
 
