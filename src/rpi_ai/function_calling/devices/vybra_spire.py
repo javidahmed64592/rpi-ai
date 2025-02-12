@@ -60,10 +60,10 @@ class VybraSpireOptions(Enum):
 
 class VybraSpire(FunctionsListBase):
     DEVICE = tinytuya.Device(
-        dev_id=os.environ.get("VYBRA_SPIRE_ID"),
-        address=os.environ.get("VYBRA_SPIRE_ADDRESS"),
-        local_key=os.environ.get("VYBRA_SPIRE_KEY"),
-        version=os.environ.get("VYBRA_SPIRE_VERSION"),
+        dev_id=str(os.environ.get("VYBRA_SPIRE_ID")),
+        address=str(os.environ.get("VYBRA_SPIRE_ADDRESS")),
+        local_key=str(os.environ.get("VYBRA_SPIRE_KEY")),
+        version=float(os.environ.get("VYBRA_SPIRE_VERSION")),
     )
 
     def __init__(self) -> None:
