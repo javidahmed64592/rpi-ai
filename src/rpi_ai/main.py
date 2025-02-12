@@ -50,7 +50,7 @@ class AIApp:
         try:
             return Path(self._root_dir)
         except AttributeError:
-            self._root_dir = Path(os.environ.get("RPI_AI_PATH"))
+            self._root_dir = Path(str(os.environ.get("RPI_AI_PATH")))
             logger.debug(f"Root directory: {self._root_dir}")
             return self._root_dir
 
@@ -67,7 +67,7 @@ class AIApp:
         try:
             return self._api_key
         except AttributeError:
-            self._api_key = os.environ.get("GEMINI_API_KEY")
+            self._api_key = str(os.environ.get("GEMINI_API_KEY"))
             logger.debug("Successfully loaded API key")
             return self._api_key
 

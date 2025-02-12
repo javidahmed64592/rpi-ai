@@ -1,9 +1,8 @@
 #!/bin/bash
 set -eu
 
-if [ -z "${GEMINI_API_KEY}" ]; then
-    echo "GEMINI_API_KEY environment variable is not set. Please set it before running the script."
-    exit 1
+if [ -z "${GEMINI_API_KEY:-}" ]; then
+    read -p "(Gemini) Enter Gemini API key: " GEMINI_API_KEY
 fi
 
 WD=$(pwd)
@@ -145,7 +144,6 @@ cat > "${README_PATH}" << EOF
 RPi-AI has been installed successfully.
 The AI executable is located at: '${EXE_PATH}'
 Configure the AI model: '${CONFIG_PATH}'
-Add the following line to your '.bashrc' file: 'export GEMINI_API_KEY=<Your API Key>'
 
 To create a start-up service for the AI, run: './service/${CREATE_SERVICE_FILE}'
 To stop the service, run: './service/${STOP_SERVICE_FILE}'
