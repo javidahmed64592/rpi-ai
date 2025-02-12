@@ -6,8 +6,8 @@ from google.genai.types import GenerateContentConfig, GoogleSearchRetrieval, Too
 from gtts import gTTSError
 from pydantic import ValidationError
 
+from rpi_ai.api_types import AIConfigType, Message, SpeechResponse
 from rpi_ai.models import audiobot
-from rpi_ai.types import AIConfigType, Message, SpeechResponse
 
 
 class Chatbot:

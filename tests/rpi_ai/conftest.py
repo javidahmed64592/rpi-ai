@@ -5,9 +5,9 @@ from unittest.mock import MagicMock, PropertyMock, patch
 import pytest
 from flask.testing import FlaskClient
 
+from rpi_ai.api_types import AIConfigType
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.types import AIConfigType
 
 
 # Config fixtures
@@ -29,7 +29,7 @@ def mock_config(config_data: dict[str, str | float]) -> AIConfigType:
 
 @pytest.fixture
 def mock_load_config(mock_config: AIConfigType) -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.types.AIConfigType.load") as mock:
+    with patch("rpi_ai.api_types.AIConfigType.load") as mock:
         mock.return_value = mock_config
         yield mock
 
