@@ -1,13 +1,13 @@
 from collections.abc import Callable
 
 from google.genai import Client
+from google.genai.api_types import GenerateContentConfig, GoogleSearchRetrieval, Tool
 from google.genai.errors import ServerError
-from google.genai.types import GenerateContentConfig, GoogleSearchRetrieval, Tool
 from gtts import gTTSError
 from pydantic import ValidationError
 
+from rpi_ai.api_types import AIConfigType, Message, SpeechResponse
 from rpi_ai.models import audiobot
-from rpi_ai.types import AIConfigType, Message, SpeechResponse
 
 
 class Chatbot:

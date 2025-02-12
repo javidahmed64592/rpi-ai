@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from waitress import serve
 
+from rpi_ai.api_types import AIConfigType
 from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models.chatbot import Chatbot
 from rpi_ai.models.logger import Logger
-from rpi_ai.types import AIConfigType
 
 logger = Logger(__name__)
 

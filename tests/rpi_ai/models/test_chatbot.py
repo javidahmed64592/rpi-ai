@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock
 
+from google.genai.api_types import GenerateContentConfig, GoogleSearch
 from google.genai.errors import ServerError
-from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
+from rpi_ai.api_types import AIConfigType
 from rpi_ai.models.chatbot import Chatbot
-from rpi_ai.types import AIConfigType
 
 
 class TestChatbot:
