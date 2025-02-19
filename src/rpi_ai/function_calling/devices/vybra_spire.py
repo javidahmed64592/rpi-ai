@@ -87,50 +87,54 @@ class VybraSpire(FunctionsListBase):
         ]
 
     @staticmethod
-    def status() -> dict:
+    def _status() -> dict:
         if not (status := VybraSpire.DEVICE.status()):
             msg = "Failed to retrieve device status"
             raise RuntimeError(msg)
         return status
 
     @staticmethod
-    def turn_off() -> str:
-        """Turn off the Vybra Spire (fan/heater) device."""
+    def _set_value(index: str, new_val: str | bool) -> dict[str, str]:
         try:
-            if VybraSpire.status():
-                VybraSpire.DEVICE.turn_off()
-                new_status = VybraSpire.status()
-                return f"Device power: {new_status.get(VybraSpireOptions.POWER.value)}"
+            if VybraSpire._status():
+                VybraSpire.DEVICE.set_value(index, new_val)
+                return VybraSpire._status()
         except Exception as e:
-            return str("Failed to turn off device: " + str(e))
-        else:
-            return "Failed to fetch status"
-
-    @staticmethod
-    def turn_on() -> str:
-        """Turn on the Vybra Spire (fan/heater) device."""
-        try:
-            if VybraSpire.status():
-                VybraSpire.DEVICE.turn_on()
-                new_status = VybraSpire.status()
-                return f"Device power: {new_status.get(VybraSpireOptions.POWER.value)}"
-        except Exception as e:
-            return str("Failed to turn on device: " + str(e))
-        else:
-            return "Failed to fetch status"
+            msg = f"Error when setting device value: {e}"
+            raise RuntimeError(msg) from e
 
     @staticmethod
     def get_current_temperature() -> str:
         """Get the current temperature in the room."""
         try:
-            if status := VybraSpire.status():
-                dps = status.get("dps")
+            if status := VybraSpire._status():
+                dps: dict = status.get("dps")
                 current_temperature = dps.get(str(VybraSpireOptions.CURRENT_TEMPERATURE.value))
                 return f"Current temperature: {current_temperature}"
         except Exception as e:
-            return str("Failed to get current temperature: " + str(e))
+            return f"Failed to get current temperature: {e}"
+
+    @staticmethod
+    def turn_on() -> str:
+        """Turn on the Vybra Spire (fan/heater) device."""
+        try:
+            bool_value = True
+            VybraSpire._set_value(VybraSpireOptions.POWER.value, bool_value)
+        except Exception as e:
+            return f"Failed to turn on device: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Device power: {bool_value}"
+
+    @staticmethod
+    def turn_off() -> str:
+        """Turn off the Vybra Spire (fan/heater) device."""
+        try:
+            bool_value = False
+            VybraSpire._set_value(VybraSpireOptions.POWER.value, bool_value)
+        except Exception as e:
+            return f"Failed to turn off device: {e}"
+        else:
+            return f"Device power: {bool_value}"
 
     @staticmethod
     def set_heating_mode_cold() -> str:
@@ -138,15 +142,12 @@ class VybraSpire(FunctionsListBase):
         Set the heating mode to cold.
         """
         try:
-            if VybraSpire.status():
-                bool_value = False
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
-                new_status = VybraSpire.status()
-                return f"Heating mode set to: {'hot' if new_status.get(VybraSpireOptions.HEAT_MODE.value) else 'cold'}"
+            bool_value = False
+            VybraSpire._set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
         except Exception as e:
-            return str("Failed to set mode to cold: " + str(e))
+            return f"Failed to set mode to cold: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Heating mode set to: {'hot' if bool_value else 'cold'}"
 
     @staticmethod
     def set_heating_mode_hot() -> str:
@@ -154,15 +155,12 @@ class VybraSpire(FunctionsListBase):
         Set the heating mode to hot.
         """
         try:
-            if VybraSpire.status():
-                bool_value = True
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
-                new_status = VybraSpire.status()
-                return f"Heating mode set to: {'hot' if new_status.get(VybraSpireOptions.HEAT_MODE.value) else 'cold'}"
+            bool_value = True
+            VybraSpire._set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
         except Exception as e:
-            return str("Failed to set mode to hot: " + str(e))
+            return f"Failed to set mode to hot: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Heating mode set to: {'hot' if bool_value else 'cold'}"
 
     @staticmethod
     def set_fan_mode_fresh() -> str:
@@ -170,14 +168,12 @@ class VybraSpire(FunctionsListBase):
         Set the fan mode to fresh.
         """
         try:
-            if VybraSpire.status():
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.FAN_MODE.value, "fresh")
-                new_status = VybraSpire.status()
-                return f"Fan mode set to: {new_status.get(VybraSpireOptions.FAN_MODE.value)}"
+            mode = "fresh"
+            VybraSpire._set_value(VybraSpireOptions.FAN_MODE.value, mode)
         except Exception as e:
-            return str("Failed to set mode to fresh: " + str(e))
+            return f"Failed to set mode to fresh: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Fan mode set to: {mode}"
 
     @staticmethod
     def set_fan_mode_close() -> str:
@@ -185,14 +181,12 @@ class VybraSpire(FunctionsListBase):
         Set the fan mode to close.
         """
         try:
-            if VybraSpire.status():
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.FAN_MODE.value, "close")
-                new_status = VybraSpire.status()
-                return f"Fan mode set to: {new_status.get(VybraSpireOptions.FAN_MODE.value)}"
+            mode = "close"
+            VybraSpire._set_value(VybraSpireOptions.FAN_MODE.value, mode)
         except Exception as e:
-            return str("Failed to set mode to close: " + str(e))
+            return f"Failed to set mode to close: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Fan mode set to: {mode}"
 
     @staticmethod
     def set_fan_mode_strong() -> str:
@@ -200,14 +194,12 @@ class VybraSpire(FunctionsListBase):
         Set the fan mode to strong.
         """
         try:
-            if VybraSpire.status():
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.FAN_MODE.value, "heavy")
-                new_status = VybraSpire.status()
-                return f"Fan mode set to: {new_status.get(VybraSpireOptions.FAN_MODE.value)}"
+            mode = "heavy"
+            VybraSpire._set_value(VybraSpireOptions.FAN_MODE.value, mode)
         except Exception as e:
-            return str("Failed to set mode to strong: " + str(e))
+            return f"Failed to set mode to strong: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Fan mode set to: {mode}"
 
     @staticmethod
     def set_fan_mode_quiet() -> str:
@@ -215,14 +207,12 @@ class VybraSpire(FunctionsListBase):
         Set the fan mode to quiet.
         """
         try:
-            if VybraSpire.status():
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.FAN_MODE.value, "sleep")
-                new_status = VybraSpire.status()
-                return f"Fan mode set to: {new_status.get(VybraSpireOptions.FAN_MODE.value)}"
+            mode = "sleep"
+            VybraSpire._set_value(VybraSpireOptions.FAN_MODE.value, mode)
         except Exception as e:
-            return str("Failed to set mode to quiet: " + str(e))
+            return f"Failed to set mode to quiet: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Fan mode set to: {mode}"
 
     @staticmethod
     def turn_on_horizontal_wind() -> str:
@@ -230,15 +220,12 @@ class VybraSpire(FunctionsListBase):
         Turn on the horizontal wind to rotate the device.
         """
         try:
-            if VybraSpire.status():
-                bool_value = True
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
-                new_status = VybraSpire.status()
-                return f"Horizontal wind: {new_status.get(VybraSpireOptions.HORIZONTAL_WIND.value)}"
+            bool_value = True
+            VybraSpire._set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
         except Exception as e:
-            return str("Failed to set horizontal wind: " + str(e))
+            return f"Failed to set horizontal wind: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Horizontal wind set to: {bool_value}"
 
     @staticmethod
     def turn_off_horizontal_wind() -> str:
@@ -246,15 +233,12 @@ class VybraSpire(FunctionsListBase):
         Turn off the horizontal wind to stop rotating the device.
         """
         try:
-            if VybraSpire.status():
-                bool_value = False
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
-                new_status = VybraSpire.status()
-                return f"Horizontal wind: {new_status.get(VybraSpireOptions.HORIZONTAL_WIND.value)}"
+            bool_value = False
+            VybraSpire._set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
         except Exception as e:
-            return str("Failed to set horizontal wind: " + str(e))
+            return f"Failed to set horizontal wind: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Horizontal wind set to: {bool_value}"
 
     @staticmethod
     def turn_on_sound() -> str:
@@ -262,15 +246,12 @@ class VybraSpire(FunctionsListBase):
         Turn on the sound.
         """
         try:
-            if VybraSpire.status():
-                bool_value = True
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.SOUND.value, bool_value)
-                new_status = VybraSpire.status()
-                return f"Sound: {new_status.get(VybraSpireOptions.SOUND.value)}"
+            bool_value = True
+            VybraSpire._set_value(VybraSpireOptions.SOUND.value, bool_value)
         except Exception as e:
-            return str("Failed to set sound: " + str(e))
+            return f"Failed to set sound: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Sound set to: {bool_value}"
 
     @staticmethod
     def turn_off_sound() -> str:
@@ -278,15 +259,12 @@ class VybraSpire(FunctionsListBase):
         Turn off the sound.
         """
         try:
-            if VybraSpire.status():
-                bool_value = False
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.SOUND.value, bool_value)
-                new_status = VybraSpire.status()
-                return f"Sound: {new_status.get(VybraSpireOptions.SOUND.value)}"
+            bool_value = False
+            VybraSpire._set_value(VybraSpireOptions.SOUND.value, bool_value)
         except Exception as e:
-            return str("Failed to set sound: " + str(e))
+            return f"Failed to set sound: {e}"
         else:
-            return "Failed to fetch status"
+            return f"Sound set to: {bool_value}"
 
     @staticmethod
     def turn_on_uv_sterilisation() -> str:
@@ -294,15 +272,12 @@ class VybraSpire(FunctionsListBase):
         Turn on the UV sterilisation.
         """
         try:
-            if VybraSpire.status():
-                bool_value = True
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
-                new_status = VybraSpire.status()
-                return f"UV sterilisation: {new_status.get(VybraSpireOptions.UV_STERILISATION.value)}"
+            bool_value = True
+            VybraSpire._set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
         except Exception as e:
-            return str("Failed to set UV sterilisation: " + str(e))
+            return f"Failed to set UV sterilisation: {e}"
         else:
-            return "Failed to fetch status"
+            return f"UV sterilisation set to: {bool_value}"
 
     @staticmethod
     def turn_off_uv_sterilisation() -> str:
@@ -310,12 +285,9 @@ class VybraSpire(FunctionsListBase):
         Turn off the UV sterilisation.
         """
         try:
-            if VybraSpire.status():
-                bool_value = False
-                VybraSpire.DEVICE.set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
-                new_status = VybraSpire.status()
-                return f"UV sterilisation: {new_status.get(VybraSpireOptions.UV_STERILISATION.value)}"
+            bool_value = False
+            VybraSpire._set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
         except Exception as e:
-            return str("Failed to set UV sterilisation: " + str(e))
+            return f"Failed to set UV sterilisation: {e}"
         else:
-            return "Failed to fetch status"
+            return f"UV sterilisation set to: {bool_value}"
