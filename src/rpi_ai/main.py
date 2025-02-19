@@ -53,7 +53,7 @@ class AIApp:
 
     @property
     def root_dir(self) -> Path:
-        if not self._root_dir:
+        if not self._root_dir.exists():
             self._root_dir = Path(str(os.environ.get("RPI_AI_PATH")))
             logger.debug(f"Root directory: {self._root_dir}")
 
@@ -115,7 +115,6 @@ class AIApp:
 
     def write_token_to_file(self, token: str) -> None:
         token_file = self.logs_dir / "token.txt"
-        token_file.touch(exist_ok=True)
         with token_file.open("w") as file:
             file.write(token)
 
