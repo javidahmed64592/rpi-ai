@@ -114,7 +114,9 @@ class AIApp:
         return secrets.token_urlsafe(32)
 
     def write_token_to_file(self, token: str) -> None:
-        with (self.logs_dir / "token.txt").open("w") as file:
+        token_file = self.logs_dir / "token.txt"
+        token_file.touch(exist_ok=True)
+        with token_file.open("w") as file:
             file.write(token)
 
     def authenticate(self) -> bool:
