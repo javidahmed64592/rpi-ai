@@ -112,15 +112,15 @@ select = [
     "YTT",
 ]
 ignore = [
-  "E501",
-  "E741",
-  "G004",
-  "ISC001",
-  "N999",
-  "PLR0913",
-  "S101",
-  "S104",
-  "S105"
+    "E501",
+    "E741",
+    "G004",
+    "ISC001",
+    "N999",
+    "PLR0913",
+    "S101",
+    "S104",
+    "S105"
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
