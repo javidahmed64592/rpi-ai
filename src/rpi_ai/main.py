@@ -106,7 +106,7 @@ class AIApp:
     def load_token_from_file(self) -> str:
         try:
             with (self.logs_dir / "token.txt").open() as file:
-                return file.read()
+                return file.read().strip()
         except FileNotFoundError:
             return ""
 
@@ -119,7 +119,11 @@ class AIApp:
             file.write(token)
 
     def authenticate(self) -> bool:
-        return self.get_request_headers().get("Authorization") == self.token
+        logger.debug(f"Authorization header: {self.get_request_headers().get('Authorization')}")
+        logger.debug(f"Token: {self.token}")
+        authenticated = self.get_request_headers().get("Authorization") == self.token
+        logger.debug(f"Authenticated: {authenticated}")
+        return authenticated
 
     def token_required(self, f: Callable) -> Callable:
         """Decorator to protect endpoints with token authentication."""
