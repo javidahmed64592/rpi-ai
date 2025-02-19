@@ -114,7 +114,6 @@ class AIApp:
         return secrets.token_urlsafe(32)
 
     def write_token_to_file(self, token: str) -> None:
-        self.logs_dir.mkdir(parents=True, exist_ok=True)
         with (self.logs_dir / "token.txt").open("w") as file:
             file.write(token)
 
