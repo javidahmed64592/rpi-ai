@@ -26,6 +26,7 @@ dependencies = [
     "python-dotenv",
     "pydantic",
     "psutil",
+    "tinytuya",
 ]
 
 [project.optional-dependencies]
