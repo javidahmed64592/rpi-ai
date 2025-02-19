@@ -39,7 +39,7 @@ class VybraSpireOptions(Enum):
     def validate_option(option: VybraSpireOptions, value: int | str | bool) -> int | str | bool:
         valid_options = VybraSpireOptions.get_valid_options()
 
-        if option not in valid_options:
+        if option.value not in valid_options:
             msg = f"Invalid option: {option}"
             raise ValueError(msg)
 
@@ -47,7 +47,7 @@ class VybraSpireOptions(Enum):
             msg = f"Invalid value type for {option}: {value}"
             raise TypeError(msg)
 
-        valid_values = valid_options[option]
+        valid_values = valid_options[option.value]
         if isinstance(valid_values, tuple) and isinstance(value, int):
             if valid_values[0] <= value <= valid_values[1]:
                 return value
