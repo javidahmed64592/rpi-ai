@@ -158,9 +158,14 @@ def mock_request_files() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
+def mock_load_token_from_file() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.AIApp.load_token_from_file") as mock:
+        yield mock
+
+
+@pytest.fixture
 def mock_create_new_token() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.AIApp.create_new_token") as mock:
-        mock.return_value = "api_token"
         yield mock
 
 
