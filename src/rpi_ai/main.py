@@ -18,6 +18,7 @@ logger = Logger(__name__)
 
 class AIApp:
     def __init__(self) -> None:
+        self._token: str = ""
         logger.debug("Loading environment variables...")
         load_dotenv()
 
@@ -82,12 +83,14 @@ class AIApp:
 
     @property
     def token(self) -> str:
-        try:
-            return self._token
-        except AttributeError:
-            self._token = self.create_new_token()
-            self.write_token_to_file(self._token)
-            return self._token
+        if not self._token:
+            if token := self.load_token_from_file():
+                self._token = token
+            else:
+                self._token = self.create_new_token()
+                self.write_token_to_file(self._token)
+
+        return self._token
 
     def get_request_headers(self) -> dict[str, str]:
         return request.headers
@@ -97,6 +100,13 @@ class AIApp:
 
     def get_request_files(self) -> dict[str, str]:
         return request.files
+
+    def load_token_from_file(self) -> str:
+        try:
+            with (self.logs_dir / "token.txt").open() as file:
+                return file.read()
+        except FileNotFoundError:
+            return ""
 
     def create_new_token(self) -> str:
         return secrets.token_urlsafe(32)
