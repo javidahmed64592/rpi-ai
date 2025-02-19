@@ -20,7 +20,7 @@ logger = Logger(__name__)
 
 class AIApp:
     def __init__(self) -> None:
-        self._root_dir: Path = Path()
+        self._root_dir: Path | None = None
         self._api_key: str = ""
         self._config: AIConfigType = None
         self._token: str = ""
@@ -53,7 +53,7 @@ class AIApp:
 
     @property
     def root_dir(self) -> Path:
-        if not self._root_dir.exists():
+        if not self._root_dir:
             self._root_dir = Path(str(os.environ.get("RPI_AI_PATH")))
             logger.debug(f"Root directory: {self._root_dir}")
 
