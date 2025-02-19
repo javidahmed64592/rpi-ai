@@ -100,7 +100,7 @@ class VybraSpire(FunctionsListBase):
             if VybraSpire.status():
                 VybraSpire.DEVICE.turn_off()
                 new_status = VybraSpire.status()
-                return f"Device power: {new_status[VybraSpireOptions.POWER.value]}"
+                return f"Device power: {new_status.get(VybraSpireOptions.POWER.value)}"
         except Exception as e:
             return str("Failed to turn off device: " + str(e))
         else:
@@ -113,7 +113,7 @@ class VybraSpire(FunctionsListBase):
             if VybraSpire.status():
                 VybraSpire.DEVICE.turn_on()
                 new_status = VybraSpire.status()
-                return f"Device power: {new_status[VybraSpireOptions.POWER.value]}"
+                return f"Device power: {new_status.get(VybraSpireOptions.POWER.value)}"
         except Exception as e:
             return str("Failed to turn on device: " + str(e))
         else:
@@ -125,7 +125,7 @@ class VybraSpire(FunctionsListBase):
         try:
             if status := VybraSpire.status():
                 dps = status.get("dps")
-                current_temperature = dps[str(VybraSpireOptions.CURRENT_TEMPERATURE.value)]
+                current_temperature = dps.get(str(VybraSpireOptions.CURRENT_TEMPERATURE.value))
                 return f"Current temperature: {current_temperature}"
         except Exception as e:
             return str("Failed to get current temperature: " + str(e))
@@ -142,7 +142,7 @@ class VybraSpire(FunctionsListBase):
                 bool_value = False
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
                 new_status = VybraSpire.status()
-                return f"Heating mode set to: {'hot' if new_status[VybraSpireOptions.HEAT_MODE.value] else 'cold'}"
+                return f"Heating mode set to: {'hot' if new_status.get(VybraSpireOptions.HEAT_MODE.value) else 'cold'}"
         except Exception as e:
             return str("Failed to set mode to cold: " + str(e))
         else:
@@ -158,7 +158,7 @@ class VybraSpire(FunctionsListBase):
                 bool_value = True
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
                 new_status = VybraSpire.status()
-                return f"Heating mode set to: {'hot' if new_status[VybraSpireOptions.HEAT_MODE.value] else 'cold'}"
+                return f"Heating mode set to: {'hot' if new_status.get(VybraSpireOptions.HEAT_MODE.value) else 'cold'}"
         except Exception as e:
             return str("Failed to set mode to hot: " + str(e))
         else:
@@ -173,7 +173,7 @@ class VybraSpire(FunctionsListBase):
             if VybraSpire.status():
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.FAN_MODE.value, "fresh")
                 new_status = VybraSpire.status()
-                return f"Fan mode set to: {new_status[VybraSpireOptions.FAN_MODE.value]}"
+                return f"Fan mode set to: {new_status.get(VybraSpireOptions.FAN_MODE.value)}"
         except Exception as e:
             return str("Failed to set mode to fresh: " + str(e))
         else:
@@ -188,7 +188,7 @@ class VybraSpire(FunctionsListBase):
             if VybraSpire.status():
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.FAN_MODE.value, "close")
                 new_status = VybraSpire.status()
-                return f"Fan mode set to: {new_status[VybraSpireOptions.FAN_MODE.value]}"
+                return f"Fan mode set to: {new_status.get(VybraSpireOptions.FAN_MODE.value)}"
         except Exception as e:
             return str("Failed to set mode to close: " + str(e))
         else:
@@ -203,7 +203,7 @@ class VybraSpire(FunctionsListBase):
             if VybraSpire.status():
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.FAN_MODE.value, "heavy")
                 new_status = VybraSpire.status()
-                return f"Fan mode set to: {new_status[VybraSpireOptions.FAN_MODE.value]}"
+                return f"Fan mode set to: {new_status.get(VybraSpireOptions.FAN_MODE.value)}"
         except Exception as e:
             return str("Failed to set mode to strong: " + str(e))
         else:
@@ -218,7 +218,7 @@ class VybraSpire(FunctionsListBase):
             if VybraSpire.status():
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.FAN_MODE.value, "sleep")
                 new_status = VybraSpire.status()
-                return f"Fan mode set to: {new_status[VybraSpireOptions.FAN_MODE.value]}"
+                return f"Fan mode set to: {new_status.get(VybraSpireOptions.FAN_MODE.value)}"
         except Exception as e:
             return str("Failed to set mode to quiet: " + str(e))
         else:
@@ -234,7 +234,7 @@ class VybraSpire(FunctionsListBase):
                 bool_value = True
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
                 new_status = VybraSpire.status()
-                return f"Horizontal wind: {new_status[VybraSpireOptions.HORIZONTAL_WIND.value]}"
+                return f"Horizontal wind: {new_status.get(VybraSpireOptions.HORIZONTAL_WIND.value)}"
         except Exception as e:
             return str("Failed to set horizontal wind: " + str(e))
         else:
@@ -250,7 +250,7 @@ class VybraSpire(FunctionsListBase):
                 bool_value = False
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
                 new_status = VybraSpire.status()
-                return f"Horizontal wind: {new_status[VybraSpireOptions.HORIZONTAL_WIND.value]}"
+                return f"Horizontal wind: {new_status.get(VybraSpireOptions.HORIZONTAL_WIND.value)}"
         except Exception as e:
             return str("Failed to set horizontal wind: " + str(e))
         else:
@@ -266,7 +266,7 @@ class VybraSpire(FunctionsListBase):
                 bool_value = True
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.SOUND.value, bool_value)
                 new_status = VybraSpire.status()
-                return f"Sound: {new_status[VybraSpireOptions.SOUND.value]}"
+                return f"Sound: {new_status.get(VybraSpireOptions.SOUND.value)}"
         except Exception as e:
             return str("Failed to set sound: " + str(e))
         else:
@@ -282,7 +282,7 @@ class VybraSpire(FunctionsListBase):
                 bool_value = False
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.SOUND.value, bool_value)
                 new_status = VybraSpire.status()
-                return f"Sound: {new_status[VybraSpireOptions.SOUND.value]}"
+                return f"Sound: {new_status.get(VybraSpireOptions.SOUND.value)}"
         except Exception as e:
             return str("Failed to set sound: " + str(e))
         else:
@@ -298,7 +298,7 @@ class VybraSpire(FunctionsListBase):
                 bool_value = True
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
                 new_status = VybraSpire.status()
-                return f"UV sterilisation: {new_status[VybraSpireOptions.UV_STERILISATION.value]}"
+                return f"UV sterilisation: {new_status.get(VybraSpireOptions.UV_STERILISATION.value)}"
         except Exception as e:
             return str("Failed to set UV sterilisation: " + str(e))
         else:
@@ -314,7 +314,7 @@ class VybraSpire(FunctionsListBase):
                 bool_value = False
                 VybraSpire.DEVICE.set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
                 new_status = VybraSpire.status()
-                return f"UV sterilisation: {new_status[VybraSpireOptions.UV_STERILISATION.value]}"
+                return f"UV sterilisation: {new_status.get(VybraSpireOptions.UV_STERILISATION.value)}"
         except Exception as e:
             return str("Failed to set UV sterilisation: " + str(e))
         else:
