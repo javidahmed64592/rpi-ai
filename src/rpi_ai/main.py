@@ -53,12 +53,11 @@ class AIApp:
 
     @property
     def root_dir(self) -> Path:
-        try:
-            return self._root_dir
-        except AttributeError:
+        if not self._root_dir:
             self._root_dir = Path(str(os.environ.get("RPI_AI_PATH")))
             logger.debug(f"Root directory: {self._root_dir}")
-            return self._root_dir
+
+        return self._root_dir
 
     @property
     def config_dir(self) -> Path:
@@ -70,21 +69,19 @@ class AIApp:
 
     @property
     def api_key(self) -> str:
-        try:
-            return self._api_key
-        except AttributeError:
+        if not self._api_key:
             self._api_key = str(os.environ.get("GEMINI_API_KEY"))
             logger.debug("Successfully loaded API key")
-            return self._api_key
+
+        return self._api_key
 
     @property
     def config(self) -> AIConfigType:
-        try:
-            return self._config
-        except AttributeError:
+        if not self._config:
             logger.debug("Loading config...")
             self._config = AIConfigType.load(str(self.config_dir / "ai_config.json"))
-            return self._config
+
+        return self._config
 
     @property
     def token(self) -> str:
