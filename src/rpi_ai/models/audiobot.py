@@ -5,12 +5,12 @@ from google.genai.types import Part
 from gtts import gTTS
 
 
-def get_audio_request(audio_data: bytes) -> dict[str, str]:
+def get_audio_request(audio_data: bytes) -> tuple[str, Part]:
     inline_data = Part.from_bytes(
         data=audio_data,
         mime_type="audio/mp3",
     )
-    return ["Respond to the voice message.", inline_data]
+    return "Respond to the voice message.", inline_data
 
 
 def get_audio_bytes_from_text(text: str) -> str:

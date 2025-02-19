@@ -90,6 +90,7 @@ class SystemInfo(FunctionsListBase):
             return process.name()
         except psutil.NoSuchProcess:
             logger.exception(f"No process found with PID {pid}.")
+            return f"No process found with PID {pid}."
 
     @staticmethod
     def get_cpu_percent() -> float:
@@ -134,7 +135,7 @@ class SystemInfo(FunctionsListBase):
         }
 
     @staticmethod
-    def get_temperature() -> float:
+    def get_temperature() -> float | None:
         """
         Get the CPU temperature in degrees Celsius.
 
@@ -146,3 +147,4 @@ class SystemInfo(FunctionsListBase):
             return psutil.sensors_temperatures()["cpu_thermal"][0].current
         except (KeyError, IndexError, AttributeError):
             logger.exception("Failed to get CPU temperature.")
+            return None
