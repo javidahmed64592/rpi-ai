@@ -102,6 +102,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Device power: {VybraSpire.status()[VybraSpireOptions.POWER.value]}"
         except Exception as e:
             return str("Failed to turn off device: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def turn_on() -> str:
@@ -112,6 +114,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Device power: {VybraSpire.status()[VybraSpireOptions.POWER.value]}"
         except Exception as e:
             return str("Failed to turn on device: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def get_current_temperature() -> str:
@@ -123,6 +127,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Current temperature: {current_temperature}"
         except Exception as e:
             return str("Failed to get current temperature: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def set_heating_mode_cold() -> str:
@@ -136,6 +142,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Heating mode set to: {'hot' if VybraSpire.status()[VybraSpireOptions.HEAT_MODE.value] else 'cold'}"
         except Exception as e:
             return str("Failed to set mode to cold: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def set_heating_mode_hot() -> str:
@@ -149,6 +157,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Heating mode set to: {'hot' if VybraSpire.status()[VybraSpireOptions.HEAT_MODE.value] else 'cold'}"
         except Exception as e:
             return str("Failed to set mode to hot: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def set_fan_mode_fresh() -> str:
@@ -161,6 +171,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Fan mode set to: {VybraSpire.status()[VybraSpireOptions.HEAT_MODE.value]}"
         except Exception as e:
             return str("Failed to set mode to fresh: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def set_fan_mode_close() -> str:
@@ -173,6 +185,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Fan mode set to: {VybraSpire.status()[VybraSpireOptions.HEAT_MODE.value]}"
         except Exception as e:
             return str("Failed to set mode to quiet: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def set_fan_mode_strong() -> str:
@@ -185,6 +199,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Fan mode set to: {VybraSpire.status()[VybraSpireOptions.HEAT_MODE.value]}"
         except Exception as e:
             return str("Failed to set mode to strong: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def set_fan_mode_quiet() -> str:
@@ -197,6 +213,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Fan mode set to: {VybraSpire.status()[VybraSpireOptions.HEAT_MODE.value]}"
         except Exception as e:
             return str("Failed to set mode to quiet: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def turn_on_horizontal_wind() -> str:
@@ -210,6 +228,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Horizontal wind: {VybraSpire.status()[VybraSpireOptions.HORIZONTAL_WIND.value]}"
         except Exception as e:
             return str("Failed to set horizontal wind: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def turn_off_horizontal_wind() -> str:
@@ -223,6 +243,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Horizontal wind: {VybraSpire.status()[VybraSpireOptions.HORIZONTAL_WIND.value]}"
         except Exception as e:
             return str("Failed to set horizontal wind: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def turn_on_sound() -> str:
@@ -236,6 +258,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Sound: {VybraSpire.status()[VybraSpireOptions.SOUND.value]}"
         except Exception as e:
             return str("Failed to set sound: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def turn_off_sound() -> str:
@@ -249,6 +273,8 @@ class VybraSpire(FunctionsListBase):
                 return f"Sound: {VybraSpire.status()[VybraSpireOptions.SOUND.value]}"
         except Exception as e:
             return str("Failed to set sound: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def turn_on_uv_sterilisation() -> str:
@@ -262,6 +288,8 @@ class VybraSpire(FunctionsListBase):
                 return f"UV sterilisation: {VybraSpire.status()[VybraSpireOptions.UV_STERILISATION.value]}"
         except Exception as e:
             return str("Failed to set UV sterilisation: " + str(e))
+        else:
+            return "Failed to fetch status"
 
     @staticmethod
     def turn_off_uv_sterilisation() -> str:
@@ -275,3 +303,5 @@ class VybraSpire(FunctionsListBase):
                 return f"UV sterilisation: {VybraSpire.status()[VybraSpireOptions.UV_STERILISATION.value]}"
         except Exception as e:
             return str("Failed to set UV sterilisation: " + str(e))
+        else:
+            return "Failed to fetch status"
