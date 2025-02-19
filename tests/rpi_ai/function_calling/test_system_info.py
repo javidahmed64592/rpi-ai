@@ -24,14 +24,14 @@ def mock_platform() -> Generator[MagicMock, None, None]:
         mock_version.return_value = "test_version"
         mock_machine.return_value = "test_machine"
         mock_processor.return_value = "test_processor"
-        mock_info = MagicMock()
-        mock_info.system = mock_system
-        mock_info.node = mock_node
-        mock_info.release = mock_release
-        mock_info.version = mock_version
-        mock_info.machine = mock_machine
-        mock_info.processor = mock_processor
-        yield mock_info
+        yield MagicMock(
+            system=mock_system,
+            node=mock_node,
+            release=mock_release,
+            version=mock_version,
+            machine=mock_machine,
+            processor=mock_processor,
+        )
 
 
 @pytest.fixture
@@ -97,15 +97,13 @@ def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
 
 
 def test_get_os_info(mock_platform: MagicMock) -> None:
-    expected_result = {
-        "system": mock_platform.system.return_value,
-        "node": mock_platform.node.return_value,
-        "release": mock_platform.release.return_value,
-        "version": mock_platform.version.return_value,
-        "machine": mock_platform.machine.return_value,
-        "processor": mock_platform.processor.return_value,
-    }
-    assert SystemInfo.get_os_info() == expected_result
+    os_info = SystemInfo.get_os_info()
+    assert os_info["system"] == mock_platform.system.return_value
+    assert os_info["node"] == mock_platform.node.return_value
+    assert os_info["release"] == mock_platform.release.return_value
+    assert os_info["version"] == mock_platform.version.return_value
+    assert os_info["machine"] == mock_platform.machine.return_value
+    assert os_info["processor"] == mock_platform.processor.return_value
 
 
 def test_get_hostname(mock_get_hostname: MagicMock) -> None:
