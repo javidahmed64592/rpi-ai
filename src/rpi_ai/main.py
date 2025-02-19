@@ -106,7 +106,7 @@ class AIApp:
     def load_token_from_file(self) -> str:
         try:
             with (self.logs_dir / "token.txt").open() as file:
-                return file.read()
+                return file.read().strip()
         except FileNotFoundError:
             return ""
 
