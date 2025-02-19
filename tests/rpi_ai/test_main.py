@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 import pytest
 from flask.testing import FlaskClient
@@ -30,8 +30,30 @@ class TestAIApp:
         assert mock_ai_app.root_dir == mock_app_path.return_value
         assert mock_ai_app.api_key == mock_api_key.return_value
 
-    def test_generating_token_writes_to_file(self, mock_ai_app: AIApp, mock_write_token_to_file: MagicMock) -> None:
-        mock_write_token_to_file.assert_called_once_with(mock_ai_app.token)
+    def test_retrieve_token_when_set(self, mock_ai_app: AIApp) -> None:
+        assert mock_ai_app.token == mock_ai_app._token
+
+    def test_generating_token_loads_from_file_if_exists(
+        self,
+        mock_ai_app: AIApp,
+        mock_load_token_from_file: MagicMock,
+    ) -> None:
+        mock_ai_app._token = None
+        mock_load_token_from_file.return_value = "existing_token"
+        assert mock_ai_app.token == "existing_token"
+
+    def test_generating_token_writes_to_file_when_file_does_not_exist(
+        self,
+        mock_ai_app: AIApp,
+        mock_load_token_from_file: MagicMock,
+        mock_create_new_token: MagicMock,
+        mock_write_token_to_file: MagicMock,
+    ) -> None:
+        mock_ai_app._token = None
+        mock_create_new_token.return_value = "new_token"
+        mock_load_token_from_file.return_value = ""
+        assert mock_ai_app.token == mock_ai_app._token
+        mock_write_token_to_file.assert_has_calls([call("new_token")])
 
     def test_authenticate_success(
         self, mock_ai_app: AIApp, mock_request_headers: MagicMock, mock_create_new_token: MagicMock

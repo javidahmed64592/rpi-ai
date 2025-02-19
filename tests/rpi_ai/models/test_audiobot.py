@@ -9,13 +9,13 @@ from rpi_ai.models.audiobot import get_audio_bytes_from_text, get_audio_request
 
 def test_get_audio_request() -> None:
     audio_data = b"test_audio_data"
-    expected_result = [
+    expected_result = (
         "Respond to the voice message.",
         Part.from_bytes(
             data=audio_data,
             mime_type="audio/mp3",
         ),
-    ]
+    )
     result = get_audio_request(audio_data)
     assert result == expected_result
 

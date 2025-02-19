@@ -1,5 +1,3 @@
-from collections.abc import Callable
-
 from rpi_ai.function_calling.functions_list_base import FunctionsListBase
 
 
@@ -17,7 +15,6 @@ class TestFunctionsListBase:
 
         flb.functions.append(dummy_function)
         assert len(flb.functions) == 1
-        assert isinstance(flb.functions[0], Callable)
         assert flb.functions[0]() == "dummy"
 
     def test_remove_function(self) -> None:

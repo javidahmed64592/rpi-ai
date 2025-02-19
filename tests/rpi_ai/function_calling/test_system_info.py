@@ -24,14 +24,14 @@ def mock_platform() -> Generator[MagicMock, None, None]:
         mock_version.return_value = "test_version"
         mock_machine.return_value = "test_machine"
         mock_processor.return_value = "test_processor"
-        yield {
-            "system": mock_system,
-            "node": mock_node,
-            "release": mock_release,
-            "version": mock_version,
-            "machine": mock_machine,
-            "processor": mock_processor,
-        }
+        yield MagicMock(
+            system=mock_system,
+            node=mock_node,
+            release=mock_release,
+            version=mock_version,
+            machine=mock_machine,
+            processor=mock_processor,
+        )
 
 
 @pytest.fixture
@@ -96,16 +96,14 @@ def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
         yield mock
 
 
-def test_get_os_info(mock_platform: dict) -> None:
-    expected_result = {
-        "system": mock_platform["system"].return_value,
-        "node": mock_platform["node"].return_value,
-        "release": mock_platform["release"].return_value,
-        "version": mock_platform["version"].return_value,
-        "machine": mock_platform["machine"].return_value,
-        "processor": mock_platform["processor"].return_value,
-    }
-    assert SystemInfo.get_os_info() == expected_result
+def test_get_os_info(mock_platform: MagicMock) -> None:
+    os_info = SystemInfo.get_os_info()
+    assert os_info["system"] == mock_platform.system.return_value
+    assert os_info["node"] == mock_platform.node.return_value
+    assert os_info["release"] == mock_platform.release.return_value
+    assert os_info["version"] == mock_platform.version.return_value
+    assert os_info["machine"] == mock_platform.machine.return_value
+    assert os_info["processor"] == mock_platform.processor.return_value
 
 
 def test_get_hostname(mock_get_hostname: MagicMock) -> None:
@@ -128,9 +126,10 @@ def test_get_process_name_by_pid(mock_process: MagicMock) -> None:
     mock_process.assert_called_once_with(1234)
 
 
-def test_get_process_by_name_returns_none_on_error(mock_process: MagicMock) -> None:
+def test_get_process_name_by_pid_returns_none_on_error(mock_process: MagicMock) -> None:
     mock_process.side_effect = psutil.NoSuchProcess(1234)
-    assert SystemInfo.get_process_name_by_pid(1234) is None
+    assert SystemInfo.get_process_name_by_pid(1234) == "No process found with PID 1234."
+    mock_process.assert_called_once_with(1234)
 
 
 def test_cpu_percent(mock_cpu_percent: MagicMock) -> None:

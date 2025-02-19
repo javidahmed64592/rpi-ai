@@ -32,6 +32,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ruff",
+    "mypy",
     "pytest",
     "pytest-cov",
 ]
@@ -113,15 +114,15 @@ select = [
     "YTT",
 ]
 ignore = [
-  "E501",
-  "E741",
-  "G004",
-  "ISC001",
-  "N999",
-  "PLR0913",
-  "S101",
-  "S104",
-  "S105"
+    "E501",
+    "E741",
+    "G004",
+    "ISC001",
+    "N999",
+    "PLR0913",
+    "S101",
+    "S104",
+    "S105"
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
@@ -136,3 +137,13 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[[tool.mypy.overrides]]
+module = [
+    "google.*",
+    "gtts.*",
+    "psutil.*",
+    "rpi_ai.*",
+    "waitress.*",
+]
+ignore_missing_imports = true

@@ -1,12 +1,14 @@
 import os
 import secrets
 import signal
+from collections.abc import Callable
 from pathlib import Path
 from types import FrameType
 
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from waitress import serve
+from werkzeug.datastructures import FileStorage, Headers, ImmutableMultiDict
 
 from rpi_ai.api_types import AIConfigType
 from rpi_ai.functions import FUNCTIONS
@@ -18,6 +20,10 @@ logger = Logger(__name__)
 
 class AIApp:
     def __init__(self) -> None:
+        self._root_dir: Path = Path()
+        self._api_key: str = ""
+        self._config: AIConfigType = None
+        self._token: str = ""
         logger.debug("Loading environment variables...")
         load_dotenv()
 
@@ -48,7 +54,7 @@ class AIApp:
     @property
     def root_dir(self) -> Path:
         try:
-            return Path(self._root_dir)
+            return self._root_dir
         except AttributeError:
             self._root_dir = Path(str(os.environ.get("RPI_AI_PATH")))
             logger.debug(f"Root directory: {self._root_dir}")
@@ -82,21 +88,30 @@ class AIApp:
 
     @property
     def token(self) -> str:
-        try:
-            return self._token
-        except AttributeError:
-            self._token = self.create_new_token()
-            self.write_token_to_file(self._token)
-            return self._token
+        if not self._token:
+            if token := self.load_token_from_file():
+                self._token = token
+            else:
+                self._token = self.create_new_token()
+                self.write_token_to_file(self._token)
 
-    def get_request_headers(self) -> dict[str, str]:
+        return self._token
+
+    def get_request_headers(self) -> Headers:
         return request.headers
 
-    def get_request_json(self) -> dict[str, str]:
+    def get_request_json(self) -> dict[str, str] | None:
         return request.json
 
-    def get_request_files(self) -> dict[str, str]:
+    def get_request_files(self) -> ImmutableMultiDict[str, FileStorage]:
         return request.files
+
+    def load_token_from_file(self) -> str:
+        try:
+            with (self.logs_dir / "token.txt").open() as file:
+                return file.read()
+        except FileNotFoundError:
+            return ""
 
     def create_new_token(self) -> str:
         return secrets.token_urlsafe(32)
@@ -109,10 +124,10 @@ class AIApp:
     def authenticate(self) -> bool:
         return self.get_request_headers().get("Authorization") == self.token
 
-    def token_required(self, f: callable) -> callable:
+    def token_required(self, f: Callable) -> Callable:
         """Decorator to protect endpoints with token authentication."""
 
-        def decorated_function(*args: tuple, **kwargs: dict) -> Response:
+        def decorated_function(*args: tuple, **kwargs: dict) -> tuple[Response, int]:
             if not self.authenticate():
                 return jsonify({"error": "Unauthorized"}), 401
             return f(*args, **kwargs)
@@ -140,21 +155,29 @@ class AIApp:
         return jsonify(response)
 
     def chat(self) -> Response:
-        user_message = self.get_request_json().get("message")
-        logger.info(user_message)
-        response = self.chatbot.send_message(user_message)
-        logger.info(response.message)
+        user_message = self.get_request_json()
+        if user_message and user_message.get("message"):
+            logger.info(user_message["message"])
+            response = self.chatbot.send_message(user_message["message"])
+            logger.info(response.message)
+        else:
+            response = "No message received."
+            logger.error(response)
         return jsonify(response)
 
     def send_audio(self) -> Response:
-        audio_file = self.get_request_files().get("audio")
-        audio_data = audio_file.read()
-        logger.info("Received audio data...")
-        response = self.chatbot.send_audio(audio_data)
-        logger.info(response.message)
+        audio_file: FileStorage | None = self.get_request_files().get("audio")
+        if audio_file:
+            audio_data = audio_file.read()
+            logger.info("Received audio data...")
+            response = self.chatbot.send_audio(audio_data)
+            logger.info(response.message)
+        else:
+            response = "No audio data received."
+            logger.error(response)
         return jsonify(response)
 
-    def shutdown_handler(self, signum: int, frame: FrameType) -> None:
+    def shutdown_handler(self, signum: int, frame: FrameType | None) -> None:
         logger.info("Shutting down AI...")
         self.app.do_teardown_appcontext()
         os._exit(0)
