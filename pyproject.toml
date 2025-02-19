@@ -31,6 +31,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ruff",
+    "mypy",
     "pytest",
     "pytest-cov",
 ]
@@ -135,3 +136,13 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[[tool.mypy.overrides]]
+module = [
+    "google.*",
+    "gtts.*",
+    "psutil.*",
+    "rpi_ai.*",
+    "waitress.*",
+]
+ignore_missing_imports = true
