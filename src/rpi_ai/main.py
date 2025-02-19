@@ -119,11 +119,7 @@ class AIApp:
             file.write(token)
 
     def authenticate(self) -> bool:
-        logger.debug(f"Authorization header: {self.get_request_headers().get('Authorization')}")
-        logger.debug(f"Token: {self.token}")
-        authenticated = self.get_request_headers().get("Authorization") == self.token
-        logger.debug(f"Authenticated: {authenticated}")
-        return authenticated
+        return self.get_request_headers().get("Authorization") == self.token
 
     def token_required(self, f: Callable) -> Callable:
         """Decorator to protect endpoints with token authentication."""
