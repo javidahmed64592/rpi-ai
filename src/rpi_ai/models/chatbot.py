@@ -8,6 +8,9 @@ from pydantic import ValidationError
 
 from rpi_ai.api_types import AIConfigType, Message, SpeechResponse
 from rpi_ai.models import audiobot
+from rpi_ai.models.logger import Logger
+
+logger = Logger(__name__)
 
 
 class Chatbot:
@@ -66,7 +69,9 @@ class Chatbot:
         try:
             response = self._chat.send_message(text)
             return Message(message=response.text)
-        except (AttributeError, ValidationError):
+        except (AttributeError, ValidationError) as e:
+            msg = f"Failed to send message to chatbot: {e}"
+            logger.exception(msg)
             return Message(message="An error occurred! Please try again.")
         except ServerError:
             return Message(message="Model overloaded! Please try again.")
@@ -78,8 +83,10 @@ class Chatbot:
             reply = response.text
             audio = audiobot.get_audio_bytes_from_text(reply.replace("*", ""))
             return SpeechResponse(bytes=audio, message=reply)
-        except (AttributeError, ValidationError):
-            reply = "Failed to send message to chatbot!"
+        except (AttributeError, ValidationError) as e:
+            msg = f"Failed to send audio to chatbot: {e}"
+            logger.exception(msg)
+            reply = "Failed to send audio to chatbot!"
             audio = audiobot.get_audio_bytes_from_text(reply)
             return SpeechResponse(bytes=audio, message=reply)
         except ServerError:
@@ -87,4 +94,6 @@ class Chatbot:
             audio = audiobot.get_audio_bytes_from_text(reply)
             return SpeechResponse(bytes=audio, message=reply)
         except gTTSError as e:
+            msg = f"A gTTSError occurred: {e}"
+            logger.exception(msg)
             return SpeechResponse(bytes="", message=str(e))
