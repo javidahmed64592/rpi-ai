@@ -31,5 +31,5 @@ def test_get_audio_bytes_from_text(mock_gtts: MagicMock) -> None:
     result = get_audio_bytes_from_text(text)
     expected_result = base64.b64encode(b"test_audio_bytes").decode("utf-8")
     assert result == expected_result
-    mock_gtts.assert_called_once_with(text, lang="en", tld="com.au")
+    mock_gtts.assert_called_once_with(text, lang="en", tld="co.uk")
     mock_gtts_instance.write_to_fp.assert_called_once()
