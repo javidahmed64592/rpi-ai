@@ -4,7 +4,13 @@ from unittest.mock import MagicMock
 
 from google.genai.types import Part
 
-from rpi_ai.models.audiobot import get_audio_bytes_from_text, get_audio_request
+from rpi_ai.models.audiobot import (
+    get_audio_bytes_from_text,
+    get_audio_request,
+    preprocess_default_list,
+    preprocess_remove_asterisk,
+    preprocess_remove_emojis,
+)
 
 
 def test_get_audio_request() -> None:
@@ -31,5 +37,28 @@ def test_get_audio_bytes_from_text(mock_gtts: MagicMock) -> None:
     result = get_audio_bytes_from_text(text)
     expected_result = base64.b64encode(b"test_audio_bytes").decode("utf-8")
     assert result == expected_result
-    mock_gtts.assert_called_once_with(text, lang="en", tld="co.uk")
+    mock_gtts.assert_called_once_with(
+        text,
+        lang="en",
+        tld="co.uk",
+        pre_processor_funcs=[
+            *preprocess_default_list(),
+            preprocess_remove_asterisk,
+            preprocess_remove_emojis,
+        ],
+    )
     mock_gtts_instance.write_to_fp.assert_called_once()
+
+
+def test_preprocess_remove_asterisk() -> None:
+    text = "Hello *world*!"
+    expected_result = "Hello world!"
+    result = preprocess_remove_asterisk(text)
+    assert result == expected_result
+
+
+def test_preprocess_remove_emojis() -> None:
+    text = "Hello 🌍!"
+    expected_result = "Hello !"
+    result = preprocess_remove_emojis(text)
+    assert result == expected_result
