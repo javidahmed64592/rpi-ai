@@ -15,6 +15,6 @@ def get_audio_request(audio_data: bytes) -> list[str | Part]:
 
 def get_audio_bytes_from_text(text: str) -> str:
     audio_fp = BytesIO()
-    tts = gTTS(text, lang="en", tld="com.au")
+    tts = gTTS(text, lang="en", tld="co.uk")
     tts.write_to_fp(audio_fp)
     return base64.b64encode(audio_fp.getvalue()).decode("utf-8")
