@@ -118,7 +118,7 @@ class TestChatbot:
         mock_chatbot.start_chat()
         response = mock_chatbot.send_audio(b"test_audio_data")
         mock_chat_instance.send_message.assert_called_once()
-        assert response.message == "Failed to send message to chatbot!"
+        assert response.message == "Failed to send audio to chatbot!"
         assert response.bytes == mock_audio
 
     def test_send_audio_with_server_error(
