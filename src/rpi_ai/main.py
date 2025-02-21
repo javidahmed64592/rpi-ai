@@ -61,6 +61,8 @@ class AIApp:
 
     @property
     def config_dir(self) -> Path:
+        if (_config_dir := Path.home() / ".config" / "rpi_ai").exists():
+            return _config_dir
         return self.root_dir / "config"
 
     @property

@@ -34,6 +34,21 @@ README_PATH="${WD}/${README_FILE}"
 mkdir -p "${LOGS_DIR}"
 mkdir -p "${SERVICE_DIR}"
 
+CONFIG_DEST="~/.config/rpi_ai/${CONFIG_FILE}"
+mkdir -p "$(dirname "${CONFIG_DEST}")"
+
+if [ -f "${CONFIG_DEST}" ]; then
+    echo "AI configuration file already exists: '${CONFIG_DEST}'"
+    read -p "Overwrite? (y/n): " overwrite
+    if [ "${overwrite}" == "y" ]; then
+        echo "Overwriting AI configuration file: '${CONFIG_DEST}'"
+        cp "${CONFIG_PATH}" "${CONFIG_DEST}"
+    fi
+else
+    echo "Creating AI configuration file: '${CONFIG_DEST}'"
+    cp "${CONFIG_PATH}" "${CONFIG_DEST}"
+fi
+
 echo "Creating environment '${VENV_NAME}'..."
 python -m venv "${VENV_NAME}"
 
