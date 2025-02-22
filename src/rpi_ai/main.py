@@ -20,8 +20,6 @@ logger = Logger(__name__)
 
 class AIApp:
     def __init__(self) -> None:
-        self._config: AIConfigType = None
-        self._token: str = ""
         logger.debug("Loading environment variables...")
         load_dotenv()
 
@@ -41,8 +39,12 @@ class AIApp:
         self.api_key = str(gemini_api_key)
         logger.debug("Successfully loaded API key")
 
-        logger.info(f"Generated token: {self.token}")
+        logger.debug("Loading config...")
+        self.config = AIConfigType.load(str(self.config_dir / "ai_config.json"))
         self.chatbot = Chatbot(self.api_key, self.config, FUNCTIONS)
+
+        self.token = self._generate_token()
+        logger.info(f"Generated token: {self.token}")
 
         self.app = Flask(__name__)
         self.app.add_url_rule("/", "is_alive", self.is_alive, methods=["GET"])
@@ -64,25 +66,6 @@ class AIApp:
     def logs_dir(self) -> Path:
         return self.root_dir / "logs"
 
-    @property
-    def config(self) -> AIConfigType:
-        if not self._config:
-            logger.debug("Loading config...")
-            self._config = AIConfigType.load(str(self.config_dir / "ai_config.json"))
-
-        return self._config
-
-    @property
-    def token(self) -> str:
-        if not self._token:
-            if token := self.load_token_from_file():
-                self._token = token
-            else:
-                self._token = self.create_new_token()
-                self.write_token_to_file(self._token)
-
-        return self._token
-
     def get_request_headers(self) -> Headers:
         return request.headers
 
@@ -91,6 +74,14 @@ class AIApp:
 
     def get_request_files(self) -> ImmutableMultiDict[str, FileStorage]:
         return request.files
+
+    def _generate_token(self) -> str:
+        if token := self.load_token_from_file():
+            return token
+
+        token = self.create_new_token()
+        self.write_token_to_file(token)
+        return token
 
     def load_token_from_file(self) -> str:
         try:
