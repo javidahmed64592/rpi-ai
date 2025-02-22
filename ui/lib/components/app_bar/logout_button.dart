@@ -13,13 +13,12 @@ class LogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context, listen: false);
+    final appState = Provider.of<AppState>(context);
 
     return IconButton(
       icon: const Icon(Icons.logout),
-      onPressed: () {
-        appState.setActivePage(PageType.login);
-      },
+      onPressed:
+          appState.isBusy ? null : () => appState.setActivePage(PageType.login),
     );
   }
 }

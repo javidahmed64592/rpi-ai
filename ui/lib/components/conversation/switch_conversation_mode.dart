@@ -16,9 +16,7 @@ class SwitchConversationMode extends StatelessWidget {
 
     return IconButton(
       icon: const Icon(Icons.swap_horiz),
-      onPressed: () {
-        appState.toggleActivePage();
-      },
+      onPressed: appState.isBusy ? null : () => appState.toggleActivePage(),
     );
   }
 }
