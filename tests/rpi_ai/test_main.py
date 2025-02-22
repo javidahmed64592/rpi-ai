@@ -1,5 +1,6 @@
+from collections.abc import Generator
 from pathlib import Path
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 from flask.testing import FlaskClient
@@ -12,11 +13,14 @@ UNAUTHORIZED_CODE = 401
 
 
 class TestAIAppInit:
-    def test_init(self, mock_env_vars: None, mock_ai_app: AIApp) -> None:
+    @pytest.fixture
+    def mock_path_exists(self) -> Generator[MagicMock, None, None]:
+        with patch("pathlib.Path.exists") as mock:
+            yield mock
+
+    def test_init(self, mock_ai_app: AIApp, mock_env_vars: MagicMock) -> None:
         assert mock_ai_app.root_dir == Path("/test/app/path")
-        assert mock_ai_app.logs_dir == Path("/test/app/path/logs")
         assert mock_ai_app.api_key == "test_api_key"
-        assert mock_ai_app.token == mock_ai_app._token
 
     def test_init_no_rpi_ai_path(self, mock_env_vars_no_rpi_ai_path: None) -> None:
         with pytest.raises(ValueError, match="RPI_AI_PATH variable not set!"):
@@ -25,6 +29,16 @@ class TestAIAppInit:
     def test_init_no_api_key(self, mock_env_vars_no_gemini_api_key: None) -> None:
         with pytest.raises(ValueError, match="GEMINI_API_KEY variable not set!"):
             AIApp()
+
+    def test_config_dir_when_home_config_exists(self, mock_ai_app: AIApp, mock_path_exists: MagicMock) -> None:
+        mock_path_exists.return_value = True
+        assert mock_ai_app.config_dir == Path.home() / ".config" / "rpi_ai"
+
+    def test_config_dir_when_home_config_does_not_exist(
+        self, mock_ai_app: AIApp, mock_env_vars: MagicMock, mock_path_exists: MagicMock
+    ) -> None:
+        mock_path_exists.return_value = False
+        assert mock_ai_app.config_dir == Path("/test/app/path") / "config"
 
 
 class TestAIAppToken:
