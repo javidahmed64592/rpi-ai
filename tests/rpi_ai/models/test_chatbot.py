@@ -9,8 +9,8 @@ from rpi_ai.models.chatbot import Chatbot
 
 
 class TestChatbot:
-    def test_init(self, mock_chatbot: Chatbot, mock_api_key: MagicMock, mock_genai_client: MagicMock) -> None:
-        mock_genai_client.assert_called_once_with(api_key=mock_api_key.return_value)
+    def test_init(self, mock_chatbot: Chatbot, mock_env_vars: MagicMock, mock_genai_client: MagicMock) -> None:
+        mock_genai_client.assert_called_once_with(api_key=mock_env_vars["GEMINI_API_KEY"])
 
     def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         config = mock_chatbot._web_search_config()
@@ -37,18 +37,14 @@ class TestChatbot:
     def test_get_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         assert mock_chatbot.get_config() == mock_config
 
-    def test_update_config(
-        self,
-        mock_chatbot: Chatbot,
-        mock_config: AIConfigType,
-    ) -> None:
+    def test_update_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         mock_config.model = "new-model"
         mock_chatbot.update_config(mock_config)
         assert mock_chatbot.get_config() == mock_config
 
-    def test_start_chat(self, mock_chatbot: Chatbot, mock_start_chat_method: MagicMock) -> None:
+    def test_start_chat(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
         response = mock_chatbot.start_chat()
-        mock_start_chat_method.assert_called_once_with(
+        mock_genai_client.return_value.chats.create.assert_called_once_with(
             model=mock_chatbot._config.model,
             config=GenerateContentConfig(
                 system_instruction=mock_chatbot._config.system_instruction,

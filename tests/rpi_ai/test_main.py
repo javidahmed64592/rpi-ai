@@ -1,5 +1,7 @@
+import os
+from collections.abc import Generator
 from pathlib import Path
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 from flask.testing import FlaskClient
@@ -11,36 +13,65 @@ SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
 
 
-class TestAIApp:
-    def test_init_no_app_path(self, mock_app_path: MagicMock) -> None:
-        mock_app_path.return_value = ""
+@pytest.fixture
+def mock_env_vars_no_rpi_ai_path() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "",
+        "GEMINI_API_KEY": "test_api",
+    }
+    with patch.dict(os.environ, env_vars):
+        yield
+
+
+@pytest.fixture
+def mock_env_vars_no_gemini_api_key() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "/test/app/path",
+        "GEMINI_API_KEY": "",
+    }
+    with patch.dict(os.environ, env_vars):
+        yield
+
+
+@pytest.fixture
+def mock_path_exists() -> Generator[MagicMock, None, None]:
+    with patch("pathlib.Path.exists") as mock:
+        yield mock
+
+
+class TestAIAppInit:
+    def test_init(self, mock_ai_app: AIApp, mock_env_vars: MagicMock) -> None:
+        assert mock_ai_app.root_dir == Path(mock_env_vars["RPI_AI_PATH"])
+        assert mock_ai_app.api_key == mock_env_vars["GEMINI_API_KEY"]
+
+    def test_init_no_rpi_ai_path(self, mock_env_vars_no_rpi_ai_path: None) -> None:
         with pytest.raises(ValueError, match="RPI_AI_PATH variable not set!"):
             AIApp()
 
-    def test_init_no_api_key(self, mock_app_path: MagicMock, mock_api_key: MagicMock) -> None:
-        mock_api_key.return_value = ""
+    def test_init_no_api_key(self, mock_env_vars_no_gemini_api_key: None) -> None:
         with pytest.raises(ValueError, match="GEMINI_API_KEY variable not set!"):
             AIApp()
 
-    def test_init(
-        self, mock_ai_app: AIApp, mock_api_key: MagicMock, mock_app_path: MagicMock, mock_create_new_token: MagicMock
-    ) -> None:
-        assert mock_ai_app.logs_dir == Path(f"{mock_app_path.return_value}/logs")
-        assert mock_ai_app.token == mock_create_new_token.return_value
-        assert mock_ai_app.root_dir == mock_app_path.return_value
-        assert mock_ai_app.api_key == mock_api_key.return_value
+    def test_config_dir_when_home_config_exists(self, mock_ai_app: AIApp, mock_path_exists: MagicMock) -> None:
+        mock_path_exists.return_value = True
+        assert mock_ai_app.config_dir == Path.home() / ".config" / "rpi_ai"
 
-    def test_retrieve_token_when_set(self, mock_ai_app: AIApp) -> None:
-        assert mock_ai_app.token == mock_ai_app._token
+    def test_config_dir_when_home_config_does_not_exist(self, mock_ai_app: AIApp, mock_path_exists: MagicMock) -> None:
+        mock_path_exists.return_value = False
+        assert mock_ai_app.config_dir == mock_ai_app.root_dir / "config"
 
+    def test_logs_dir(self, mock_ai_app: AIApp) -> None:
+        assert mock_ai_app.logs_dir == mock_ai_app.root_dir / "logs"
+
+
+class TestAIAppToken:
     def test_generating_token_loads_from_file_if_exists(
         self,
         mock_ai_app: AIApp,
         mock_load_token_from_file: MagicMock,
     ) -> None:
-        mock_ai_app._token = None
         mock_load_token_from_file.return_value = "existing_token"
-        assert mock_ai_app.token == "existing_token"
+        assert mock_ai_app.generate_token() == "existing_token"
 
     def test_generating_token_writes_to_file_when_file_does_not_exist(
         self,
@@ -49,12 +80,13 @@ class TestAIApp:
         mock_create_new_token: MagicMock,
         mock_write_token_to_file: MagicMock,
     ) -> None:
-        mock_ai_app._token = None
-        mock_create_new_token.return_value = "new_token"
         mock_load_token_from_file.return_value = ""
-        assert mock_ai_app.token == mock_ai_app._token
+        mock_create_new_token.return_value = "new_token"
+        assert mock_ai_app.generate_token() == "new_token"
         mock_write_token_to_file.assert_has_calls([call("new_token")])
 
+
+class TestAIAppEndpoints:
     def test_authenticate_success(
         self, mock_ai_app: AIApp, mock_request_headers: MagicMock, mock_create_new_token: MagicMock
     ) -> None:
@@ -125,6 +157,7 @@ class TestAIApp:
         mock_request_headers: MagicMock,
         mock_request_json: MagicMock,
         mock_update_config: MagicMock,
+        mock_save_config: MagicMock,
         mock_start_chat: MagicMock,
         mock_jsonify: MagicMock,
         mock_create_new_token: MagicMock,
@@ -141,6 +174,7 @@ class TestAIApp:
 
         response = mock_client.post("/update-config")
         mock_update_config.assert_called_once_with(AIConfigType(**new_config))
+        mock_save_config.assert_called_once()
         mock_start_chat.assert_called_once()
         mock_jsonify.assert_called_once_with(mock_start_chat.return_value)
         assert response.status_code == SUCCESS_CODE
@@ -199,6 +233,23 @@ class TestAIApp:
         mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
         assert response.status_code == UNAUTHORIZED_CODE
 
+    def test_chat_no_message(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_json: MagicMock,
+        mock_send_message: MagicMock,
+        mock_jsonify: MagicMock,
+        mock_create_new_token: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_json.return_value = {}
+
+        response = mock_client.post("/chat")
+        mock_send_message.assert_not_called()
+        mock_jsonify.assert_called_once_with("No message received.")
+        assert response.status_code == SUCCESS_CODE
+
     def test_send_audio(
         self,
         mock_client: FlaskClient,
@@ -229,6 +280,23 @@ class TestAIApp:
         response = mock_client.post("/send-audio")
         mock_jsonify.assert_called_once_with({"error": "Unauthorized"})
         assert response.status_code == UNAUTHORIZED_CODE
+
+    def test_send_audio_no_audio(
+        self,
+        mock_client: FlaskClient,
+        mock_request_headers: MagicMock,
+        mock_request_files: MagicMock,
+        mock_send_audio: MagicMock,
+        mock_jsonify: MagicMock,
+        mock_create_new_token: MagicMock,
+    ) -> None:
+        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_files.return_value = {}
+
+        response = mock_client.post("/send-audio")
+        mock_send_audio.assert_not_called()
+        mock_jsonify.assert_called_once_with("No audio data received.")
+        assert response.status_code == SUCCESS_CODE
 
     def test_run_with_waitress(self, mock_ai_app: AIApp, mock_waitress_serve: MagicMock) -> None:
         mock_ai_app.run(host="0.0.0.0", port=8080)
