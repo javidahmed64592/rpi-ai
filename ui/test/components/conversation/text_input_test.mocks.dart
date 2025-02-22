@@ -279,6 +279,12 @@ class MockAppState extends _i1.Mock implements _i6.AppState {
       ) as bool);
 
   @override
+  bool get isBusy => (super.noSuchMethod(
+        Invocation.getter(#isBusy),
+        returnValue: false,
+      ) as bool);
+
+  @override
   bool get hasListeners => (super.noSuchMethod(
         Invocation.getter(#hasListeners),
         returnValue: false,
@@ -334,6 +340,15 @@ class MockAppState extends _i1.Mock implements _i6.AppState {
         Invocation.method(
           #setConnected,
           [newConnected],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setIsBusy(bool? busy) => super.noSuchMethod(
+        Invocation.method(
+          #setIsBusy,
+          [busy],
         ),
         returnValueForMissingStub: null,
       );
