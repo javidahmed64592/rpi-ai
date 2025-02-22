@@ -1,5 +1,4 @@
 from collections.abc import Generator
-from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
@@ -59,7 +58,6 @@ def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
 
 @pytest.fixture
 def mock_chatbot(
-    mock_app_path: MagicMock,
     mock_api_key: MagicMock,
     mock_config: AIConfigType,
     mock_genai_client: MagicMock,
@@ -122,13 +120,6 @@ def mock_jsonify() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_ai_app_class() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.AIApp") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_app_path() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.root_dir", new_callable=PropertyMock) as mock:
-        mock.return_value = Path("/test/app/path")
         yield mock
 
 

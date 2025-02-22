@@ -20,17 +20,19 @@ logger = Logger(__name__)
 
 class AIApp:
     def __init__(self) -> None:
-        self._root_dir: Path | None = None
         self._api_key: str = ""
         self._config: AIConfigType = None
         self._token: str = ""
         logger.debug("Loading environment variables...")
         load_dotenv()
 
-        if not self.root_dir:
+        if not (rpi_ai_path := os.environ.get("RPI_AI_PATH")):
             msg = "RPI_AI_PATH variable not set!"
             logger.error(msg)
             raise ValueError(msg)
+
+        self.root_dir = Path(str(rpi_ai_path.strip()))
+        logger.debug(f"Root directory: {self.root_dir}")
 
         if not self.api_key:
             msg = "GEMINI_API_KEY variable not set!"
@@ -50,15 +52,6 @@ class AIApp:
         )
         self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
         self.app.add_url_rule("/send-audio", "send_audio", self.token_required(self.send_audio), methods=["POST"])
-
-    @property
-    def root_dir(self) -> Path:
-        if not self._root_dir:
-            if rpi_ai_path := os.environ.get("RPI_AI_PATH"):
-                self._root_dir = Path(str(rpi_ai_path.strip()))
-                logger.debug(f"Root directory: {self._root_dir}")
-
-        return self._root_dir
 
     @property
     def config_dir(self) -> Path:
