@@ -51,7 +51,8 @@ class AIApp:
         self.api_key = str(gemini_api_key)
         logger.debug("Successfully loaded API key!")
 
-        self.config = AIConfigType.load(str(self.config_dir / "ai_config.json"))
+        self.config_path = self.config_dir / "ai_config.json"
+        self.config = AIConfigType.load(str(self.config_path))
         logger.debug("Successfully loaded AI config!")
         self.chatbot = Chatbot(self.api_key, self.config, FUNCTIONS)
 
@@ -131,7 +132,7 @@ class AIApp:
         logger.info("Updating AI config...")
         config = AIConfigType(**get_request_json())
         self.chatbot.update_config(config)
-        config.save(str(self.config_dir / "ai_config.json"))
+        config.save(str(self.config_path))
         response = self.chatbot.start_chat()
         logger.info(response.message)
         return jsonify(response)
