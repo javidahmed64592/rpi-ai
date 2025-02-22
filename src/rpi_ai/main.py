@@ -131,6 +131,7 @@ class AIApp:
         logger.info("Updating AI config...")
         config = AIConfigType(**get_request_json())
         self.chatbot.update_config(config)
+        config.save(str(self.config_dir / "ai_config.json"))
         response = self.chatbot.start_chat()
         logger.info(response.message)
         return jsonify(response)

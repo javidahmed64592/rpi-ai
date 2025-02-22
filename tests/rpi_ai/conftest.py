@@ -44,6 +44,12 @@ def mock_load_config(mock_config: AIConfigType) -> Generator[MagicMock, None, No
         yield mock
 
 
+@pytest.fixture
+def mock_save_config() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.api_types.AIConfigType.save") as mock:
+        yield mock
+
+
 # Chatbot fixtures
 @pytest.fixture
 def mock_genai_client() -> Generator[MagicMock, None, None]:

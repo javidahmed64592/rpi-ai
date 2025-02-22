@@ -19,6 +19,10 @@ class AIConfigType:
         with open(path) as file:
             return cls(**json.load(file))
 
+    def save(self, path: str) -> None:
+        with open(path, "w") as file:
+            json.dump(self.__dict__, file)
+
 
 # Chatbot responses
 @dataclass

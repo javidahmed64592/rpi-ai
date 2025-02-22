@@ -157,6 +157,7 @@ class TestAIAppEndpoints:
         mock_request_headers: MagicMock,
         mock_request_json: MagicMock,
         mock_update_config: MagicMock,
+        mock_save_config: MagicMock,
         mock_start_chat: MagicMock,
         mock_jsonify: MagicMock,
         mock_create_new_token: MagicMock,
@@ -173,6 +174,7 @@ class TestAIAppEndpoints:
 
         response = mock_client.post("/update-config")
         mock_update_config.assert_called_once_with(AIConfigType(**new_config))
+        mock_save_config.assert_called_once()
         mock_start_chat.assert_called_once()
         mock_jsonify.assert_called_once_with(mock_start_chat.return_value)
         assert response.status_code == SUCCESS_CODE
