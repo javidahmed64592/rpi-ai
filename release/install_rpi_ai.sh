@@ -34,7 +34,7 @@ README_PATH="${WD}/${README_FILE}"
 mkdir -p "${LOGS_DIR}"
 mkdir -p "${SERVICE_DIR}"
 
-CONFIG_DEST="~/.config/rpi_ai/${CONFIG_FILE}"
+CONFIG_DEST="${HOME}/.config/rpi_ai/${CONFIG_FILE}"
 mkdir -p "$(dirname "${CONFIG_DEST}")"
 
 if [ -f "${CONFIG_DEST}" ]; then
