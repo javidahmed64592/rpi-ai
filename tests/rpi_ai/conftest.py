@@ -1,6 +1,6 @@
+import os
 from collections.abc import Generator
-from pathlib import Path
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from flask.testing import FlaskClient
@@ -11,6 +11,16 @@ from rpi_ai.models.chatbot import Chatbot
 
 
 # Config fixtures
+@pytest.fixture(autouse=True)
+def mock_env_vars() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "/test/app/path",
+        "GEMINI_API_KEY": "test_api_key",
+    }
+    with patch.dict(os.environ, env_vars) as mock:
+        yield mock
+
+
 @pytest.fixture
 def config_data() -> dict[str, str | float]:
     return {
@@ -34,6 +44,12 @@ def mock_load_config(mock_config: AIConfigType) -> Generator[MagicMock, None, No
         yield mock
 
 
+@pytest.fixture
+def mock_save_config() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.api_types.AIConfigType.save") as mock:
+        yield mock
+
+
 # Chatbot fixtures
 @pytest.fixture
 def mock_genai_client() -> Generator[MagicMock, None, None]:
@@ -42,30 +58,16 @@ def mock_genai_client() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_start_chat_method(mock_genai_client: MagicMock) -> MagicMock:
-    mock_chat_instance = MagicMock()
-    mock_genai_client.return_value.chats.create.return_value = mock_chat_instance
-    mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="What's on your mind today?")])
-    return mock_genai_client.return_value.chats.create
+def mock_chat_instance(mock_genai_client: MagicMock) -> MagicMock:
+    mock_instance = MagicMock()
+    mock_genai_client.return_value.chats.create.return_value = mock_instance
+    mock_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="What's on your mind today?")])
+    return mock_instance
 
 
 @pytest.fixture
-def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
-    mock_chat_instance = MagicMock()
-    mock_chat_instance.history = [MagicMock(role="model", parts=[MagicMock(text="What's on your mind today?")])]
-    mock_start_chat_method.return_value = mock_chat_instance
-    return mock_chat_instance
-
-
-@pytest.fixture
-def mock_chatbot(
-    mock_app_path: MagicMock,
-    mock_api_key: MagicMock,
-    mock_config: AIConfigType,
-    mock_genai_client: MagicMock,
-    mock_chat_instance: MagicMock,
-) -> Chatbot:
-    return Chatbot(mock_api_key.return_value, mock_config, [])
+def mock_chatbot(mock_env_vars: MagicMock, mock_config: AIConfigType, mock_chat_instance: MagicMock) -> Chatbot:
+    return Chatbot(mock_env_vars["GEMINI_API_KEY"], mock_config, [])
 
 
 @pytest.fixture
@@ -120,58 +122,44 @@ def mock_jsonify() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
+def mock_request_headers() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.get_request_headers") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_request_json() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.get_request_json") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_request_files() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.get_request_files") as mock:
+        yield mock
+
+
+@pytest.fixture
 def mock_ai_app_class() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.AIApp") as mock:
         yield mock
 
 
 @pytest.fixture
-def mock_app_path() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.root_dir", new_callable=PropertyMock) as mock:
-        mock.return_value = Path("/test/app/path")
-        yield mock
-
-
-@pytest.fixture
-def mock_api_key() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.api_key", new_callable=PropertyMock) as mock:
-        mock.return_value = "test_api_key"
-        yield mock
-
-
-@pytest.fixture
-def mock_request_headers() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.get_request_headers") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_request_json() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.get_request_json") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_request_files() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.get_request_files") as mock:
-        yield mock
-
-
-@pytest.fixture
 def mock_load_token_from_file() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.load_token_from_file") as mock:
+    with patch("rpi_ai.main.AIApp._load_token_from_file") as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_create_new_token() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.create_new_token") as mock:
+    with patch("rpi_ai.main.AIApp._create_new_token") as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_write_token_to_file() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.write_token_to_file") as mock:
+    with patch("rpi_ai.main.AIApp._write_token_to_file") as mock:
         yield mock
 
 

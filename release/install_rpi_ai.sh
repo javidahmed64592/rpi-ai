@@ -34,6 +34,23 @@ README_PATH="${WD}/${README_FILE}"
 mkdir -p "${LOGS_DIR}"
 mkdir -p "${SERVICE_DIR}"
 
+CONFIG_DEST="${HOME}/.config/rpi_ai/${CONFIG_FILE}"
+mkdir -p "$(dirname "${CONFIG_DEST}")"
+
+if [ -f "${CONFIG_DEST}" ]; then
+    echo "AI configuration file already exists: '${CONFIG_DEST}'"
+    read -p "Overwrite? (y/n): " overwrite
+    if [ "${overwrite}" == "y" ]; then
+        echo "Overwriting AI configuration file: '${CONFIG_DEST}'"
+        mv "${CONFIG_PATH}" "${CONFIG_DEST}"
+    fi
+else
+    echo "Creating AI configuration file: '${CONFIG_DEST}'"
+    mv "${CONFIG_PATH}" "${CONFIG_DEST}"
+fi
+
+rm -rf "${CONFIG_DIR}"
+
 echo "Creating environment '${VENV_NAME}'..."
 python -m venv "${VENV_NAME}"
 
@@ -129,10 +146,14 @@ if [ -f /etc/systemd/system/${SERVICE_FILE} ]; then
     exit 1
 fi
 
+read -p "Remove AI configuration file? (y/n): " remove_config
+if [ "\$remove_config" == "y" ]; then
+    rm -f ${CONFIG_DEST}
+fi
+
 rm -rf ${WD}/${VENV_NAME}
 rm -f ${EXE_PATH}
 rm -f ${README_PATH}
-rm -rf ${CONFIG_DIR}
 rm -rf ${LOGS_DIR}
 rm -rf ${SERVICE_DIR}
 rm -- "\$0"
