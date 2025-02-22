@@ -9,19 +9,25 @@ import 'package:provider/provider.dart';
 import 'package:ui/components/audio/microphone_button.dart';
 import 'package:ui/components/audio/microphone_permission_button.dart';
 import 'package:ui/components/conversation/speech_input.dart';
+import 'package:ui/state/app_state.dart';
 import 'package:ui/state/speech_state.dart';
 
 void main() {
+  late AppState appState;
   late SpeechState speechState;
 
   setUp(() {
+    appState = AppState();
     speechState = SpeechState();
   });
 
   Widget createSpeechInput(VoidCallback onRequestPermissions,
       VoidCallback onStartRecording, VoidCallback onStopRecording) {
-    return ChangeNotifierProvider<SpeechState>.value(
-      value: speechState,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => appState),
+        ChangeNotifierProvider(create: (_) => speechState),
+      ],
       child: MaterialApp(
         home: Scaffold(
           body: SpeechInput(
