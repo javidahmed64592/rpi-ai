@@ -18,6 +18,18 @@ from rpi_ai.models.logger import Logger
 logger = Logger(__name__)
 
 
+def get_request_headers() -> Headers:
+    return request.headers
+
+
+def get_request_json() -> dict[str, str] | None:
+    return request.json
+
+
+def get_request_files() -> ImmutableMultiDict[str, FileStorage]:
+    return request.files
+
+
 class AIApp:
     def __init__(self) -> None:
         logger.debug("Loading environment variables...")
@@ -66,15 +78,6 @@ class AIApp:
     def logs_dir(self) -> Path:
         return self.root_dir / "logs"
 
-    def get_request_headers(self) -> Headers:
-        return request.headers
-
-    def get_request_json(self) -> dict[str, str] | None:
-        return request.json
-
-    def get_request_files(self) -> ImmutableMultiDict[str, FileStorage]:
-        return request.files
-
     def generate_token(self) -> str:
         if token := self._load_token_from_file():
             return token
@@ -99,7 +102,7 @@ class AIApp:
             file.write(token)
 
     def authenticate(self) -> bool:
-        return self.get_request_headers().get("Authorization") == self.token
+        return get_request_headers().get("Authorization") == self.token
 
     def token_required(self, f: Callable) -> Callable:
         """Decorator to protect endpoints with token authentication."""
@@ -125,14 +128,14 @@ class AIApp:
 
     def update_config(self) -> Response:
         logger.info("Updating AI config...")
-        config = AIConfigType(**self.get_request_json())
+        config = AIConfigType(**get_request_json())
         self.chatbot.update_config(config)
         response = self.chatbot.start_chat()
         logger.info(response.message)
         return jsonify(response)
 
     def chat(self) -> Response:
-        user_message = self.get_request_json()
+        user_message = get_request_json()
         if user_message and user_message.get("message"):
             logger.info(user_message["message"])
             response = self.chatbot.send_message(user_message["message"])
@@ -143,7 +146,7 @@ class AIApp:
         return jsonify(response)
 
     def send_audio(self) -> Response:
-        audio_file: FileStorage | None = self.get_request_files().get("audio")
+        audio_file: FileStorage | None = get_request_files().get("audio")
         if audio_file:
             audio_data = audio_file.read()
             logger.info("Received audio data...")
