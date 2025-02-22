@@ -62,7 +62,9 @@ class TestAIAppInit:
         with pytest.raises(ValueError, match="GEMINI_API_KEY variable not set!"):
             AIApp()
 
-    def test_config_dir_when_home_config_exists(self, mock_ai_app: AIApp, mock_path_exists: MagicMock) -> None:
+    def test_config_dir_when_home_config_exists(
+        self, mock_ai_app: AIApp, mock_env_vars: MagicMock, mock_path_exists: MagicMock
+    ) -> None:
         mock_path_exists.return_value = True
         assert mock_ai_app.config_dir == Path.home() / ".config" / "rpi_ai"
 
