@@ -146,10 +146,14 @@ if [ -f /etc/systemd/system/${SERVICE_FILE} ]; then
     exit 1
 fi
 
+read -p "Remove AI configuration file? (y/n): " remove_config
+if [ "\$remove_config" == "y" ]; then
+    rm -f ${CONFIG_DEST}
+fi
+
 rm -rf ${WD}/${VENV_NAME}
 rm -f ${EXE_PATH}
 rm -f ${README_PATH}
-rm -rf ${CONFIG_DIR}
 rm -rf ${LOGS_DIR}
 rm -rf ${SERVICE_DIR}
 rm -- "\$0"
