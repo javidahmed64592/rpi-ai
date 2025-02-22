@@ -42,12 +42,14 @@ if [ -f "${CONFIG_DEST}" ]; then
     read -p "Overwrite? (y/n): " overwrite
     if [ "${overwrite}" == "y" ]; then
         echo "Overwriting AI configuration file: '${CONFIG_DEST}'"
-        cp "${CONFIG_PATH}" "${CONFIG_DEST}"
+        mv "${CONFIG_PATH}" "${CONFIG_DEST}"
     fi
 else
     echo "Creating AI configuration file: '${CONFIG_DEST}'"
-    cp "${CONFIG_PATH}" "${CONFIG_DEST}"
+    mv "${CONFIG_PATH}" "${CONFIG_DEST}"
 fi
+
+rm -rf "${CONFIG_DIR}"
 
 echo "Creating environment '${VENV_NAME}'..."
 python -m venv "${VENV_NAME}"
