@@ -43,7 +43,7 @@ class AIApp:
         logger.debug("Successfully loaded AI config!")
         self.chatbot = Chatbot(self.api_key, self.config, FUNCTIONS)
 
-        self.token = self._generate_token()
+        self.token = self.generate_token()
         logger.info(f"Generated token: {self.token}")
 
         self.app = Flask(__name__)
@@ -75,25 +75,25 @@ class AIApp:
     def get_request_files(self) -> ImmutableMultiDict[str, FileStorage]:
         return request.files
 
-    def _generate_token(self) -> str:
-        if token := self.load_token_from_file():
+    def generate_token(self) -> str:
+        if token := self._load_token_from_file():
             return token
 
-        token = self.create_new_token()
-        self.write_token_to_file(token)
+        token = self._create_new_token()
+        self._write_token_to_file(token)
         return token
 
-    def load_token_from_file(self) -> str:
+    def _load_token_from_file(self) -> str:
         try:
             with (self.logs_dir / "token.txt").open() as file:
                 return file.read().strip()
         except FileNotFoundError:
             return ""
 
-    def create_new_token(self) -> str:
+    def _create_new_token(self) -> str:
         return secrets.token_urlsafe(32)
 
-    def write_token_to_file(self, token: str) -> None:
+    def _write_token_to_file(self, token: str) -> None:
         token_file = self.logs_dir / "token.txt"
         with token_file.open("w") as file:
             file.write(token)

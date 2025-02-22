@@ -71,7 +71,7 @@ class TestAIAppToken:
         mock_load_token_from_file: MagicMock,
     ) -> None:
         mock_load_token_from_file.return_value = "existing_token"
-        assert mock_ai_app._generate_token() == "existing_token"
+        assert mock_ai_app.generate_token() == "existing_token"
 
     def test_generating_token_writes_to_file_when_file_does_not_exist(
         self,
@@ -82,7 +82,7 @@ class TestAIAppToken:
     ) -> None:
         mock_load_token_from_file.return_value = ""
         mock_create_new_token.return_value = "new_token"
-        assert mock_ai_app._generate_token() == "new_token"
+        assert mock_ai_app.generate_token() == "new_token"
         mock_write_token_to_file.assert_has_calls([call("new_token")])
 
 
