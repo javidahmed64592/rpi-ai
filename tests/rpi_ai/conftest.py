@@ -1,3 +1,4 @@
+import os
 from collections.abc import Generator
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, patch
@@ -32,6 +33,36 @@ def mock_load_config(mock_config: AIConfigType) -> Generator[MagicMock, None, No
     with patch("rpi_ai.api_types.AIConfigType.load") as mock:
         mock.return_value = mock_config
         yield mock
+
+
+@pytest.fixture
+def mock_env_vars() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "/test/app/path",
+        "GEMINI_API_KEY": "test_api_key",
+    }
+    with patch.dict(os.environ, env_vars):
+        yield
+
+
+@pytest.fixture
+def mock_env_vars_no_rpi_ai_path() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "",
+        "GEMINI_API_KEY": "test_api",
+    }
+    with patch.dict(os.environ, env_vars):
+        yield
+
+
+@pytest.fixture
+def mock_env_vars_no_gemini_api_key() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "/test/app/path",
+        "GEMINI_API_KEY": "",
+    }
+    with patch.dict(os.environ, env_vars):
+        yield
 
 
 # Chatbot fixtures

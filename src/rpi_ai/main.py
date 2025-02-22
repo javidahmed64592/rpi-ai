@@ -54,8 +54,9 @@ class AIApp:
     @property
     def root_dir(self) -> Path:
         if not self._root_dir:
-            self._root_dir = Path(str(os.environ.get("RPI_AI_PATH")))
-            logger.debug(f"Root directory: {self._root_dir}")
+            if rpi_ai_path := os.environ.get("RPI_AI_PATH"):
+                self._root_dir = Path(str(rpi_ai_path.strip()))
+                logger.debug(f"Root directory: {self._root_dir}")
 
         return self._root_dir
 
@@ -72,8 +73,9 @@ class AIApp:
     @property
     def api_key(self) -> str:
         if not self._api_key:
-            self._api_key = str(os.environ.get("GEMINI_API_KEY"))
-            logger.debug("Successfully loaded API key")
+            if gemini_api_key := os.environ.get("GEMINI_API_KEY"):
+                self._api_key = str(gemini_api_key)
+                logger.debug("Successfully loaded API key")
 
         return self._api_key
 

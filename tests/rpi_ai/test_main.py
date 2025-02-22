@@ -11,25 +11,23 @@ SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
 
 
-class TestAIApp:
-    def test_init_no_app_path(self, mock_app_path: MagicMock) -> None:
-        mock_app_path.return_value = ""
+class TestAIAppInit:
+    def test_init(self, mock_env_vars: None, mock_ai_app: AIApp) -> None:
+        assert mock_ai_app.root_dir == Path("/test/app/path")
+        assert mock_ai_app.logs_dir == Path("/test/app/path/logs")
+        assert mock_ai_app.api_key == "test_api_key"
+        assert mock_ai_app.token == mock_ai_app._token
+
+    def test_init_no_rpi_ai_path(self, mock_env_vars_no_rpi_ai_path: None) -> None:
         with pytest.raises(ValueError, match="RPI_AI_PATH variable not set!"):
             AIApp()
 
-    def test_init_no_api_key(self, mock_app_path: MagicMock, mock_api_key: MagicMock) -> None:
-        mock_api_key.return_value = ""
+    def test_init_no_api_key(self, mock_env_vars_no_gemini_api_key: None) -> None:
         with pytest.raises(ValueError, match="GEMINI_API_KEY variable not set!"):
             AIApp()
 
-    def test_init(
-        self, mock_ai_app: AIApp, mock_api_key: MagicMock, mock_app_path: MagicMock, mock_create_new_token: MagicMock
-    ) -> None:
-        assert mock_ai_app.logs_dir == Path(f"{mock_app_path.return_value}/logs")
-        assert mock_ai_app.token == mock_create_new_token.return_value
-        assert mock_ai_app.root_dir == mock_app_path.return_value
-        assert mock_ai_app.api_key == mock_api_key.return_value
 
+class TestAIAppToken:
     def test_retrieve_token_when_set(self, mock_ai_app: AIApp) -> None:
         assert mock_ai_app.token == mock_ai_app._token
 
@@ -55,6 +53,8 @@ class TestAIApp:
         assert mock_ai_app.token == mock_ai_app._token
         mock_write_token_to_file.assert_has_calls([call("new_token")])
 
+
+class TestAIAppEndpoints:
     def test_authenticate_success(
         self, mock_ai_app: AIApp, mock_request_headers: MagicMock, mock_create_new_token: MagicMock
     ) -> None:
