@@ -1,3 +1,4 @@
+import os
 from collections.abc import Generator
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
@@ -12,12 +13,43 @@ SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
 
 
-class TestAIAppInit:
-    @pytest.fixture
-    def mock_path_exists(self) -> Generator[MagicMock, None, None]:
-        with patch("pathlib.Path.exists") as mock:
-            yield mock
+@pytest.fixture
+def mock_env_vars() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "/test/app/path",
+        "GEMINI_API_KEY": "test_api_key",
+    }
+    with patch.dict(os.environ, env_vars):
+        yield
 
+
+@pytest.fixture
+def mock_env_vars_no_rpi_ai_path() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "",
+        "GEMINI_API_KEY": "test_api",
+    }
+    with patch.dict(os.environ, env_vars):
+        yield
+
+
+@pytest.fixture
+def mock_env_vars_no_gemini_api_key() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "/test/app/path",
+        "GEMINI_API_KEY": "",
+    }
+    with patch.dict(os.environ, env_vars):
+        yield
+
+
+@pytest.fixture
+def mock_path_exists() -> Generator[MagicMock, None, None]:
+    with patch("pathlib.Path.exists") as mock:
+        yield mock
+
+
+class TestAIAppInit:
     def test_init(self, mock_ai_app: AIApp, mock_env_vars: MagicMock) -> None:
         assert mock_ai_app.root_dir == Path("/test/app/path")
         assert mock_ai_app.api_key == "test_api_key"
