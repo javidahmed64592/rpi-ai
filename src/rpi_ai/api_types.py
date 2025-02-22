@@ -21,7 +21,7 @@ class AIConfigType:
 
     def save(self, path: str) -> None:
         with open(path, "w") as file:
-            json.dump(self.__dict__, file)
+            json.dump(self.__dict__, file, indent=4)
 
 
 # Chatbot responses
