@@ -59,14 +59,12 @@ class AIApp:
         logger.info(f"Generated token: {self.token}")
 
         self.app = Flask(__name__)
-        self.app.add_url_rule("/", "is_alive", self.is_alive, methods=["GET"])
-        self.app.add_url_rule("/login", "login", self.token_required(self.login), methods=["GET"])
-        self.app.add_url_rule("/get-config", "get-config", self.token_required(self.get_config), methods=["GET"])
-        self.app.add_url_rule(
-            "/update-config", "update-config", self.token_required(self.update_config), methods=["POST"]
-        )
-        self.app.add_url_rule("/chat", "chat", self.token_required(self.chat), methods=["POST"])
-        self.app.add_url_rule("/send-audio", "send_audio", self.token_required(self.send_audio), methods=["POST"])
+        self.add_app_url("/", self.is_alive, ["GET"])
+        self.add_app_url("/login", self.token_required(self.login), ["GET"])
+        self.add_app_url("/get-config", self.token_required(self.get_config), ["GET"])
+        self.add_app_url("/update-config", self.token_required(self.update_config), ["POST"])
+        self.add_app_url("/chat", self.token_required(self.chat), ["POST"])
+        self.add_app_url("/send-audio", self.token_required(self.send_audio), ["POST"])
 
     @property
     def config_dir(self) -> Path:
@@ -77,14 +75,6 @@ class AIApp:
     @property
     def logs_dir(self) -> Path:
         return self.root_dir / "logs"
-
-    def generate_token(self) -> str:
-        if token := self._load_token_from_file():
-            return token
-
-        token = self._create_new_token()
-        self._write_token_to_file(token)
-        return token
 
     def _load_token_from_file(self) -> str:
         try:
@@ -100,6 +90,17 @@ class AIApp:
         token_file = self.logs_dir / "token.txt"
         with token_file.open("w") as file:
             file.write(token)
+
+    def generate_token(self) -> str:
+        if token := self._load_token_from_file():
+            return token
+
+        token = self._create_new_token()
+        self._write_token_to_file(token)
+        return token
+
+    def add_app_url(self, endpoint: str, view_func: Callable, methods: list[str]) -> None:
+        self.app.add_url_rule(endpoint, endpoint, view_func, methods=methods)
 
     def authenticate(self) -> bool:
         return get_request_headers().get("Authorization") == self.token
