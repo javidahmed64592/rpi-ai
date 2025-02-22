@@ -9,8 +9,8 @@ from rpi_ai.models.chatbot import Chatbot
 
 
 class TestChatbot:
-    def test_init(self, mock_chatbot: Chatbot, mock_api_key: MagicMock, mock_genai_client: MagicMock) -> None:
-        mock_genai_client.assert_called_once_with(api_key=mock_api_key.return_value)
+    def test_init(self, mock_chatbot: Chatbot, mock_env_vars: MagicMock, mock_genai_client: MagicMock) -> None:
+        mock_genai_client.assert_called_once_with(api_key=mock_env_vars["GEMINI_API_KEY"])
 
     def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         config = mock_chatbot._web_search_config()

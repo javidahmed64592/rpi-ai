@@ -1,5 +1,6 @@
+import os
 from collections.abc import Generator
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from flask.testing import FlaskClient
@@ -10,6 +11,16 @@ from rpi_ai.models.chatbot import Chatbot
 
 
 # Config fixtures
+@pytest.fixture(autouse=True)
+def mock_env_vars() -> Generator[None, None, None]:
+    env_vars = {
+        "RPI_AI_PATH": "/test/app/path",
+        "GEMINI_API_KEY": "test_api_key",
+    }
+    with patch.dict(os.environ, env_vars) as mock:
+        yield mock
+
+
 @pytest.fixture
 def config_data() -> dict[str, str | float]:
     return {
@@ -58,12 +69,12 @@ def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
 
 @pytest.fixture
 def mock_chatbot(
-    mock_api_key: MagicMock,
+    mock_env_vars: MagicMock,
     mock_config: AIConfigType,
     mock_genai_client: MagicMock,
     mock_chat_instance: MagicMock,
 ) -> Chatbot:
-    return Chatbot(mock_api_key.return_value, mock_config, [])
+    return Chatbot(mock_env_vars["GEMINI_API_KEY"], mock_config, [])
 
 
 @pytest.fixture
@@ -120,13 +131,6 @@ def mock_jsonify() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_ai_app_class() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.AIApp") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_api_key() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp.api_key", new_callable=PropertyMock) as mock:
-        mock.return_value = "test_api_key"
         yield mock
 
 

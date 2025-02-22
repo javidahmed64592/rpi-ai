@@ -13,16 +13,6 @@ SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
 
 
-@pytest.fixture(autouse=True)
-def mock_env_vars() -> Generator[None, None, None]:
-    env_vars = {
-        "RPI_AI_PATH": "/test/app/path",
-        "GEMINI_API_KEY": "test_api_key",
-    }
-    with patch.dict(os.environ, env_vars) as mock:
-        yield mock
-
-
 @pytest.fixture
 def mock_env_vars_no_rpi_ai_path() -> Generator[None, None, None]:
     env_vars = {

@@ -20,7 +20,6 @@ logger = Logger(__name__)
 
 class AIApp:
     def __init__(self) -> None:
-        self._api_key: str = ""
         self._config: AIConfigType = None
         self._token: str = ""
         logger.debug("Loading environment variables...")
@@ -34,13 +33,15 @@ class AIApp:
         self.root_dir = Path(str(rpi_ai_path.strip()))
         logger.debug(f"Root directory: {self.root_dir}")
 
-        if not self.api_key:
+        if not (gemini_api_key := os.environ.get("GEMINI_API_KEY")):
             msg = "GEMINI_API_KEY variable not set!"
             logger.error(msg)
             raise ValueError(msg)
 
-        logger.info(f"Generated token: {self.token}")
+        self.api_key = str(gemini_api_key)
+        logger.debug("Successfully loaded API key")
 
+        logger.info(f"Generated token: {self.token}")
         self.chatbot = Chatbot(self.api_key, self.config, FUNCTIONS)
 
         self.app = Flask(__name__)
@@ -62,15 +63,6 @@ class AIApp:
     @property
     def logs_dir(self) -> Path:
         return self.root_dir / "logs"
-
-    @property
-    def api_key(self) -> str:
-        if not self._api_key:
-            if gemini_api_key := os.environ.get("GEMINI_API_KEY"):
-                self._api_key = str(gemini_api_key)
-                logger.debug("Successfully loaded API key")
-
-        return self._api_key
 
     @property
     def config(self) -> AIConfigType:
