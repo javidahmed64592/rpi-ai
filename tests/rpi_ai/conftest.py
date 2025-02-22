@@ -52,28 +52,15 @@ def mock_genai_client() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_start_chat_method(mock_genai_client: MagicMock) -> MagicMock:
-    mock_chat_instance = MagicMock()
-    mock_genai_client.return_value.chats.create.return_value = mock_chat_instance
-    mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="What's on your mind today?")])
-    return mock_genai_client.return_value.chats.create
+def mock_chat_instance(mock_genai_client: MagicMock) -> MagicMock:
+    mock_instance = MagicMock()
+    mock_genai_client.return_value.chats.create.return_value = mock_instance
+    mock_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="What's on your mind today?")])
+    return mock_instance
 
 
 @pytest.fixture
-def mock_chat_instance(mock_start_chat_method: MagicMock) -> MagicMock:
-    mock_chat_instance = MagicMock()
-    mock_chat_instance.history = [MagicMock(role="model", parts=[MagicMock(text="What's on your mind today?")])]
-    mock_start_chat_method.return_value = mock_chat_instance
-    return mock_chat_instance
-
-
-@pytest.fixture
-def mock_chatbot(
-    mock_env_vars: MagicMock,
-    mock_config: AIConfigType,
-    mock_genai_client: MagicMock,
-    mock_chat_instance: MagicMock,
-) -> Chatbot:
+def mock_chatbot(mock_env_vars: MagicMock, mock_config: AIConfigType, mock_chat_instance: MagicMock) -> Chatbot:
     return Chatbot(mock_env_vars["GEMINI_API_KEY"], mock_config, [])
 
 

@@ -37,18 +37,14 @@ class TestChatbot:
     def test_get_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         assert mock_chatbot.get_config() == mock_config
 
-    def test_update_config(
-        self,
-        mock_chatbot: Chatbot,
-        mock_config: AIConfigType,
-    ) -> None:
+    def test_update_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         mock_config.model = "new-model"
         mock_chatbot.update_config(mock_config)
         assert mock_chatbot.get_config() == mock_config
 
-    def test_start_chat(self, mock_chatbot: Chatbot, mock_start_chat_method: MagicMock) -> None:
+    def test_start_chat(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
         response = mock_chatbot.start_chat()
-        mock_start_chat_method.assert_called_once_with(
+        mock_genai_client.return_value.chats.create.assert_called_once_with(
             model=mock_chatbot._config.model,
             config=GenerateContentConfig(
                 system_instruction=mock_chatbot._config.system_instruction,
