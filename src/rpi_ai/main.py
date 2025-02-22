@@ -28,19 +28,19 @@ class AIApp:
             logger.error(msg)
             raise ValueError(msg)
 
-        self.root_dir = Path(str(rpi_ai_path.strip()))
-        logger.debug(f"Root directory: {self.root_dir}")
-
         if not (gemini_api_key := os.environ.get("GEMINI_API_KEY")):
             msg = "GEMINI_API_KEY variable not set!"
             logger.error(msg)
             raise ValueError(msg)
 
-        self.api_key = str(gemini_api_key)
-        logger.debug("Successfully loaded API key")
+        self.root_dir = Path(str(rpi_ai_path.strip()))
+        logger.debug(f"Root directory: {self.root_dir}")
 
-        logger.debug("Loading config...")
+        self.api_key = str(gemini_api_key)
+        logger.debug("Successfully loaded API key!")
+
         self.config = AIConfigType.load(str(self.config_dir / "ai_config.json"))
+        logger.debug("Successfully loaded AI config!")
         self.chatbot = Chatbot(self.api_key, self.config, FUNCTIONS)
 
         self.token = self._generate_token()
