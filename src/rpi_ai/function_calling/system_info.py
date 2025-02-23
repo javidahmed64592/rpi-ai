@@ -101,7 +101,7 @@ class SystemInfo(FunctionsListBase):
             str: A fixed output indicating the reboot command was issued.
         """
         delay = 5
-        commands = ["sleep", delay, "&&", "sudo", "shutdown", "-r", "now"]
+        commands = ["sleep", f"{delay}", "&&", "sudo", "shutdown", "-r", "now"]
         try:
             time.sleep(delay)
             subprocess.Popen(commands)
