@@ -18,7 +18,6 @@ class SystemInfo(FunctionsListBase):
             SystemInfo.update_and_check_packages,
             SystemInfo.upgrade_packages,
             SystemInfo.auto_remove_packages,
-            SystemInfo.reboot_system,
             SystemInfo.get_os_info,
             SystemInfo.get_hostname,
             SystemInfo.get_uptime,
@@ -88,23 +87,6 @@ class SystemInfo(FunctionsListBase):
             return {"stdout": e.output, "stderr": e.stderr}
         else:
             return {"stdout": result.stdout, "stderr": result.stderr}
-
-    @staticmethod
-    def reboot_system() -> str:
-        """
-        Reboot the system after a delay.
-
-        `sleep 5 && sudo shutdown -r now`
-
-        Returns:
-            str: A fixed output indicating the reboot command was issued.
-        """
-        delay = 5
-        response = subprocess.Popen(f"sleep {delay} && sudo shutdown -r now")
-        if response.returncode != 0:
-            logger.exception("Failed to reboot system.")
-            return "Failed to reboot system."
-        return f"Rebooting system in {delay} seconds..."
 
     @staticmethod
     def get_os_info() -> dict:
