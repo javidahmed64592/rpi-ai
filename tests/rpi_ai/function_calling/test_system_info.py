@@ -1,3 +1,4 @@
+import subprocess
 from collections.abc import Generator
 from datetime import datetime
 from unittest.mock import MagicMock, Mock, patch
@@ -6,6 +7,13 @@ import psutil
 import pytest
 
 from rpi_ai.function_calling.system_info import SystemInfo
+
+
+@pytest.fixture
+def mock_subprocess_run() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.function_calling.system_info.subprocess.run") as mock:
+        mock.return_value.stdout = "test_output"
+        yield mock
 
 
 @pytest.fixture
@@ -94,6 +102,59 @@ def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.function_calling.system_info.psutil") as mock:
         mock.sensors_temperatures.return_value = {"cpu_thermal": [Mock(current=45.0)]}
         yield mock
+
+
+def test_update_and_check_packages(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.return_value.stderr = ""
+    response = SystemInfo.update_and_check_packages()
+    expected_update_commands = ["sudo", "apt", "update"]
+    expected_check_commands = ["sudo", "apt", "list", "--upgradable"]
+    mock_subprocess_run.assert_any_call(expected_update_commands, capture_output=True, text=True, check=True)
+    mock_subprocess_run.assert_any_call(expected_check_commands, capture_output=True, text=True, check=True)
+    assert response == {
+        "stdout": mock_subprocess_run.return_value.stdout,
+        "stderr": mock_subprocess_run.return_value.stderr,
+    }
+
+
+def test_update_and_check_packages_fails(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error", output="test_output")
+    response = SystemInfo.update_and_check_packages()
+    assert response == {"stdout": "test_output", "stderr": "test_error"}
+
+
+def test_upgrade_packages(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.return_value.stderr = ""
+    response = SystemInfo.upgrade_packages()
+    expected_commands = ["sudo", "apt", "upgrade", "-y"]
+    mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
+    assert response == {
+        "stdout": mock_subprocess_run.return_value.stdout,
+        "stderr": mock_subprocess_run.return_value.stderr,
+    }
+
+
+def test_upgrade_packages_fails(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error", output="test_output")
+    response = SystemInfo.upgrade_packages()
+    assert response == {"stdout": "test_output", "stderr": "test_error"}
+
+
+def test_auto_remove_packages(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.return_value.stderr = ""
+    response = SystemInfo.auto_remove_packages()
+    expected_commands = ["sudo", "apt", "autoremove", "-y"]
+    mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
+    assert response == {
+        "stdout": mock_subprocess_run.return_value.stdout,
+        "stderr": mock_subprocess_run.return_value.stderr,
+    }
+
+
+def test_auto_remove_packages_fails(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error", output="test_output")
+    response = SystemInfo.auto_remove_packages()
+    assert response == {"stdout": "test_output", "stderr": "test_error"}
 
 
 def test_get_os_info(mock_platform: MagicMock) -> None:
