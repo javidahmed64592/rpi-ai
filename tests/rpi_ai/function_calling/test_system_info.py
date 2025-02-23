@@ -132,6 +132,19 @@ def test_upgrade_packages_fails(mock_subprocess_run: MagicMock) -> None:
     assert response == "Failed to upgrade packages: test_error"
 
 
+def test_auto_remove_packages(mock_subprocess_run: MagicMock) -> None:
+    response = SystemInfo.auto_remove_packages()
+    expected_commands = ["sudo", "apt", "autoremove", "-y"]
+    mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
+    assert response == mock_subprocess_run.return_value.stdout
+
+
+def test_auto_remove_packages_fails(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error")
+    response = SystemInfo.auto_remove_packages()
+    assert response == "Failed to remove unused packages: test_error"
+
+
 def test_reboot_system(mock_subprocess_run: MagicMock) -> None:
     response = SystemInfo.reboot_system()
     expected_commands = ["sudo", "shutdown", "-r", "now"]

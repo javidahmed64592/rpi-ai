@@ -17,6 +17,8 @@ class SystemInfo(FunctionsListBase):
         self.functions = [
             SystemInfo.update_and_check_packages,
             SystemInfo.upgrade_packages,
+            SystemInfo.auto_remove_packages,
+            SystemInfo.reboot_system,
             SystemInfo.get_os_info,
             SystemInfo.get_hostname,
             SystemInfo.get_uptime,
@@ -63,6 +65,23 @@ class SystemInfo(FunctionsListBase):
         except subprocess.CalledProcessError as e:
             logger.exception(f"Failed to upgrade packages: {e.stderr}")
             return f"Failed to upgrade packages: {e.stderr}"
+
+    @staticmethod
+    def auto_remove_packages() -> str:
+        """
+        Remove unused packages.
+
+        `sudo apt autoremove -y`
+
+        Returns:
+            str: The output of the package autoremove command.
+        """
+        commands = ["sudo", "apt", "autoremove", "-y"]
+        try:
+            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
+        except subprocess.CalledProcessError as e:
+            logger.exception(f"Failed to remove unused packages: {e.stderr}")
+            return f"Failed to remove unused packages: {e.stderr}"
 
     @staticmethod
     def reboot_system() -> str:
