@@ -65,6 +65,20 @@ class SystemInfo(FunctionsListBase):
             return f"Failed to upgrade packages: {e.stderr}"
 
     @staticmethod
+    def reboot_system() -> None:
+        """
+        Reboot the system.
+
+        `sudo shutdown -r now`
+        """
+        commands = ["sudo", "shutdown", "-r", "now"]
+        try:
+            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
+        except subprocess.CalledProcessError as e:
+            logger.exception(f"Failed to reboot: {e.stderr}")
+            return f"Failed to reboot: {e.stderr}"
+
+    @staticmethod
     def get_os_info() -> dict:
         """
         Get the operating system information.

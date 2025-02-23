@@ -132,6 +132,19 @@ def test_upgrade_packages_fails(mock_subprocess_run: MagicMock) -> None:
     assert response == "Failed to upgrade packages: test_error"
 
 
+def test_reboot_system(mock_subprocess_run: MagicMock) -> None:
+    response = SystemInfo.reboot_system()
+    expected_commands = ["sudo", "shutdown", "-r", "now"]
+    mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
+    assert response == mock_subprocess_run.return_value.stdout
+
+
+def test_reboot_system_fails(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error")
+    response = SystemInfo.reboot_system()
+    assert response == "Failed to reboot: test_error"
+
+
 def test_get_os_info(mock_platform: MagicMock) -> None:
     os_info = SystemInfo.get_os_info()
     assert os_info["system"] == mock_platform.system.return_value
