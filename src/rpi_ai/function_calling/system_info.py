@@ -65,7 +65,7 @@ class SystemInfo(FunctionsListBase):
             return f"Failed to upgrade packages: {e.stderr}"
 
     @staticmethod
-    def reboot_system() -> None:
+    def reboot_system() -> str:
         """
         Reboot the system.
 
