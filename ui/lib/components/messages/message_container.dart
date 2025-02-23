@@ -103,14 +103,17 @@ class MessageBox extends StatelessWidget {
         }
         finalSpans.add(TextSpan(
           text: match.group(1),
-          style: span.style?.copyWith(fontWeight: FontWeight.bold),
+          style: span.style?.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
         ));
         boldStart = match.end;
       }
       if (boldStart < text.length) {
         finalSpans.add(TextSpan(
           text: text.substring(boldStart),
-          style: span.style,
+          style: span.style?.copyWith(fontSize: 16),
         ));
       }
     }
@@ -132,6 +135,7 @@ class MessageBox extends StatelessWidget {
       child: RichText(
         text: TextSpan(
           children: _getFormattedText(message, textColour),
+          style: const TextStyle(fontSize: 16),
         ),
       ),
     );
