@@ -1,6 +1,7 @@
 import platform
 import socket
 import subprocess
+import time  # Add this import
 from datetime import datetime
 
 import psutil
@@ -90,23 +91,25 @@ class SystemInfo(FunctionsListBase):
             return {"stdout": result.stdout, "stderr": result.stderr}
 
     @staticmethod
-    def reboot_system() -> dict:
+    def reboot_system() -> str:
         """
-        Reboot the system.
+        Reboot the system after a delay.
 
-        `sudo shutdown -r now`
+        `sleep 5 && sudo shutdown -r now`
 
         Returns:
-            dict: The output of the reboot command.
+            str: A fixed output indicating the reboot command was issued.
         """
-        commands = ["sudo", "shutdown", "-r", "now"]
+        delay = 5
+        commands = ["sleep", delay, "&&", "sudo", "shutdown", "-r", "now"]
         try:
-            result = subprocess.run(commands, capture_output=True, text=True, check=True)
-        except subprocess.CalledProcessError as e:
-            logger.exception(f"Failed to reboot: {e.stderr}")
-            return {"stdout": e.output, "stderr": e.stderr}
+            time.sleep(delay)
+            subprocess.Popen(commands)
+        except Exception:
+            logger.exception("Failed to reboot system.")
+            return "Failed to reboot system."
         else:
-            return {"stdout": result.stdout, "stderr": result.stderr}
+            return f"Rebooting system in {delay} seconds..."
 
     @staticmethod
     def get_os_info() -> dict:
