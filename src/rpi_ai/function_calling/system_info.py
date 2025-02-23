@@ -31,71 +31,82 @@ class SystemInfo(FunctionsListBase):
         ]
 
     @staticmethod
-    def update_and_check_packages() -> str:
+    def update_and_check_packages() -> dict:
         """
         Update the list of installed packages and check for updated packages.
 
         `sudo apt update` and `sudo apt list --upgradable`
 
         Returns:
-            str: The output of the package check command.
+            dict: The output of the package check command.
         """
         update_commands = ["sudo", "apt", "update"]
         check_commands = ["sudo", "apt", "list", "--upgradable"]
         try:
             subprocess.run(update_commands, capture_output=True, text=True, check=True)
-            return subprocess.run(check_commands, capture_output=True, text=True, check=True).stdout
+            result = subprocess.run(check_commands, capture_output=True, text=True, check=True)
         except subprocess.CalledProcessError as e:
             logger.exception(f"Failed to update packages list: {e.stderr}")
-            return f"Failed to update packages list: {e.stderr}"
+            return {"stdout": e.output, "stderr": e.stderr}
+        else:
+            return {"stdout": result.stdout, "stderr": result.stderr}
 
     @staticmethod
-    def upgrade_packages() -> str:
+    def upgrade_packages() -> dict:
         """
         Upgrade all packages.
 
         `sudo apt upgrade -y`
 
         Returns:
-            str: The output of the package upgrade command.
+            dict: The output of the package upgrade command.
         """
         commands = ["sudo", "apt", "upgrade", "-y"]
         try:
-            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
+            result = subprocess.run(commands, capture_output=True, text=True, check=True)
         except subprocess.CalledProcessError as e:
             logger.exception(f"Failed to upgrade packages: {e.stderr}")
-            return f"Failed to upgrade packages: {e.stderr}"
+            return {"stdout": e.output, "stderr": e.stderr}
+        else:
+            return {"stdout": result.stdout, "stderr": result.stderr}
 
     @staticmethod
-    def auto_remove_packages() -> str:
+    def auto_remove_packages() -> dict:
         """
         Remove unused packages.
 
         `sudo apt autoremove -y`
 
         Returns:
-            str: The output of the package autoremove command.
+            dict: The output of the package autoremove command.
         """
         commands = ["sudo", "apt", "autoremove", "-y"]
         try:
-            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
+            result = subprocess.run(commands, capture_output=True, text=True, check=True)
         except subprocess.CalledProcessError as e:
             logger.exception(f"Failed to remove unused packages: {e.stderr}")
-            return f"Failed to remove unused packages: {e.stderr}"
+            return {"stdout": e.output, "stderr": e.stderr}
+        else:
+            return {"stdout": result.stdout, "stderr": result.stderr}
 
     @staticmethod
-    def reboot_system() -> str:
+    def reboot_system() -> dict:
         """
         Reboot the system.
 
         `sudo shutdown -r now`
+
+        Returns:
+            dict: The output of the reboot command.
         """
         commands = ["sudo", "shutdown", "-r", "now"]
         try:
-            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
+            result = subprocess.run(commands, capture_output=True, text=True, check=True)
         except subprocess.CalledProcessError as e:
             logger.exception(f"Failed to reboot: {e.stderr}")
-            return f"Failed to reboot: {e.stderr}"
+            return {"stdout": e.output, "stderr": e.stderr}
+        else:
+            return {"stdout": result.stdout, "stderr": result.stderr}
 
     @staticmethod
     def get_os_info() -> dict:

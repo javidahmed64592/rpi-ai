@@ -105,57 +105,73 @@ def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
 
 
 def test_update_and_check_packages(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.return_value.stderr = ""
     response = SystemInfo.update_and_check_packages()
     expected_update_commands = ["sudo", "apt", "update"]
     expected_check_commands = ["sudo", "apt", "list", "--upgradable"]
     mock_subprocess_run.assert_any_call(expected_update_commands, capture_output=True, text=True, check=True)
     mock_subprocess_run.assert_any_call(expected_check_commands, capture_output=True, text=True, check=True)
-    assert response == mock_subprocess_run.return_value.stdout
+    assert response == {
+        "stdout": mock_subprocess_run.return_value.stdout,
+        "stderr": mock_subprocess_run.return_value.stderr,
+    }
 
 
 def test_update_and_check_packages_fails(mock_subprocess_run: MagicMock) -> None:
-    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error")
+    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error", output="test_output")
     response = SystemInfo.update_and_check_packages()
-    assert response == "Failed to update packages list: test_error"
+    assert response == {"stdout": "test_output", "stderr": "test_error"}
 
 
 def test_upgrade_packages(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.return_value.stderr = ""
     response = SystemInfo.upgrade_packages()
     expected_commands = ["sudo", "apt", "upgrade", "-y"]
     mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
-    assert response == mock_subprocess_run.return_value.stdout
+    assert response == {
+        "stdout": mock_subprocess_run.return_value.stdout,
+        "stderr": mock_subprocess_run.return_value.stderr,
+    }
 
 
 def test_upgrade_packages_fails(mock_subprocess_run: MagicMock) -> None:
-    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error")
+    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error", output="test_output")
     response = SystemInfo.upgrade_packages()
-    assert response == "Failed to upgrade packages: test_error"
+    assert response == {"stdout": "test_output", "stderr": "test_error"}
 
 
 def test_auto_remove_packages(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.return_value.stderr = ""
     response = SystemInfo.auto_remove_packages()
     expected_commands = ["sudo", "apt", "autoremove", "-y"]
     mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
-    assert response == mock_subprocess_run.return_value.stdout
+    assert response == {
+        "stdout": mock_subprocess_run.return_value.stdout,
+        "stderr": mock_subprocess_run.return_value.stderr,
+    }
 
 
 def test_auto_remove_packages_fails(mock_subprocess_run: MagicMock) -> None:
-    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error")
+    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error", output="test_output")
     response = SystemInfo.auto_remove_packages()
-    assert response == "Failed to remove unused packages: test_error"
+    assert response == {"stdout": "test_output", "stderr": "test_error"}
 
 
 def test_reboot_system(mock_subprocess_run: MagicMock) -> None:
+    mock_subprocess_run.return_value.stderr = ""
     response = SystemInfo.reboot_system()
     expected_commands = ["sudo", "shutdown", "-r", "now"]
     mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
-    assert response == mock_subprocess_run.return_value.stdout
+    assert response == {
+        "stdout": mock_subprocess_run.return_value.stdout,
+        "stderr": mock_subprocess_run.return_value.stderr,
+    }
 
 
 def test_reboot_system_fails(mock_subprocess_run: MagicMock) -> None:
-    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error")
+    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error", output="test_output")
     response = SystemInfo.reboot_system()
-    assert response == "Failed to reboot: test_error"
+    assert response == {"stdout": "test_output", "stderr": "test_error"}
 
 
 def test_get_os_info(mock_platform: MagicMock) -> None:
