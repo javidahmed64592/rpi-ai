@@ -23,12 +23,6 @@ def mock_subprocess_popen() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_sleep() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.function_calling.system_info.time.sleep") as mock:
-        yield mock
-
-
-@pytest.fixture
 def mock_platform() -> Generator[MagicMock, None, None]:
     with (
         patch("rpi_ai.function_calling.system_info.platform.system") as mock_system,
@@ -169,18 +163,16 @@ def test_auto_remove_packages_fails(mock_subprocess_run: MagicMock) -> None:
     assert response == {"stdout": "test_output", "stderr": "test_error"}
 
 
-def test_reboot_system(mock_subprocess_popen: MagicMock, mock_sleep: MagicMock) -> None:
+def test_reboot_system(mock_subprocess_popen: MagicMock) -> None:
     response = SystemInfo.reboot_system()
     expected_commands = ["sleep", "5", "&&", "sudo", "shutdown", "-r", "now"]
-    mock_sleep.assert_called_once_with(5)
     mock_subprocess_popen.assert_called_once_with(expected_commands)
     assert response == "Rebooting system in 5 seconds..."
 
 
-def test_reboot_system_fails(mock_subprocess_popen: MagicMock, mock_sleep: MagicMock) -> None:
+def test_reboot_system_fails(mock_subprocess_popen: MagicMock) -> None:
     mock_subprocess_popen.side_effect = Exception("test_error")
     response = SystemInfo.reboot_system()
-    mock_sleep.assert_called_once()
     mock_subprocess_popen.assert_called_once()
     assert response == "Failed to reboot system."
 

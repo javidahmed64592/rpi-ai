@@ -1,7 +1,7 @@
 import platform
+import shlex
 import socket
 import subprocess
-import time  # Add this import
 from datetime import datetime
 
 import psutil
@@ -101,10 +101,8 @@ class SystemInfo(FunctionsListBase):
             str: A fixed output indicating the reboot command was issued.
         """
         delay = 5
-        commands = ["sleep", f"{delay}", "&&", "sudo", "shutdown", "-r", "now"]
         try:
-            time.sleep(delay)
-            subprocess.Popen(commands)
+            subprocess.Popen(shlex.split(f"sleep {delay} && sudo shutdown -r now"))
         except Exception:
             logger.exception("Failed to reboot system.")
             return "Failed to reboot system."
