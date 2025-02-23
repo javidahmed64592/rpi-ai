@@ -35,12 +35,21 @@ void main() {
       ),
     );
 
-    final messageFinder = find.text('Hello, this is a user message');
+    final richTextFinder = find.descendant(
+      of: find.byType(MessageBox),
+      matching: find.byType(RichText),
+    );
+    expect(richTextFinder, findsOneWidget);
+
+    final RichText richTextWidget = tester.widget<RichText>(richTextFinder);
+    final TextSpan textSpan = richTextWidget.text as TextSpan;
+
+    expect(textSpan.toPlainText(), contains('Hello, this is a user message'));
+
     final timestampFinder = find.text('01/10/23 | 14:30');
-    expect(messageFinder, findsOneWidget);
     expect(timestampFinder, findsOneWidget);
 
-    await tester.longPress(find.text('Hello, this is a user message'));
+    await tester.longPress(richTextFinder);
     await tester.pumpAndSettle();
     expect(find.text('Copied to clipboard'), findsOneWidget);
   });
@@ -56,12 +65,22 @@ void main() {
       ),
     );
 
-    final messageFinder = find.text('Hello, this is a non-user message');
+    final richTextFinder = find.descendant(
+      of: find.byType(MessageBox),
+      matching: find.byType(RichText),
+    );
+    expect(richTextFinder, findsOneWidget);
+
+    final RichText richTextWidget = tester.widget<RichText>(richTextFinder);
+    final TextSpan textSpan = richTextWidget.text as TextSpan;
+
+    expect(
+        textSpan.toPlainText(), contains('Hello, this is a non-user message'));
+
     final timestampFinder = find.text('01/10/23 | 14:30');
-    expect(messageFinder, findsOneWidget);
     expect(timestampFinder, findsOneWidget);
 
-    await tester.longPress(find.text('Hello, this is a non-user message'));
+    await tester.longPress(richTextFinder);
     await tester.pumpAndSettle();
     expect(find.text('Copied to clipboard'), findsOneWidget);
   });
@@ -99,5 +118,34 @@ void main() {
     expect(boldTextSpan.style?.fontWeight, FontWeight.bold);
     expect(normalTextSpan2.text, ' text');
     expect(normalTextSpan2.style?.fontWeight, null);
+  });
+
+  testWidgets('MessageContainer displays bullet points correctly',
+      (WidgetTester tester) async {
+    final timestamp = DateTime(2023, 10, 1, 14, 30);
+    await tester.pumpWidget(
+      createMessageContainer(
+        message: '* Bullet point 1\n* Bullet point 2',
+        isUserMessage: true,
+        timestamp: timestamp,
+      ),
+    );
+
+    final richTextFinder = find.descendant(
+      of: find.byType(MessageBox),
+      matching: find.byType(RichText),
+    );
+    expect(richTextFinder, findsOneWidget);
+
+    final RichText richTextWidget = tester.widget<RichText>(richTextFinder);
+    final TextSpan textSpan = richTextWidget.text as TextSpan;
+
+    expect(textSpan.children, isNotNull);
+
+    final TextSpan bulletPoint1 = textSpan.children![0] as TextSpan;
+    final TextSpan bulletPoint2 = textSpan.children![2] as TextSpan;
+
+    expect(bulletPoint1.text, '- Bullet point 1');
+    expect(bulletPoint2.text, '- Bullet point 2');
   });
 }

@@ -64,11 +64,12 @@ class MessageBox extends StatelessWidget {
   }) : super(key: key);
 
   List<TextSpan> _getFormattedText(String text, Color textColour) {
-    final RegExp exp = RegExp(r'\*\*(.*?)\*\*');
+    final RegExp boldExp = RegExp(r'\*\*(.*?)\*\*');
+    final RegExp bulletExp = RegExp(r'^\* (.*)', multiLine: true);
     final List<TextSpan> spans = [];
     int start = 0;
 
-    for (final Match match in exp.allMatches(text)) {
+    for (final Match match in bulletExp.allMatches(text)) {
       if (match.start > start) {
         spans.add(TextSpan(
           text: text.substring(start, match.start),
@@ -76,8 +77,8 @@ class MessageBox extends StatelessWidget {
         ));
       }
       spans.add(TextSpan(
-        text: match.group(1),
-        style: TextStyle(color: textColour, fontWeight: FontWeight.bold),
+        text: '- ${match.group(1)}',
+        style: TextStyle(color: textColour),
       ));
       start = match.end;
     }
@@ -89,7 +90,32 @@ class MessageBox extends StatelessWidget {
       ));
     }
 
-    return spans;
+    final List<TextSpan> finalSpans = [];
+    for (final span in spans) {
+      final text = span.text!;
+      int boldStart = 0;
+      for (final Match match in boldExp.allMatches(text)) {
+        if (match.start > boldStart) {
+          finalSpans.add(TextSpan(
+            text: text.substring(boldStart, match.start),
+            style: span.style,
+          ));
+        }
+        finalSpans.add(TextSpan(
+          text: match.group(1),
+          style: span.style?.copyWith(fontWeight: FontWeight.bold),
+        ));
+        boldStart = match.end;
+      }
+      if (boldStart < text.length) {
+        finalSpans.add(TextSpan(
+          text: text.substring(boldStart),
+          style: span.style,
+        ));
+      }
+    }
+
+    return finalSpans;
   }
 
   @override
