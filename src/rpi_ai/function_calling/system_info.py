@@ -1,5 +1,4 @@
 import platform
-import shlex
 import socket
 import subprocess
 from datetime import datetime
@@ -101,13 +100,11 @@ class SystemInfo(FunctionsListBase):
             str: A fixed output indicating the reboot command was issued.
         """
         delay = 5
-        try:
-            subprocess.Popen(shlex.split(f"sleep {delay}; sudo shutdown -r now"))
-        except Exception:
+        response = subprocess.Popen(f"sleep {delay} && sudo shutdown -r now")
+        if response.returncode != 0:
             logger.exception("Failed to reboot system.")
             return "Failed to reboot system."
-        else:
-            return f"Rebooting system in {delay} seconds..."
+        return f"Rebooting system in {delay} seconds..."
 
     @staticmethod
     def get_os_info() -> dict:
