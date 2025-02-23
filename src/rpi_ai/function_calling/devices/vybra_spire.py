@@ -67,7 +67,7 @@ class VybraSpire(FunctionsListBase):
             dev_id=str(os.environ.get("VYBRA_SPIRE_ID")),
             address=str(os.environ.get("VYBRA_SPIRE_ADDRESS")),
             local_key=str(os.environ.get("VYBRA_SPIRE_KEY")),
-            version=str(os.environ.get("VYBRA_SPIRE_VERSION")),
+            version=os.environ.get("VYBRA_SPIRE_VERSION"),
         )
     except Exception:
         logger.exception("Failed to initialise Vybra Spire device.")
