@@ -59,12 +59,16 @@ class VybraSpireOptions(Enum):
 
 
 class VybraSpire(FunctionsListBase):
-    DEVICE = tinytuya.Device(
-        dev_id=str(os.environ.get("VYBRA_SPIRE_ID")),
-        address=str(os.environ.get("VYBRA_SPIRE_ADDRESS")),
-        local_key=str(os.environ.get("VYBRA_SPIRE_KEY")),
-        version=str(os.environ.get("VYBRA_SPIRE_VERSION")),
-    )
+    try:
+        DEVICE = tinytuya.Device(
+            dev_id=str(os.environ.get("VYBRA_SPIRE_ID")),
+            address=str(os.environ.get("VYBRA_SPIRE_ADDRESS")),
+            local_key=str(os.environ.get("VYBRA_SPIRE_KEY")),
+            version=str(os.environ.get("VYBRA_SPIRE_VERSION")),
+        )
+    except Exception as e:
+        msg = f"Failed to initialize device: {e}"
+        raise RuntimeError(msg) from e
 
     def __init__(self) -> None:
         super().__init__()
