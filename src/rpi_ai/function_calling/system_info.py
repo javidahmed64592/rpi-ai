@@ -1,5 +1,6 @@
 import platform
 import socket
+import subprocess
 from datetime import datetime
 
 import psutil
@@ -14,6 +15,9 @@ class SystemInfo(FunctionsListBase):
     def __init__(self) -> None:
         super().__init__()
         self.functions = [
+            SystemInfo.update_and_check_packages,
+            SystemInfo.upgrade_packages,
+            SystemInfo.auto_remove_packages,
             SystemInfo.get_os_info,
             SystemInfo.get_hostname,
             SystemInfo.get_uptime,
@@ -24,6 +28,65 @@ class SystemInfo(FunctionsListBase):
             SystemInfo.get_disk_usage,
             SystemInfo.get_temperature,
         ]
+
+    @staticmethod
+    def update_and_check_packages() -> dict:
+        """
+        Update the list of installed packages and check for updated packages.
+
+        `sudo apt update` and `sudo apt list --upgradable`
+
+        Returns:
+            dict: The output of the package check command.
+        """
+        update_commands = ["sudo", "apt", "update"]
+        check_commands = ["sudo", "apt", "list", "--upgradable"]
+        try:
+            subprocess.run(update_commands, capture_output=True, text=True, check=True)
+            result = subprocess.run(check_commands, capture_output=True, text=True, check=True)
+        except subprocess.CalledProcessError as e:
+            logger.exception(f"Failed to update packages list: {e.stderr}")
+            return {"stdout": e.output, "stderr": e.stderr}
+        else:
+            return {"stdout": result.stdout, "stderr": result.stderr}
+
+    @staticmethod
+    def upgrade_packages() -> dict:
+        """
+        Upgrade all packages.
+
+        `sudo apt upgrade -y`
+
+        Returns:
+            dict: The output of the package upgrade command.
+        """
+        commands = ["sudo", "apt", "upgrade", "-y"]
+        try:
+            result = subprocess.run(commands, capture_output=True, text=True, check=True)
+        except subprocess.CalledProcessError as e:
+            logger.exception(f"Failed to upgrade packages: {e.stderr}")
+            return {"stdout": e.output, "stderr": e.stderr}
+        else:
+            return {"stdout": result.stdout, "stderr": result.stderr}
+
+    @staticmethod
+    def auto_remove_packages() -> dict:
+        """
+        Remove unused packages.
+
+        `sudo apt autoremove -y`
+
+        Returns:
+            dict: The output of the package autoremove command.
+        """
+        commands = ["sudo", "apt", "autoremove", "-y"]
+        try:
+            result = subprocess.run(commands, capture_output=True, text=True, check=True)
+        except subprocess.CalledProcessError as e:
+            logger.exception(f"Failed to remove unused packages: {e.stderr}")
+            return {"stdout": e.output, "stderr": e.stderr}
+        else:
+            return {"stdout": result.stdout, "stderr": result.stderr}
 
     @staticmethod
     def get_os_info() -> dict:
