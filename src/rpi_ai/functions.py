@@ -5,8 +5,4 @@ from rpi_ai.models.logger import Logger
 logger = Logger(__name__)
 
 FUNCTIONS = SystemInfo().functions
-
-try:
-    FUNCTIONS.extend(VybraSpire().functions)
-except RuntimeError:
-    logger.exception("Failed to load Vybra Spire functions.")
+FUNCTIONS.extend(VybraSpire().functions)

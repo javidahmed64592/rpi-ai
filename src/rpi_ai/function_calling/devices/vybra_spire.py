@@ -6,6 +6,9 @@ from enum import Enum
 import tinytuya
 
 from rpi_ai.function_calling.functions_list_base import FunctionsListBase
+from rpi_ai.models.logger import Logger
+
+logger = Logger(__name__)
 
 
 class VybraSpireOptions(Enum):
@@ -66,9 +69,8 @@ class VybraSpire(FunctionsListBase):
             local_key=str(os.environ.get("VYBRA_SPIRE_KEY")),
             version=str(os.environ.get("VYBRA_SPIRE_VERSION")),
         )
-    except Exception as e:
-        msg = f"Failed to initialize device: {e}"
-        raise RuntimeError(msg) from e
+    except Exception:
+        logger.exception("Failed to initialise Vybra Spire device.")
 
     def __init__(self) -> None:
         super().__init__()
