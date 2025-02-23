@@ -102,7 +102,7 @@ class SystemInfo(FunctionsListBase):
         """
         delay = 5
         try:
-            subprocess.Popen(shlex.split(f"sleep {delay} && sudo shutdown -r now"))
+            subprocess.Popen(shlex.split(f"sleep {delay}; sudo shutdown -r now"))
         except Exception:
             logger.exception("Failed to reboot system.")
             return "Failed to reboot system."

@@ -165,7 +165,7 @@ def test_auto_remove_packages_fails(mock_subprocess_run: MagicMock) -> None:
 
 def test_reboot_system(mock_subprocess_popen: MagicMock) -> None:
     response = SystemInfo.reboot_system()
-    expected_commands = ["sleep", "5", "&&", "sudo", "shutdown", "-r", "now"]
+    expected_commands = ["sleep", "5;", "sudo", "shutdown", "-r", "now"]
     mock_subprocess_popen.assert_called_once_with(expected_commands)
     assert response == "Rebooting system in 5 seconds..."
 
