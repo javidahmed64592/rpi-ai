@@ -155,9 +155,11 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
+
     return IconButton(
       icon: const Icon(Icons.settings),
-      onPressed: () => showSettingsDialog(context),
+      onPressed: appState.isBusy ? null : () => showSettingsDialog(context),
     );
   }
 }

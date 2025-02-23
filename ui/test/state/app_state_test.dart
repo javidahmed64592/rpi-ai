@@ -19,6 +19,7 @@ void main() {
       expect(appState.authToken, '');
       expect(appState.activePage, PageType.login);
       expect(appState.connected, false);
+      expect(appState.isBusy, false);
     });
 
     test('setIp updates the IP address', () {
@@ -59,6 +60,11 @@ void main() {
       appState.setIp('192.168.1.1');
       appState.setPort(8080);
       expect(appState.fullUrl, 'http://192.168.1.1:8080');
+    });
+
+    test('setIsBusy', () {
+      appState.setIsBusy(true);
+      expect(appState.isBusy, true);
     });
   });
 }

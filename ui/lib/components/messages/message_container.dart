@@ -63,6 +63,64 @@ class MessageBox extends StatelessWidget {
     required this.textColour,
   }) : super(key: key);
 
+  List<TextSpan> _getFormattedText(String text, Color textColour) {
+    final RegExp boldExp = RegExp(r'\*\*(.*?)\*\*');
+    final RegExp bulletExp = RegExp(r'^\* (.*)', multiLine: true);
+    final List<TextSpan> spans = [];
+    int start = 0;
+
+    for (final Match match in bulletExp.allMatches(text)) {
+      if (match.start > start) {
+        spans.add(TextSpan(
+          text: text.substring(start, match.start),
+          style: TextStyle(color: textColour),
+        ));
+      }
+      spans.add(TextSpan(
+        text: '- ${match.group(1)}',
+        style: TextStyle(color: textColour),
+      ));
+      start = match.end;
+    }
+
+    if (start < text.length) {
+      spans.add(TextSpan(
+        text: text.substring(start),
+        style: TextStyle(color: textColour),
+      ));
+    }
+
+    final List<TextSpan> finalSpans = [];
+    for (final span in spans) {
+      final text = span.text!;
+      int boldStart = 0;
+      for (final Match match in boldExp.allMatches(text)) {
+        if (match.start > boldStart) {
+          finalSpans.add(TextSpan(
+            text: text.substring(boldStart, match.start),
+            style: span.style,
+          ));
+        }
+        finalSpans.add(TextSpan(
+          text: match.group(1),
+          style: span.style?.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ));
+        boldStart = match.end;
+      }
+      if (boldStart < text.length) {
+        finalSpans.add(TextSpan(
+          text: text.substring(boldStart),
+          style: span.style?.copyWith(fontSize: 16),
+        ));
+      }
+    }
+
+    return finalSpans;
+  }
+
   @override
   Widget build(BuildContext context) {
     final maxWidth = MediaQuery.of(context).size.width * 0.75;
@@ -74,7 +132,12 @@ class MessageBox extends StatelessWidget {
         color: boxColour,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(message, style: TextStyle(color: textColour)),
+      child: RichText(
+        text: TextSpan(
+          children: _getFormattedText(message, textColour),
+          style: const TextStyle(fontSize: 16),
+        ),
+      ),
     );
   }
 }
