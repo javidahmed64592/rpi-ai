@@ -21,6 +21,7 @@ void main() {
     test('title returns correct values', () {
       expect(PageType.login.title, 'Login');
       expect(PageType.text.title, 'Chat');
+      expect(PageType.speech.title, 'Speech');
     });
   });
 
