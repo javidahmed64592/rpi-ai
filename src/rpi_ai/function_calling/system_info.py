@@ -1,5 +1,6 @@
 import platform
 import socket
+import subprocess
 from datetime import datetime
 
 import psutil
@@ -14,6 +15,9 @@ class SystemInfo(FunctionsListBase):
     def __init__(self) -> None:
         super().__init__()
         self.functions = [
+            SystemInfo.update_packages_list,
+            SystemInfo.check_updated_packages,
+            SystemInfo.upgrade_packages,
             SystemInfo.get_os_info,
             SystemInfo.get_hostname,
             SystemInfo.get_uptime,
@@ -24,6 +28,57 @@ class SystemInfo(FunctionsListBase):
             SystemInfo.get_disk_usage,
             SystemInfo.get_temperature,
         ]
+
+    @staticmethod
+    def update_packages_list() -> str:
+        """
+        Update the list of installed packages.
+
+        `sudo apt update`
+
+        Returns:
+            str: The output of the package update command.
+        """
+        commands = ["sudo", "apt", "update"]
+        try:
+            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
+        except subprocess.CalledProcessError as e:
+            logger.exception(f"Failed to update packages list: {e.stderr}")
+            return f"Failed to update packages list: {e.stderr}"
+
+    @staticmethod
+    def check_updated_packages() -> str:
+        """
+        Check for updated packages.
+
+        `sudo apt list --upgradable`
+
+        Returns:
+            str: The output of the package check command.
+        """
+        commands = ["sudo", "apt", "list", "--upgradable"]
+        try:
+            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
+        except subprocess.CalledProcessError as e:
+            logger.exception(f"Failed to check updated packages: {e.stderr}")
+            return f"Failed to check updated packages: {e.stderr}"
+
+    @staticmethod
+    def upgrade_packages() -> str:
+        """
+        Upgrade all packages.
+
+        `sudo apt upgrade -y`
+
+        Returns:
+            str: The output of the package upgrade command.
+        """
+        commands = ["sudo", "apt", "upgrade", "-y"]
+        try:
+            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
+        except subprocess.CalledProcessError as e:
+            logger.exception(f"Failed to upgrade packages: {e.stderr}")
+            return f"Failed to upgrade packages: {e.stderr}"
 
     @staticmethod
     def get_os_info() -> dict:
