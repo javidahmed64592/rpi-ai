@@ -63,6 +63,35 @@ class MessageBox extends StatelessWidget {
     required this.textColour,
   }) : super(key: key);
 
+  List<TextSpan> _getFormattedText(String text, Color textColour) {
+    final RegExp exp = RegExp(r'\*\*(.*?)\*\*');
+    final List<TextSpan> spans = [];
+    int start = 0;
+
+    for (final Match match in exp.allMatches(text)) {
+      if (match.start > start) {
+        spans.add(TextSpan(
+          text: text.substring(start, match.start),
+          style: TextStyle(color: textColour),
+        ));
+      }
+      spans.add(TextSpan(
+        text: match.group(1),
+        style: TextStyle(color: textColour, fontWeight: FontWeight.bold),
+      ));
+      start = match.end;
+    }
+
+    if (start < text.length) {
+      spans.add(TextSpan(
+        text: text.substring(start),
+        style: TextStyle(color: textColour),
+      ));
+    }
+
+    return spans;
+  }
+
   @override
   Widget build(BuildContext context) {
     final maxWidth = MediaQuery.of(context).size.width * 0.75;
@@ -74,7 +103,11 @@ class MessageBox extends StatelessWidget {
         color: boxColour,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(message, style: TextStyle(color: textColour)),
+      child: RichText(
+        text: TextSpan(
+          children: _getFormattedText(message, textColour),
+        ),
+      ),
     );
   }
 }

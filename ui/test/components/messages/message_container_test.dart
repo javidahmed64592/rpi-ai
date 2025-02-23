@@ -66,32 +66,38 @@ void main() {
     expect(find.text('Copied to clipboard'), findsOneWidget);
   });
 
-  testWidgets('MessageBox displays message with correct colors',
+  testWidgets('MessageContainer displays bold text correctly',
       (WidgetTester tester) async {
-    const message = 'Test message';
-    const boxColour = Colors.blue;
-    const textColour = Colors.white;
-
+    final timestamp = DateTime(2023, 10, 1, 14, 30);
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(
-          body: MessageBox(
-            message: message,
-            boxColour: boxColour,
-            textColour: textColour,
-          ),
-        ),
+      createMessageContainer(
+        message: 'This is **bold** text',
+        isUserMessage: true,
+        timestamp: timestamp,
       ),
     );
 
-    final messageFinder = find.text(message);
-    expect(messageFinder, findsOneWidget);
+    final richTextFinder = find.descendant(
+      of: find.byType(MessageBox),
+      matching: find.byType(RichText),
+    );
+    expect(richTextFinder, findsOneWidget);
 
-    final container = tester.widget<Container>(find.byType(Container));
-    final decoration = container.decoration as BoxDecoration;
-    expect(decoration.color, boxColour);
+    final RichText richTextWidget = tester.widget<RichText>(richTextFinder);
+    final TextSpan textSpan = richTextWidget.text as TextSpan;
 
-    final text = tester.widget<Text>(find.text(message));
-    expect(text.style?.color, textColour);
+    expect(textSpan.children, isNotNull);
+    expect(textSpan.children!.length, 3);
+
+    final TextSpan normalTextSpan1 = textSpan.children![0] as TextSpan;
+    final TextSpan boldTextSpan = textSpan.children![1] as TextSpan;
+    final TextSpan normalTextSpan2 = textSpan.children![2] as TextSpan;
+
+    expect(normalTextSpan1.text, 'This is ');
+    expect(normalTextSpan1.style?.fontWeight, null);
+    expect(boldTextSpan.text, 'bold');
+    expect(boldTextSpan.style?.fontWeight, FontWeight.bold);
+    expect(normalTextSpan2.text, ' text');
+    expect(normalTextSpan2.style?.fontWeight, null);
   });
 }
