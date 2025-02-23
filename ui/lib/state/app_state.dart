@@ -10,6 +10,7 @@ class AppState extends ChangeNotifier {
   String _authToken = '';
   PageType _activePage = PageType.login;
   bool _connected = false;
+  bool _isBusy = false;
 
   String get ip => _ip;
   int get port => _port;
@@ -17,6 +18,7 @@ class AppState extends ChangeNotifier {
   String get authToken => _authToken;
   PageType get activePage => _activePage;
   bool get connected => _connected;
+  bool get isBusy => _isBusy;
 
   void setIp(String newIp) {
     _ip = newIp;
@@ -49,6 +51,11 @@ class AppState extends ChangeNotifier {
 
   void setConnected(bool newConnected) {
     _connected = newConnected;
+    notifyListeners();
+  }
+
+  void setIsBusy(bool busy) {
+    _isBusy = busy;
     notifyListeners();
   }
 }

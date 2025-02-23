@@ -73,7 +73,7 @@ class _SpeechPageState extends State<SpeechPage> {
     try {
       final path = await _audioRecorder.stop();
       speechState.setIsRecording(false);
-      speechState.setIsBusy(true);
+      appState.setIsBusy(true);
 
       if (path == null) {
         notificationState.setNotificationError('No audio recorded.');
@@ -88,14 +88,14 @@ class _SpeechPageState extends State<SpeechPage> {
         final decodedBytes = BytesSource(base64Decode(response['bytes']));
         await _audioPlayer.play(decodedBytes);
         _audioPlayer.onPlayerComplete.listen((event) {
-          speechState.setIsBusy(false);
+          appState.setIsBusy(false);
         });
       } else {
         throw Exception(response['text']);
       }
     } catch (e) {
       notificationState.setNotificationError('Error stopping recording: $e');
-      speechState.setIsBusy(false);
+      appState.setIsBusy(false);
     }
   }
 
@@ -123,8 +123,8 @@ class _SpeechPageState extends State<SpeechPage> {
           Row(
             children: [
               Expanded(
-                child: Consumer<SpeechState>(
-                  builder: (context, speechState, child) {
+                child: Consumer<AppState>(
+                  builder: (context, appState, child) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: StatusDisplayBox(
@@ -134,7 +134,7 @@ class _SpeechPageState extends State<SpeechPage> {
                         secondaryIcon: Icons.hourglass_empty,
                         primaryColor: Theme.of(context).colorScheme.onSurface,
                         secondaryColor: Theme.of(context).colorScheme.tertiary,
-                        showPrimary: !speechState.isBusy,
+                        showPrimary: !appState.isBusy,
                       ),
                     );
                   },
