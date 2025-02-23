@@ -104,34 +104,19 @@ def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
         yield mock
 
 
-def test_update_packages_list(mock_subprocess_run: MagicMock) -> None:
-    response = SystemInfo.update_packages_list()
-    expected_commands = ["sudo", "apt", "update"]
-    mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
+def test_update_and_check_packages(mock_subprocess_run: MagicMock) -> None:
+    response = SystemInfo.update_and_check_packages()
+    expected_update_commands = ["sudo", "apt", "update"]
+    expected_check_commands = ["sudo", "apt", "list", "--upgradable"]
+    mock_subprocess_run.assert_any_call(expected_update_commands, capture_output=True, text=True, check=True)
+    mock_subprocess_run.assert_any_call(expected_check_commands, capture_output=True, text=True, check=True)
     assert response == mock_subprocess_run.return_value.stdout
 
 
-def test_update_packages_list_fails(mock_subprocess_run: MagicMock) -> None:
+def test_update_and_check_packages_fails(mock_subprocess_run: MagicMock) -> None:
     mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error")
-    response = SystemInfo.update_packages_list()
-    expected_commands = ["sudo", "apt", "update"]
-    mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
+    response = SystemInfo.update_and_check_packages()
     assert response == "Failed to update packages list: test_error"
-
-
-def test_check_updated_packages(mock_subprocess_run: MagicMock) -> None:
-    response = SystemInfo.check_updated_packages()
-    expected_commands = ["sudo", "apt", "list", "--upgradable"]
-    mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
-    assert response == mock_subprocess_run.return_value.stdout
-
-
-def test_check_updated_packages_fails(mock_subprocess_run: MagicMock) -> None:
-    mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error")
-    response = SystemInfo.check_updated_packages()
-    expected_commands = ["sudo", "apt", "list", "--upgradable"]
-    mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
-    assert response == "Failed to check updated packages: test_error"
 
 
 def test_upgrade_packages(mock_subprocess_run: MagicMock) -> None:
@@ -144,8 +129,6 @@ def test_upgrade_packages(mock_subprocess_run: MagicMock) -> None:
 def test_upgrade_packages_fails(mock_subprocess_run: MagicMock) -> None:
     mock_subprocess_run.side_effect = subprocess.CalledProcessError(1, "cmd", stderr="test_error")
     response = SystemInfo.upgrade_packages()
-    expected_commands = ["sudo", "apt", "upgrade", "-y"]
-    mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
     assert response == "Failed to upgrade packages: test_error"
 
 

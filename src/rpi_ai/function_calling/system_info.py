@@ -15,8 +15,7 @@ class SystemInfo(FunctionsListBase):
     def __init__(self) -> None:
         super().__init__()
         self.functions = [
-            SystemInfo.update_packages_list,
-            SystemInfo.check_updated_packages,
+            SystemInfo.update_and_check_packages,
             SystemInfo.upgrade_packages,
             SystemInfo.get_os_info,
             SystemInfo.get_hostname,
@@ -30,38 +29,23 @@ class SystemInfo(FunctionsListBase):
         ]
 
     @staticmethod
-    def update_packages_list() -> str:
+    def update_and_check_packages() -> str:
         """
-        Update the list of installed packages.
+        Update the list of installed packages and check for updated packages.
 
-        `sudo apt update`
-
-        Returns:
-            str: The output of the package update command.
-        """
-        commands = ["sudo", "apt", "update"]
-        try:
-            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
-        except subprocess.CalledProcessError as e:
-            logger.exception(f"Failed to update packages list: {e.stderr}")
-            return f"Failed to update packages list: {e.stderr}"
-
-    @staticmethod
-    def check_updated_packages() -> str:
-        """
-        Check for updated packages.
-
-        `sudo apt list --upgradable`
+        `sudo apt update` and `sudo apt list --upgradable`
 
         Returns:
             str: The output of the package check command.
         """
-        commands = ["sudo", "apt", "list", "--upgradable"]
+        update_commands = ["sudo", "apt", "update"]
+        check_commands = ["sudo", "apt", "list", "--upgradable"]
         try:
-            return subprocess.run(commands, capture_output=True, text=True, check=True).stdout
+            subprocess.run(update_commands, capture_output=True, text=True, check=True)
+            return subprocess.run(check_commands, capture_output=True, text=True, check=True).stdout
         except subprocess.CalledProcessError as e:
-            logger.exception(f"Failed to check updated packages: {e.stderr}")
-            return f"Failed to check updated packages: {e.stderr}"
+            logger.exception(f"Failed to update packages list: {e.stderr}")
+            return f"Failed to update packages list: {e.stderr}"
 
     @staticmethod
     def upgrade_packages() -> str:
