@@ -63,7 +63,7 @@ class VybraSpire(FunctionsListBase):
         dev_id=str(os.environ.get("VYBRA_SPIRE_ID")),
         address=str(os.environ.get("VYBRA_SPIRE_ADDRESS")),
         local_key=str(os.environ.get("VYBRA_SPIRE_KEY")),
-        version=float(os.environ.get("VYBRA_SPIRE_VERSION")),
+        version=str(os.environ.get("VYBRA_SPIRE_VERSION")),
     )
 
     def __init__(self) -> None:
@@ -94,26 +94,30 @@ class VybraSpire(FunctionsListBase):
         return status
 
     @staticmethod
-    def _set_value(index: str, new_val: str | bool) -> str | bool:
+    def _set_value(index: str, new_val: str | bool) -> str | bool | None:
         try:
             if VybraSpire._status():
                 VybraSpire.DEVICE.set_value(index, new_val)
-                dps: dict = VybraSpire._status().get("dps")
+                dps: dict = VybraSpire._status().get("dps", {})
                 return dps.get(index)
         except Exception as e:
             msg = f"Error when setting device value: {e}"
             raise RuntimeError(msg) from e
+        else:
+            return None
 
     @staticmethod
     def get_current_temperature() -> str:
         """Get the current temperature in the room."""
         try:
             if status := VybraSpire._status():
-                dps: dict = status.get("dps")
+                dps: dict = status.get("dps", {})
                 current_temperature = dps.get(str(VybraSpireOptions.CURRENT_TEMPERATURE.value))
                 return f"Current temperature: {current_temperature}"
         except Exception as e:
             return f"Failed to get current temperature: {e}"
+        else:
+            return "Failed to get current temperature."
 
     @staticmethod
     def turn_on() -> str:

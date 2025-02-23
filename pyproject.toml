@@ -145,6 +145,7 @@ module = [
     "gtts.*",
     "psutil.*",
     "rpi_ai.*",
+    "tinytuya.*",
     "waitress.*",
 ]
 ignore_missing_imports = true
