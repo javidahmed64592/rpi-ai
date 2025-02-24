@@ -137,9 +137,9 @@ Before running the installer, ensure you have set the `GEMINI_API_KEY` environme
 Run the `install_rpi_ai.sh` script:
 
     tar -xzf rpi_ai.tar.gz
+    rm rpi_ai.tar.gz
     cd rpi_ai
     ./install_rpi_ai.sh
-    rm rpi_ai.tar.gz
 
 This script will create a virtual environment, install the API from the wheel file, and set up the necessary directories and files.
 
