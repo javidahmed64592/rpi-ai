@@ -1,7 +1,9 @@
 import json
 from unittest.mock import mock_open, patch
 
-from rpi_ai.api_types import AIConfigType, Message, SpeechResponse
+from google.genai.types import Content, Part
+
+from rpi_ai.api_types import AIConfigType, MessageList, SpeechResponse
 
 
 # Config
@@ -25,18 +27,31 @@ class TestAIConfigType:
 
 
 # Chatbot responses
-class TestMessage:
-    def test_from_dict_user_message(self) -> None:
-        data = {"role": "user", "parts": "Hello, world!"}
-        message = Message.from_dict(data)
-        assert message.message == "Hello, world!"
-        assert message.is_user_message
+class TestMessageList:
+    def test_from_contents_list(self) -> None:
+        data = [
+            Content(parts=[Part(text="user_msg")], role="user"),
+            Content(parts=[Part(text="model_msg")], role="model"),
+        ]
+        message_list = MessageList.from_contents_list(data)
+        assert len(message_list.messages) == len(data)
+        assert message_list.messages[0].message == "user_msg"
+        assert message_list.messages[0].is_user_message
+        assert message_list.messages[1].message == "model_msg"
+        assert not message_list.messages[1].is_user_message
 
-    def test_from_dict_model_message(self) -> None:
-        data = {"role": "model", "parts": "Hello, user!"}
-        message = Message.from_dict(data)
-        assert message.message == "Hello, user!"
-        assert not message.is_user_message
+    def test_history(self) -> None:
+        data = [
+            Content(parts=[Part(text="user_msg")], role="user"),
+            Content(parts=[Part(text="model_msg")], role="model"),
+        ]
+        message_list = MessageList.from_contents_list(data)
+        history = message_list.history
+        assert len(history) == len(data)
+        assert history[0].parts[0].text == "user_msg"
+        assert history[0].role == "user"
+        assert history[1].parts[0].text == "model_msg"
+        assert history[1].role == "model"
 
 
 class TestSpeechResponse:

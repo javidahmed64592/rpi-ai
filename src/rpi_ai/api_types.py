@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 
+from google.genai.types import Content, Part
 from pydantic.dataclasses import dataclass
 
 
@@ -30,13 +31,33 @@ class Message:
     message: str
     is_user_message: bool = False
 
-    @classmethod
-    def from_dict(cls, data: dict[str, str]) -> Message:
-        return cls(message=data["parts"], is_user_message=cls.is_user(data))
 
-    @staticmethod
-    def is_user(data: dict[str, str]) -> bool:
-        return data["role"] == "user"
+@dataclass
+class MessageList:
+    messages: list[Message]
+
+    @classmethod
+    def from_contents_list(cls, contents: list[Content]) -> MessageList:
+        message_list = cls([])
+        for content in contents:
+            if content.role == "user":
+                message_list.add_user_message(content.parts[0].text.strip())
+            else:
+                message_list.add_model_message(content.parts[0].text.strip())
+        return message_list
+
+    @property
+    def history(self) -> list[Content]:
+        return [
+            Content(parts=[Part(text=message.message)], role="user" if message.is_user_message else "model")
+            for message in self.messages
+        ]
+
+    def add_user_message(self, message: str) -> None:
+        self.messages.append(Message(message=message, is_user_message=True))
+
+    def add_model_message(self, message: str) -> None:
+        self.messages.append(Message(message=message, is_user_message=False))
 
 
 @dataclass
