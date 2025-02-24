@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 
 class TextFormatHelper {
-  TextFormatHelper() : super();
-
   static List<TextSpan> createBulletPoints(String text, TextStyle? style) {
     final RegExp bulletExp = RegExp(r'^\* (.*)', multiLine: true);
     final List<TextSpan> spans = [];
