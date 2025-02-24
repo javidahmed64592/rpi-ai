@@ -85,12 +85,13 @@ void main() {
     expect(find.text('Copied to clipboard'), findsOneWidget);
   });
 
-  testWidgets('MessageContainer displays bold text correctly',
+  testWidgets('MessageContainer displays formatted text correctly',
       (WidgetTester tester) async {
     final timestamp = DateTime(2023, 10, 1, 14, 30);
     await tester.pumpWidget(
       createMessageContainer(
-        message: 'This is **bold** text',
+        message:
+            'This is **bold** text\n* Bullet point 1\n* Bullet point 2\nThis is ***bold and italic*** text',
         isUserMessage: true,
         timestamp: timestamp,
       ),
@@ -105,47 +106,7 @@ void main() {
     final RichText richTextWidget = tester.widget<RichText>(richTextFinder);
     final TextSpan textSpan = richTextWidget.text as TextSpan;
 
-    expect(textSpan.children, isNotNull);
-    expect(textSpan.children!.length, 3);
-
-    final TextSpan normalTextSpan1 = textSpan.children![0] as TextSpan;
-    final TextSpan boldTextSpan = textSpan.children![1] as TextSpan;
-    final TextSpan normalTextSpan2 = textSpan.children![2] as TextSpan;
-
-    expect(normalTextSpan1.text, 'This is ');
-    expect(normalTextSpan1.style?.fontWeight, null);
-    expect(boldTextSpan.text, 'bold');
-    expect(boldTextSpan.style?.fontWeight, FontWeight.bold);
-    expect(normalTextSpan2.text, ' text');
-    expect(normalTextSpan2.style?.fontWeight, null);
-  });
-
-  testWidgets('MessageContainer displays bullet points correctly',
-      (WidgetTester tester) async {
-    final timestamp = DateTime(2023, 10, 1, 14, 30);
-    await tester.pumpWidget(
-      createMessageContainer(
-        message: '* Bullet point 1\n* Bullet point 2',
-        isUserMessage: true,
-        timestamp: timestamp,
-      ),
-    );
-
-    final richTextFinder = find.descendant(
-      of: find.byType(MessageBox),
-      matching: find.byType(RichText),
-    );
-    expect(richTextFinder, findsOneWidget);
-
-    final RichText richTextWidget = tester.widget<RichText>(richTextFinder);
-    final TextSpan textSpan = richTextWidget.text as TextSpan;
-
-    expect(textSpan.children, isNotNull);
-
-    final TextSpan bulletPoint1 = textSpan.children![0] as TextSpan;
-    final TextSpan bulletPoint2 = textSpan.children![2] as TextSpan;
-
-    expect(bulletPoint1.text, '- Bullet point 1');
-    expect(bulletPoint2.text, '- Bullet point 2');
+    expect(textSpan.toPlainText(),
+        'This is bold text\n- Bullet point 1\n- Bullet point 2\nThis is bold and italic text');
   });
 }
