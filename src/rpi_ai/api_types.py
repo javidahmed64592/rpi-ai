@@ -40,10 +40,13 @@ class MessageList:
     def from_contents_list(cls, contents: list[Content]) -> MessageList:
         message_list = cls([])
         for content in contents:
-            if content.role == "user":
-                message_list.add_user_message(content.parts[0].text.strip())
-            else:
-                message_list.add_model_message(content.parts[0].text.strip())
+            try:
+                if content.role == "user":
+                    message_list.add_user_message(content.parts[0].text.strip())
+                else:
+                    message_list.add_model_message(content.parts[0].text.strip())
+            except (AttributeError, IndexError):
+                pass
         return message_list
 
     @property
