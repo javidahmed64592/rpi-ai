@@ -85,11 +85,9 @@ void main() {
   testWidgets(
       'SettingsDialog updates SettingsState when Update button is pressed',
       (WidgetTester tester) async {
-    when(mockHttpHelper.updateConfig(any, any, any)).thenAnswer((_) async => {
-          'text': 'Config updated successfully',
-          'isUserMessage': false,
-          'timestamp': DateTime.now(),
-        });
+    when(mockHttpHelper.updateConfig(any, any, any)).thenAnswer((_) async => [
+          {'text': 'Config updated successfully', 'isUserMessage': false},
+        ]);
 
     await tester.pumpWidget(createSettingsDialog());
 
@@ -108,11 +106,19 @@ void main() {
     final settingsState = Provider.of<SettingsState>(
         tester.element(find.byType(MaterialApp)),
         listen: false);
+    final messageState = Provider.of<MessageState>(
+        tester.element(find.byType(MaterialApp)),
+        listen: false);
     expect(settingsState.model, 'newModel');
     expect(settingsState.systemInstruction, 'newSystemInstruction');
     expect(settingsState.candidateCount, 5);
     expect(settingsState.maxOutputTokens, 1500);
     expect(settingsState.temperature, 1.5);
+    expect(messageState.messages.length, 1);
+    expect(
+      messageState.messages[0],
+      {'text': 'Config updated successfully', 'isUserMessage': false},
+    );
 
     expect(find.byType(AlertDialog), findsNothing);
   });

@@ -141,7 +141,7 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<bool>);
 
   @override
-  _i4.Future<Map<String, dynamic>> getLoginResponse(
+  _i4.Future<List<Map<String, dynamic>>> getLoginResponse(
     String? url,
     String? authToken,
   ) =>
@@ -153,9 +153,26 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
             authToken,
           ],
         ),
-        returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
+        returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
+            <Map<String, dynamic>>[]),
+      ) as _i4.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i4.Future<List<Map<String, dynamic>>> postRestartChat(
+    String? url,
+    String? authToken,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #postRestartChat,
+          [
+            url,
+            authToken,
+          ],
+        ),
+        returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
+            <Map<String, dynamic>>[]),
+      ) as _i4.Future<List<Map<String, dynamic>>>);
 
   @override
   _i4.Future<Map<String, dynamic>> getConfig(
@@ -175,7 +192,7 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<Map<String, dynamic>>);
 
   @override
-  _i4.Future<Map<String, dynamic>> updateConfig(
+  _i4.Future<List<Map<String, dynamic>>> updateConfig(
     String? url,
     String? authToken,
     Map<String, dynamic>? config,
@@ -189,9 +206,9 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
             config,
           ],
         ),
-        returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
+        returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
+            <Map<String, dynamic>>[]),
+      ) as _i4.Future<List<Map<String, dynamic>>>);
 
   @override
   _i4.Future<Map<String, dynamic>> chat(
