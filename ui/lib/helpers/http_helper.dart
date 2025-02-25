@@ -119,7 +119,7 @@ class HttpHelper {
     final headers = <String, String>{
       'Authorization': authToken,
     };
-    final response = await getResponseFromUri('$url/restart-chat', headers);
+    final response = await postResponseToUri('$url/restart-chat', headers, '');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
@@ -134,7 +134,8 @@ class HttpHelper {
     }
 
     // Raise exception if response status code is not 200
-    throw Exception('Login failed: (${response.statusCode}) ${response.body}');
+    throw Exception(
+        'Restarting chat failed: (${response.statusCode}) ${response.body}');
   }
 
   Future<Map<String, dynamic>> chat(

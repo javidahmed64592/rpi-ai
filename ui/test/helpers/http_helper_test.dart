@@ -240,9 +240,10 @@ void main() {
     const uri = 'http://example.com';
     const authToken = 'testToken';
 
-    when(client.get(
+    when(client.post(
       Uri.parse('$uri/restart-chat'),
       headers: {'Authorization': authToken},
+      body: '',
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
           'messages': [
@@ -267,9 +268,10 @@ void main() {
     const uri = 'http://example.com';
     const authToken = 'testToken';
 
-    when(client.get(
+    when(client.post(
       Uri.parse('$uri/restart-chat'),
       headers: {'Authorization': authToken},
+      body: '',
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
     expect(httpHelper.postRestartChat(uri, authToken), throwsException);
