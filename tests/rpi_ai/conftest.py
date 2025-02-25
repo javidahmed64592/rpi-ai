@@ -61,7 +61,8 @@ def mock_genai_client() -> Generator[MagicMock, None, None]:
 def mock_chat_instance(mock_genai_client: MagicMock) -> MagicMock:
     mock_instance = MagicMock()
     mock_genai_client.return_value.chats.create.return_value = mock_instance
-    mock_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="What's on your mind today?")])
+    mock_instance._curated_history = [MagicMock(parts=[MagicMock(text="What's on your mind today?")], role="model")]
+    mock_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="Hi user!")])
     return mock_instance
 
 
@@ -80,6 +81,12 @@ def mock_get_config(mock_config: AIConfigType) -> Generator[MagicMock, None, Non
 @pytest.fixture
 def mock_update_config() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.Chatbot.update_config") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_get_chat_history() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.Chatbot.get_chat_history") as mock:
         yield mock
 
 

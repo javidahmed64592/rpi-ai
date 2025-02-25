@@ -6,7 +6,7 @@ from google.genai.types import GenerateContentConfig, GoogleSearchRetrieval, Too
 from gtts import gTTSError
 from pydantic import ValidationError
 
-from rpi_ai.api_types import AIConfigType, Message, SpeechResponse
+from rpi_ai.api_types import AIConfigType, Message, MessageList, SpeechResponse
 from rpi_ai.models import audiobot
 from rpi_ai.models.logger import Logger
 
@@ -19,6 +19,7 @@ class Chatbot:
         self._config = config
         functions.append(self._web_search)
         self._functions = functions
+        self.start_chat()
 
     def _web_search_config(self) -> Tool:
         return GenerateContentConfig(
@@ -52,7 +53,11 @@ class Chatbot:
     def update_config(self, config: AIConfigType) -> None:
         self._config = config
 
-    def start_chat(self) -> Message:
+    def get_chat_history(self) -> MessageList:
+        return MessageList.from_contents_list(self._chat._curated_history)
+
+    def start_chat(self) -> None:
+        messages = MessageList([Message(message="What's on your mind today?")])
         self._chat = self._client.chats.create(
             model=self._config.model,
             config=GenerateContentConfig(
@@ -62,8 +67,8 @@ class Chatbot:
                 temperature=self._config.temperature,
                 tools=self._functions,
             ),
+            history=messages.history,
         )
-        return Message(message="What's on your mind today?")
 
     def send_message(self, text: str) -> Message:
         try:

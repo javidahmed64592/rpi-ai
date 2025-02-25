@@ -4,7 +4,7 @@ from google.genai.errors import ServerError
 from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
-from rpi_ai.api_types import AIConfigType
+from rpi_ai.api_types import AIConfigType, Message, MessageList
 from rpi_ai.models.chatbot import Chatbot
 
 
@@ -43,7 +43,6 @@ class TestChatbot:
         assert mock_chatbot.get_config() == mock_config
 
     def test_start_chat(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
-        response = mock_chatbot.start_chat()
         mock_genai_client.return_value.chats.create.assert_called_once_with(
             model=mock_chatbot._config.model,
             config=GenerateContentConfig(
@@ -53,15 +52,19 @@ class TestChatbot:
                 temperature=mock_chatbot._config.temperature,
                 tools=mock_chatbot._functions,
             ),
+            history=MessageList([Message(message="What's on your mind today?")]).history,
         )
-        assert response.message == "What's on your mind today?"
+
+    def test_get_chat_history(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
+        history = mock_chatbot.get_chat_history()
+        assert len(history.messages) == 1
+        assert history.messages[0].message == "What's on your mind today?"
 
     def test_send_message_with_valid_response(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
         mock_msg = "Hi model!"
         mock_response = MagicMock(text="Hi user!")
         mock_chat_instance.send_message.return_value = mock_response
 
-        mock_chatbot.start_chat()
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
         assert response.message == "Hi user!"
@@ -70,7 +73,6 @@ class TestChatbot:
         mock_msg = "Hi model!"
         mock_chat_instance.send_message.return_value = MagicMock(text=None)
 
-        mock_chatbot.start_chat()
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
         assert response.message == "An error occurred! Please try again."
@@ -81,7 +83,6 @@ class TestChatbot:
             code=503, response=MagicMock(body_segments=[{"error": {"message": "Model overloaded!"}}])
         )
 
-        mock_chatbot.start_chat()
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
         assert response.message == "Model overloaded! Please try again."
@@ -95,7 +96,6 @@ class TestChatbot:
 
         mock_audio = "test_audio_response"
         mock_get_audio_bytes_from_text.return_value = mock_audio
-        mock_chatbot.start_chat()
         response = mock_chatbot.send_audio(b"test_audio_data")
         mock_chat_instance.send_message.assert_called_once()
         assert response.message == "Hi user!"
@@ -111,7 +111,6 @@ class TestChatbot:
         mock_audio = "Failed to send messages to chatbot!"
         mock_get_audio_bytes_from_text.return_value = mock_audio
 
-        mock_chatbot.start_chat()
         response = mock_chatbot.send_audio(b"test_audio_data")
         mock_chat_instance.send_message.assert_called_once()
         assert response.message == "Failed to send audio to chatbot!"
@@ -127,7 +126,6 @@ class TestChatbot:
         mock_audio = "Model overloaded! Please try again."
         mock_get_audio_bytes_from_text.return_value = mock_audio
 
-        mock_chatbot.start_chat()
         response = mock_chatbot.send_audio(b"test_audio_data")
         mock_chat_instance.send_message.assert_called_once()
         assert response.message == "Model overloaded! Please try again."
@@ -139,7 +137,6 @@ class TestChatbot:
         mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="Hi user!")])
         mock_get_audio_bytes_from_text.side_effect = gTTSError("gTTS error")
 
-        mock_chatbot.start_chat()
         response = mock_chatbot.send_audio(b"test_audio_data")
         mock_chat_instance.send_message.assert_called_once()
         assert response.message == "gTTS error"
