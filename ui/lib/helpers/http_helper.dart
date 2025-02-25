@@ -42,7 +42,7 @@ class HttpHelper {
     }
   }
 
-  Future<Map<String, dynamic>> getLoginResponse(
+  Future<List<Map<String, dynamic>>> getLoginResponse(
       String url, String authToken) async {
     final headers = <String, String>{
       'Authorization': authToken,
@@ -51,11 +51,14 @@ class HttpHelper {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
-      return {
-        'text': body['message'].toString().trim(),
-        'isUserMessage': body['is_user_message'],
-        'timestamp': DateTime.now(),
-      };
+      final List<dynamic> messages = body['messages'];
+      return messages.map((message) {
+        return {
+          'text': message['message'].toString().trim(),
+          'isUserMessage': message['is_user_message'],
+          'timestamp': DateTime.now(),
+        };
+      }).toList();
     }
 
     // Raise exception if response status code is not 200
@@ -84,7 +87,7 @@ class HttpHelper {
         'Getting config failed: (${response.statusCode}) ${response.body}');
   }
 
-  Future<Map<String, dynamic>> updateConfig(
+  Future<List<Map<String, dynamic>>> updateConfig(
       String url, String authToken, Map<String, dynamic> config) async {
     final headers = <String, String>{
       'Authorization': authToken,
@@ -96,16 +99,43 @@ class HttpHelper {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
-      return {
-        'text': body['message'].toString().trim(),
-        'isUserMessage': body['is_user_message'],
-        'timestamp': DateTime.now(),
-      };
+      final List<dynamic> messages = body['messages'];
+      return messages.map((message) {
+        return {
+          'text': message['message'].toString().trim(),
+          'isUserMessage': message['is_user_message'],
+          'timestamp': DateTime.now(),
+        };
+      }).toList();
     }
 
     // Raise exception if response status code is not 200
     throw Exception(
         'Updating config failed: (${response.statusCode}) ${response.body}');
+  }
+
+  Future<List<Map<String, dynamic>>> postRestartChat(
+      String url, String authToken) async {
+    final headers = <String, String>{
+      'Authorization': authToken,
+    };
+    final response = await postResponseToUri('$url/restart-chat', headers, '');
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      final List<dynamic> messages = body['messages'];
+      return messages.map((message) {
+        return {
+          'text': message['message'].toString().trim(),
+          'isUserMessage': message['is_user_message'],
+          'timestamp': DateTime.now(),
+        };
+      }).toList();
+    }
+
+    // Raise exception if response status code is not 200
+    throw Exception(
+        'Restarting chat failed: (${response.statusCode}) ${response.body}');
   }
 
   Future<Map<String, dynamic>> chat(

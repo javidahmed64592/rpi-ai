@@ -11,6 +11,11 @@ class MessageState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addMessages(List<Map<String, dynamic>> messages) {
+    _messages.addAll(messages);
+    notifyListeners();
+  }
+
   void clearMessages() {
     _messages.clear();
     notifyListeners();
@@ -23,8 +28,8 @@ class MessageState extends ChangeNotifier {
     }
   }
 
-  void initialiseChat(Map<String, dynamic> message) {
+  void initialiseChat(List<Map<String, dynamic>> messages) {
     clearMessages();
-    addMessage(message);
+    addMessages(messages);
   }
 }

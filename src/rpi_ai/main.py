@@ -62,6 +62,7 @@ class AIApp:
         self.app = Flask(__name__)
         self.add_app_url("/", self.is_alive, ["GET"])
         self.add_app_url("/login", self.token_required(self.login), ["GET"])
+        self.add_app_url("/restart-chat", self.token_required(self.restart_chat), ["POST"])
         self.add_app_url("/get-config", self.token_required(self.get_config), ["GET"])
         self.add_app_url("/update-config", self.token_required(self.update_config), ["POST"])
         self.add_app_url("/chat", self.token_required(self.chat), ["POST"])
@@ -121,8 +122,14 @@ class AIApp:
 
     def login(self) -> Response:
         logger.info("Starting new chat...")
-        response = self.chatbot.start_chat()
-        logger.info(response.message)
+        response = self.chatbot.get_chat_history()
+        logger.info(f"Loaded chat history: {len(response.messages)} messages")
+        return jsonify(response)
+
+    def restart_chat(self) -> Response:
+        logger.info("Restarting chat...")
+        self.chatbot.start_chat()
+        response = self.chatbot.get_chat_history()
         return jsonify(response)
 
     def get_config(self) -> Response:
@@ -133,8 +140,8 @@ class AIApp:
         config = AIConfigType(**get_request_json())
         self.chatbot.update_config(config)
         config.save(str(self.config_path))
-        response = self.chatbot.start_chat()
-        logger.info(response.message)
+        self.chatbot.start_chat()
+        response = self.chatbot.get_chat_history()
         return jsonify(response)
 
     def chat(self) -> Response:
