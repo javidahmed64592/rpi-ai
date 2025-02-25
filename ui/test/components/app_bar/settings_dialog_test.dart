@@ -172,6 +172,30 @@ void main() {
 
     expect(find.byType(AlertDialog), findsNothing);
   });
+
+  testWidgets(
+      'SettingsDialog shows error notification when Restart chat button is pressed and an error occurs',
+      (WidgetTester tester) async {
+    when(mockHttpHelper.postRestartChat(any, any))
+        .thenThrow(Exception('Failed to restart chat'));
+
+    await tester.pumpWidget(createSettingsDialog());
+
+    expect(find.byType(AlertDialog), findsOneWidget);
+
+    await tester.tap(find.text('Restart Chat'));
+    await tester.pumpAndSettle();
+
+    final notificationState = Provider.of<NotificationState>(
+        tester.element(find.byType(MaterialApp)),
+        listen: false);
+    expect(notificationState.notificationState, NotificationType.error);
+    expect(notificationState.notificationMessage,
+        'Error updating settings: Exception: Failed to restart chat');
+
+    expect(find.byType(AlertDialog), findsNothing);
+  });
+
   testWidgets('SettingsDialog closes when Close button is pressed',
       (WidgetTester tester) async {
     await tester.pumpWidget(createSettingsDialog());
