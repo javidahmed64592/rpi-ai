@@ -29,12 +29,16 @@ class TestAIConfigType:
 # Chatbot responses
 class TestMessageList:
     def test_from_contents_list(self) -> None:
-        data = [
+        good_data = [
             Content(parts=[Part(text="user_msg")], role="user"),
             Content(parts=[Part(text="model_msg")], role="model"),
         ]
+        bad_data = [
+            Content(parts=[], role="user"),
+        ]
+        data = good_data + bad_data
         message_list = MessageList.from_contents_list(data)
-        assert len(message_list.messages) == len(data)
+        assert len(message_list.messages) == len(good_data)
         assert message_list.messages[0].message == "user_msg"
         assert message_list.messages[0].is_user_message
         assert message_list.messages[1].message == "model_msg"
