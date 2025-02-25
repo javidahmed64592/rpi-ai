@@ -45,6 +45,26 @@ class SettingsDialog extends StatelessWidget {
       );
     }
 
+    Widget restartChatButton() {
+      return TextButton(
+        child: const Text('Restart Chat'),
+        onPressed: () {
+          try {
+            httpHelper
+                .postRestartChat(appState.fullUrl, appState.authToken)
+                .then((messages) {
+              messageState.initialiseChat(messages);
+            });
+          } catch (error) {
+            notificationState
+                .setNotificationError('Error updating settings: $error');
+          }
+
+          Navigator.of(context).pop();
+        },
+      );
+    }
+
     Widget updateButton() {
       return TextButton(
         child: const Text('Update'),
@@ -135,6 +155,7 @@ class SettingsDialog extends StatelessWidget {
       ),
       actions: <Widget>[
         closeButton(),
+        restartChatButton(),
         updateButton(),
       ],
     );

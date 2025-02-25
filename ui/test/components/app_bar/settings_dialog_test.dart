@@ -146,6 +146,32 @@ void main() {
     expect(find.byType(AlertDialog), findsNothing);
   });
 
+  testWidgets(
+      'SettingsDialog restarts chat when Restart Chat button is pressed',
+      (WidgetTester tester) async {
+    when(mockHttpHelper.postRestartChat(any, any)).thenAnswer((_) async => [
+          {'text': 'Chat restarted', 'is_user_message': false},
+          {'text': 'Welcome back', 'is_user_message': true}
+        ]);
+
+    await tester.pumpWidget(createSettingsDialog());
+
+    expect(find.byType(AlertDialog), findsOneWidget);
+
+    await tester.tap(find.text('Restart Chat'));
+    await tester.pumpAndSettle();
+
+    final messageState = Provider.of<MessageState>(
+        tester.element(find.byType(MaterialApp)),
+        listen: false);
+    expect(messageState.messages.length, 2);
+    expect(messageState.messages[0],
+        {'text': 'Chat restarted', 'is_user_message': false});
+    expect(messageState.messages[1],
+        {'text': 'Welcome back', 'is_user_message': true});
+
+    expect(find.byType(AlertDialog), findsNothing);
+  });
   testWidgets('SettingsDialog closes when Close button is pressed',
       (WidgetTester tester) async {
     await tester.pumpWidget(createSettingsDialog());
