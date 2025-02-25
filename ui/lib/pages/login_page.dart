@@ -97,15 +97,15 @@ class _LoginPageState extends State<LoginPage> {
         child: const Text('Connect'),
         onPressed: () async {
           try {
-            final Map<String, dynamic> message = await httpHelper
+            final List<Map<String, dynamic>> messages = await httpHelper
                 .getLoginResponse(appState.fullUrl, appState.authToken);
             final Map<String, dynamic> config = await httpHelper.getConfig(
                 appState.fullUrl, appState.authToken);
 
-            if (message.isNotEmpty) {
+            if (messages.isNotEmpty) {
               settingsState.updateConfig(config);
               appState.setConnected(true);
-              messageState.initialiseChat(message);
+              messageState.initialiseChat(messages);
               appState.setActivePage(PageType.text);
               notificationState.clearNotification();
             }

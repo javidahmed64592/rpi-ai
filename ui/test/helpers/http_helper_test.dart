@@ -78,7 +78,7 @@ void main() {
   });
 
   test(
-      'getLoginResponse returns a message if the http call completes successfully',
+      'getLoginResponse returns a list of messages if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -88,11 +88,24 @@ void main() {
       Uri.parse('$uri/login'),
       headers: {'Authorization': authToken},
     )).thenAnswer((_) async => http.Response(
-        jsonEncode({'message': 'Welcome', 'is_user_message': true}), 200));
+        jsonEncode({
+          'messages': [
+            {'message': 'Welcome', 'is_user_message': true},
+            {'message': 'Hello', 'is_user_message': false}
+          ]
+        }),
+        200));
 
-    expect(await httpHelper.getLoginResponse(uri, authToken), {
+    final messages = await httpHelper.getLoginResponse(uri, authToken);
+    expect(messages.length, 2);
+    expect(messages[0], {
       'text': 'Welcome',
       'isUserMessage': true,
+      'timestamp': isA<DateTime>(),
+    });
+    expect(messages[1], {
+      'text': 'Hello',
+      'isUserMessage': false,
       'timestamp': isA<DateTime>(),
     });
   });
@@ -155,7 +168,7 @@ void main() {
   });
 
   test(
-      'updateConfig returns the first message if the http call completes successfully',
+      'updateConfig returns a list of messages if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -177,12 +190,17 @@ void main() {
       body: jsonEncode(config),
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'message': 'Config updated successfully',
-          'is_user_message': false,
+          'messages': [
+            {
+              'message': 'Config updated successfully',
+              'is_user_message': false
+            },
+          ]
         }),
         200));
 
-    expect(await httpHelper.updateConfig(uri, authToken, config), {
+    final messages = await httpHelper.updateConfig(uri, authToken, config);
+    expect(messages[0], {
       'text': 'Config updated successfully',
       'isUserMessage': false,
       'timestamp': isA<DateTime>(),
@@ -213,6 +231,50 @@ void main() {
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
     expect(httpHelper.updateConfig(uri, authToken, config), throwsException);
+  });
+
+  test(
+      'postRestartChat returns a list of one message if the http call completes successfully',
+      () async {
+    final httpHelper = HttpHelper(client: client);
+    const uri = 'http://example.com';
+    const authToken = 'testToken';
+
+    when(client.post(
+      Uri.parse('$uri/restart-chat'),
+      headers: {'Authorization': authToken},
+      body: '',
+    )).thenAnswer((_) async => http.Response(
+        jsonEncode({
+          'messages': [
+            {'message': 'Chat restarted', 'is_user_message': false},
+          ]
+        }),
+        200));
+
+    final messages = await httpHelper.postRestartChat(uri, authToken);
+    expect(messages.length, 1);
+    expect(messages[0], {
+      'text': 'Chat restarted',
+      'isUserMessage': false,
+      'timestamp': isA<DateTime>(),
+    });
+  });
+
+  test(
+      'postRestartChat throws an exception if the http call completes with an error',
+      () {
+    final httpHelper = HttpHelper(client: client);
+    const uri = 'http://example.com';
+    const authToken = 'testToken';
+
+    when(client.post(
+      Uri.parse('$uri/restart-chat'),
+      headers: {'Authorization': authToken},
+      body: '',
+    )).thenAnswer((_) async => http.Response('Not Found', 404));
+
+    expect(httpHelper.postRestartChat(uri, authToken), throwsException);
   });
 
   test('chat returns a message if the http call completes successfully',

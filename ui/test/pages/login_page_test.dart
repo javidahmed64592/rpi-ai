@@ -82,8 +82,10 @@ void main() {
 
   testWidgets('Connect button triggers login process',
       (WidgetTester tester) async {
-    when(mockHttpHelper.getLoginResponse(any, any)).thenAnswer(
-        (_) async => {'message': 'Hello', 'is_user_message': false});
+    when(mockHttpHelper.getLoginResponse(any, any)).thenAnswer((_) async => [
+          {'text': 'Hello', 'is_user_message': false},
+          {'text': 'Welcome', 'is_user_message': true}
+        ]);
     when(mockHttpHelper.getConfig(any, any)).thenAnswer((_) async => {
           'model': 'model',
           'systemInstruction': 'instruction',
@@ -109,7 +111,15 @@ void main() {
     final appState = Provider.of<AppState>(
         tester.element(find.byType(LoginPage)),
         listen: false);
+    final messageState = Provider.of<MessageState>(
+        tester.element(find.byType(LoginPage)),
+        listen: false);
     expect(appState.connected, true);
+    expect(messageState.messages.length, 2);
+    expect(
+        messageState.messages[0], {'text': 'Hello', 'is_user_message': false});
+    expect(
+        messageState.messages[1], {'text': 'Welcome', 'is_user_message': true});
   });
 
   testWidgets('Displays error message on failed connection',

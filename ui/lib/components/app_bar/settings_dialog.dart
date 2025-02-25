@@ -45,6 +45,26 @@ class SettingsDialog extends StatelessWidget {
       );
     }
 
+    Widget restartChatButton() {
+      return TextButton(
+        child: const Text('Restart Chat'),
+        onPressed: () {
+          try {
+            httpHelper
+                .postRestartChat(appState.fullUrl, appState.authToken)
+                .then((messages) {
+              messageState.initialiseChat(messages);
+            });
+          } catch (error) {
+            notificationState
+                .setNotificationError('Error updating settings: $error');
+          }
+
+          Navigator.of(context).pop();
+        },
+      );
+    }
+
     Widget updateButton() {
       return TextButton(
         child: const Text('Update'),
@@ -60,7 +80,7 @@ class SettingsDialog extends StatelessWidget {
           try {
             httpHelper
                 .updateConfig(appState.fullUrl, appState.authToken, config)
-                .then((value) {
+                .then((messages) {
               settingsState.updateConfig({
                 'model': config['model'],
                 'systemInstruction': config['system_instruction'],
@@ -68,7 +88,7 @@ class SettingsDialog extends StatelessWidget {
                 'maxOutputTokens': config['max_output_tokens'],
                 'temperature': config['temperature'],
               });
-              messageState.initialiseChat(value);
+              messageState.initialiseChat(messages);
             });
           } catch (error) {
             notificationState
@@ -135,6 +155,7 @@ class SettingsDialog extends StatelessWidget {
       ),
       actions: <Widget>[
         closeButton(),
+        restartChatButton(),
         updateButton(),
       ],
     );
