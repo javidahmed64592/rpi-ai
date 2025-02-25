@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:ui/helpers/data_storage_helper.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
@@ -40,9 +41,19 @@ class _LoginPageState extends State<LoginPage> {
     notificationState = Provider.of<NotificationState>(context, listen: false);
     settingsState = Provider.of<SettingsState>(context, listen: false);
     httpHelper = widget.httpHelper ?? HttpHelper();
+
     ipController = TextEditingController(text: appState.ip);
     portController = TextEditingController(text: appState.port.toString());
     authTokenController = TextEditingController(text: appState.authToken);
+
+    DataStorageHelper.loadAppState().then((Map<String, dynamic> data) {
+      appState.setIp(data['ip'] as String);
+      appState.setPort(data['port'] as int);
+      appState.setAuthToken(data['authToken'] as String);
+      ipController.text = appState.ip;
+      portController.text = appState.port.toString();
+      authTokenController.text = appState.authToken;
+    });
   }
 
   @override
@@ -108,6 +119,9 @@ class _LoginPageState extends State<LoginPage> {
               messageState.initialiseChat(messages);
               appState.setActivePage(PageType.text);
               notificationState.clearNotification();
+
+              await DataStorageHelper.saveAppState(
+                  appState.ip, appState.port, appState.authToken);
             }
           } catch (e) {
             notificationState.setNotificationError('Failed to connect: $e');
