@@ -35,17 +35,23 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setActivePage(PageType newPage) {
-    _activePage = newPage;
+  void setPageLogin() {
+    _activePage = PageType.login;
     notifyListeners();
   }
 
-  void toggleActivePage() {
-    if (_activePage == PageType.text) {
-      setActivePage(PageType.speech);
-    } else if (_activePage == PageType.speech) {
-      setActivePage(PageType.text);
-    }
+  void setPageText() {
+    _activePage = PageType.text;
+    notifyListeners();
+  }
+
+  void setPageSpeech() {
+    _activePage = PageType.speech;
+    notifyListeners();
+  }
+
+  void setPageSettings() {
+    _activePage = PageType.settings;
     notifyListeners();
   }
 
