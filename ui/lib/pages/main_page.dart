@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/components/app_bar/custom_app_bar.dart';
+import 'package:ui/components/drawer/menu_drawer.dart';
 import 'package:ui/components/notifications.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
@@ -120,6 +121,7 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
       appBar: const CustomAppBar(),
+      drawer: appState.activePage != PageType.login ? const MenuDrawer() : null,
       body: Stack(
         children: [
           Center(
