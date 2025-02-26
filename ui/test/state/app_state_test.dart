@@ -37,22 +37,40 @@ void main() {
       expect(appState.authToken, 'newToken');
     });
 
-    test('setActivePage updates the active page', () {
-      appState.setActivePage(PageType.text);
-      expect(appState.activePage, PageType.text);
-    });
-
     test('setConnected updates the connection status', () {
       appState.setConnected(true);
       expect(appState.connected, true);
     });
 
-    test('toggleActivePage toggles between text and speech', () {
+    test('setActivePage sets the active page', () {
       appState.setActivePage(PageType.text);
-      appState.toggleActivePage();
-      expect(appState.activePage, PageType.speech);
-      appState.toggleActivePage();
       expect(appState.activePage, PageType.text);
+    });
+
+    test('setActivePage does not update the active page if busy', () {
+      appState.setIsBusy(true);
+      appState.setActivePage(PageType.text);
+      expect(appState.activePage, PageType.login);
+    });
+
+    test('setPageLogin sets the active page to login', () {
+      appState.setPageLogin();
+      expect(appState.activePage, PageType.login);
+    });
+
+    test('setPageText sets the active page to text', () {
+      appState.setPageText();
+      expect(appState.activePage, PageType.text);
+    });
+
+    test('setPageSpeech sets the active page to speech', () {
+      appState.setPageSpeech();
+      expect(appState.activePage, PageType.speech);
+    });
+
+    test('setPageSettings sets the active page to settings', () {
+      appState.setPageSettings();
+      expect(appState.activePage, PageType.settings);
     });
 
     test('getFullUrl returns the correct URL', () {

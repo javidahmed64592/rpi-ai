@@ -36,16 +36,29 @@ class AppState extends ChangeNotifier {
   }
 
   void setActivePage(PageType newPage) {
-    _activePage = newPage;
+    if (!isBusy) {
+      _activePage = newPage;
+      notifyListeners();
+    }
+  }
+
+  void setPageLogin() {
+    setActivePage(PageType.login);
     notifyListeners();
   }
 
-  void toggleActivePage() {
-    if (_activePage == PageType.text) {
-      setActivePage(PageType.speech);
-    } else if (_activePage == PageType.speech) {
-      setActivePage(PageType.text);
-    }
+  void setPageText() {
+    setActivePage(PageType.text);
+    notifyListeners();
+  }
+
+  void setPageSpeech() {
+    _activePage = PageType.speech;
+    notifyListeners();
+  }
+
+  void setPageSettings() {
+    setActivePage(PageType.settings);
     notifyListeners();
   }
 

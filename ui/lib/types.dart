@@ -1,11 +1,33 @@
+// Flutter imports:
+import 'package:flutter/material.dart';
+
 // Project imports:
 import 'package:ui/helpers/http_helper.dart';
+import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 
 enum PageType {
   login,
   text,
   speech,
+  settings;
+
+  void handlePageChange(AppState appState) {
+    switch (this) {
+      case PageType.login:
+        appState.setPageLogin();
+        break;
+      case PageType.text:
+        appState.setPageText();
+        break;
+      case PageType.speech:
+        appState.setPageSpeech();
+        break;
+      case PageType.settings:
+        appState.setPageSettings();
+        break;
+    }
+  }
 }
 
 extension PageTypeExtension on PageType {
@@ -17,6 +39,25 @@ extension PageTypeExtension on PageType {
         return 'Chat';
       case PageType.speech:
         return 'Speech';
+      case PageType.settings:
+        return 'Settings';
+      default:
+        return 'Error';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case PageType.login:
+        return Icons.login;
+      case PageType.text:
+        return Icons.text_fields;
+      case PageType.speech:
+        return Icons.mic;
+      case PageType.settings:
+        return Icons.settings;
+      default:
+        return Icons.error;
     }
   }
 }
