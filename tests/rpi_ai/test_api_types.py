@@ -38,6 +38,11 @@ class TestMessage:
         assert message.message == "test_message"
         assert not message.is_user_message
 
+    def test_new_chat_message(self) -> None:
+        message = Message.new_chat_message()
+        assert message.message == "What's on your mind today?"
+        assert not message.is_user_message
+
 
 class TestMessageList:
     def test_from_contents_list(self) -> None:

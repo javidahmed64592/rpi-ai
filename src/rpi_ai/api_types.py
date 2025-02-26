@@ -39,6 +39,10 @@ class Message:
     def model_message(cls, message: str) -> Message:
         return cls(message=message, is_user_message=False)
 
+    @classmethod
+    def new_chat_message(cls) -> Message:
+        return cls(message="What's on your mind today?")
+
 
 @dataclass
 class MessageList:
