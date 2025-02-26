@@ -35,13 +35,20 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setActivePage(PageType newPage) {
+    if (!isBusy) {
+      _activePage = newPage;
+      notifyListeners();
+    }
+  }
+
   void setPageLogin() {
-    _activePage = PageType.login;
+    setActivePage(PageType.login);
     notifyListeners();
   }
 
   void setPageText() {
-    _activePage = PageType.text;
+    setActivePage(PageType.text);
     notifyListeners();
   }
 
@@ -51,7 +58,7 @@ class AppState extends ChangeNotifier {
   }
 
   void setPageSettings() {
-    _activePage = PageType.settings;
+    setActivePage(PageType.settings);
     notifyListeners();
   }
 

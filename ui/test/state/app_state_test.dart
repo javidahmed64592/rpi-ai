@@ -42,6 +42,17 @@ void main() {
       expect(appState.connected, true);
     });
 
+    test('setActivePage sets the active page', () {
+      appState.setActivePage(PageType.text);
+      expect(appState.activePage, PageType.text);
+    });
+
+    test('setActivePage does not update the active page if busy', () {
+      appState.setIsBusy(true);
+      appState.setActivePage(PageType.text);
+      expect(appState.activePage, PageType.login);
+    });
+
     test('setPageLogin sets the active page to login', () {
       appState.setPageLogin();
       expect(appState.activePage, PageType.login);

@@ -57,6 +57,7 @@ class _TextInputState extends State<TextInput> {
   }
 
   void sendMessage() async {
+    appState.setIsBusy(true);
     final String userMessage = textController.text.trim();
     if (userMessage.isEmpty) {
       return;
@@ -85,13 +86,13 @@ class _TextInputState extends State<TextInput> {
       messageType.handleFailedMessage(messageState);
       textController.text = userMessage;
       notificationState.setNotificationError('Failed to send message!');
-      return;
-    }
-
-    if (messageType == MessageType.text) {
+      appState.setIsBusy(false);
+    } else {
       messageState.addMessage(message);
       scrollToBottom();
     }
+
+    appState.setIsBusy(false);
   }
 
   @override
