@@ -31,6 +31,14 @@ class Message:
     message: str
     is_user_message: bool = False
 
+    @classmethod
+    def user_message(cls, message: str) -> Message:
+        return cls(message=message, is_user_message=True)
+
+    @classmethod
+    def model_message(cls, message: str) -> Message:
+        return cls(message=message, is_user_message=False)
+
 
 @dataclass
 class MessageList:
@@ -38,16 +46,19 @@ class MessageList:
 
     @classmethod
     def from_contents_list(cls, contents: list[Content]) -> MessageList:
-        message_list = cls([])
+        msgs = []
         for content in contents:
             try:
                 if content.role == "user":
-                    message_list.add_user_message(content.parts[0].text.strip())
+                    msg = Message.user_message(content.parts[0].text.strip())
                 else:
-                    message_list.add_model_message(content.parts[0].text.strip())
+                    msg = Message.model_message(content.parts[0].text.strip())
+
+                msgs.append(msg)
             except (AttributeError, IndexError):
                 pass
-        return message_list
+
+        return cls(msgs)
 
     @property
     def history(self) -> list[Content]:
@@ -55,12 +66,6 @@ class MessageList:
             Content(parts=[Part(text=message.message)], role="user" if message.is_user_message else "model")
             for message in self.messages
         ]
-
-    def add_user_message(self, message: str) -> None:
-        self.messages.append(Message(message=message, is_user_message=True))
-
-    def add_model_message(self, message: str) -> None:
-        self.messages.append(Message(message=message, is_user_message=False))
 
 
 @dataclass
