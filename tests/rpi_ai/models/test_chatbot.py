@@ -52,7 +52,7 @@ class TestChatbot:
                 temperature=mock_chatbot._config.temperature,
                 tools=mock_chatbot._functions,
             ),
-            history=mock_chatbot.get_chat_history().history,
+            history=mock_chatbot.get_chat_history().as_contents_list,
         )
 
     def test_get_chat_history(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:

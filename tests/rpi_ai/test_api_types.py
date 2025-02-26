@@ -67,7 +67,7 @@ class TestMessageList:
             Content(parts=[Part(text="model_msg")], role="model"),
         ]
         message_list = MessageList.from_contents_list(data)
-        history = message_list.history
+        history = message_list.as_contents_list
         assert len(history) == len(data)
         assert history[0].parts[0].text == "user_msg"
         assert history[0].role == "user"

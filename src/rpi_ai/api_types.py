@@ -65,7 +65,7 @@ class MessageList:
         return cls(msgs)
 
     @property
-    def history(self) -> list[Content]:
+    def as_contents_list(self) -> list[Content]:
         return [
             Content(parts=[Part(text=message.message)], role="user" if message.is_user_message else "model")
             for message in self.messages
