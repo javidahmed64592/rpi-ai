@@ -335,18 +335,36 @@ class MockAppState extends _i1.Mock implements _i6.AppState {
       );
 
   @override
-  void setActivePage(_i8.PageType? newPage) => super.noSuchMethod(
+  void setPageLogin() => super.noSuchMethod(
         Invocation.method(
-          #setActivePage,
-          [newPage],
+          #setPageLogin,
+          [],
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  void toggleActivePage() => super.noSuchMethod(
+  void setPageText() => super.noSuchMethod(
         Invocation.method(
-          #toggleActivePage,
+          #setPageText,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setPageSpeech() => super.noSuchMethod(
+        Invocation.method(
+          #setPageSpeech,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setPageSettings() => super.noSuchMethod(
+        Invocation.method(
+          #setPageSettings,
           [],
         ),
         returnValueForMissingStub: null,

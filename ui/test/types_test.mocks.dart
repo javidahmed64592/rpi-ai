@@ -7,15 +7,18 @@
 // Dart imports:
 import 'dart:async' as _i4;
 import 'dart:typed_data' as _i5;
-import 'dart:ui' as _i7;
+import 'dart:ui' as _i9;
 
 // Package imports:
 import 'package:http/http.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:mockito/src/dummies.dart' as _i7;
 
 // Project imports:
 import 'package:ui/helpers/http_helper.dart' as _i3;
-import 'package:ui/state/message_state.dart' as _i6;
+import 'package:ui/state/app_state.dart' as _i6;
+import 'package:ui/state/message_state.dart' as _i10;
+import 'package:ui/types.dart' as _i8;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -238,10 +241,193 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<Map<String, dynamic>>);
 }
 
+/// A class which mocks [AppState].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAppState extends _i1.Mock implements _i6.AppState {
+  MockAppState() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String get ip => (super.noSuchMethod(
+        Invocation.getter(#ip),
+        returnValue: _i7.dummyValue<String>(
+          this,
+          Invocation.getter(#ip),
+        ),
+      ) as String);
+
+  @override
+  int get port => (super.noSuchMethod(
+        Invocation.getter(#port),
+        returnValue: 0,
+      ) as int);
+
+  @override
+  String get fullUrl => (super.noSuchMethod(
+        Invocation.getter(#fullUrl),
+        returnValue: _i7.dummyValue<String>(
+          this,
+          Invocation.getter(#fullUrl),
+        ),
+      ) as String);
+
+  @override
+  String get authToken => (super.noSuchMethod(
+        Invocation.getter(#authToken),
+        returnValue: _i7.dummyValue<String>(
+          this,
+          Invocation.getter(#authToken),
+        ),
+      ) as String);
+
+  @override
+  _i8.PageType get activePage => (super.noSuchMethod(
+        Invocation.getter(#activePage),
+        returnValue: _i8.PageType.login,
+      ) as _i8.PageType);
+
+  @override
+  bool get connected => (super.noSuchMethod(
+        Invocation.getter(#connected),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  bool get isBusy => (super.noSuchMethod(
+        Invocation.getter(#isBusy),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  bool get hasListeners => (super.noSuchMethod(
+        Invocation.getter(#hasListeners),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  void setIp(String? newIp) => super.noSuchMethod(
+        Invocation.method(
+          #setIp,
+          [newIp],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setPort(int? newPort) => super.noSuchMethod(
+        Invocation.method(
+          #setPort,
+          [newPort],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setAuthToken(String? newAuthToken) => super.noSuchMethod(
+        Invocation.method(
+          #setAuthToken,
+          [newAuthToken],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setPageLogin() => super.noSuchMethod(
+        Invocation.method(
+          #setPageLogin,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setPageText() => super.noSuchMethod(
+        Invocation.method(
+          #setPageText,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setPageSpeech() => super.noSuchMethod(
+        Invocation.method(
+          #setPageSpeech,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setPageSettings() => super.noSuchMethod(
+        Invocation.method(
+          #setPageSettings,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setConnected(bool? newConnected) => super.noSuchMethod(
+        Invocation.method(
+          #setConnected,
+          [newConnected],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setIsBusy(bool? busy) => super.noSuchMethod(
+        Invocation.method(
+          #setIsBusy,
+          [busy],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void addListener(_i9.VoidCallback? listener) => super.noSuchMethod(
+        Invocation.method(
+          #addListener,
+          [listener],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void removeListener(_i9.VoidCallback? listener) => super.noSuchMethod(
+        Invocation.method(
+          #removeListener,
+          [listener],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void dispose() => super.noSuchMethod(
+        Invocation.method(
+          #dispose,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void notifyListeners() => super.noSuchMethod(
+        Invocation.method(
+          #notifyListeners,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+}
+
 /// A class which mocks [MessageState].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMessageState extends _i1.Mock implements _i6.MessageState {
+class MockMessageState extends _i1.Mock implements _i10.MessageState {
   MockMessageState() {
     _i1.throwOnMissingStub(this);
   }
@@ -305,7 +491,7 @@ class MockMessageState extends _i1.Mock implements _i6.MessageState {
       );
 
   @override
-  void addListener(_i7.VoidCallback? listener) => super.noSuchMethod(
+  void addListener(_i9.VoidCallback? listener) => super.noSuchMethod(
         Invocation.method(
           #addListener,
           [listener],
@@ -314,7 +500,7 @@ class MockMessageState extends _i1.Mock implements _i6.MessageState {
       );
 
   @override
-  void removeListener(_i7.VoidCallback? listener) => super.noSuchMethod(
+  void removeListener(_i9.VoidCallback? listener) => super.noSuchMethod(
         Invocation.method(
           #removeListener,
           [listener],

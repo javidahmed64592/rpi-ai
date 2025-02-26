@@ -9,10 +9,12 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/components/app_bar/custom_app_bar.dart';
+import 'package:ui/components/drawer/menu_drawer.dart';
 import 'package:ui/components/notifications.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/helpers/http_helper.dart';
 import 'package:ui/pages/login_page.dart';
+import 'package:ui/pages/settings_page.dart';
 import 'package:ui/pages/speech_page.dart';
 import 'package:ui/pages/text_page.dart';
 import 'package:ui/state/app_state.dart';
@@ -81,6 +83,8 @@ class _MainPageState extends State<MainPage> {
           return const TextPage();
         case PageType.speech:
           return const SpeechPage();
+        case PageType.settings:
+          return const SettingsPage();
         case PageType.login:
         default:
           return const LoginPage();
@@ -120,6 +124,7 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
       appBar: const CustomAppBar(),
+      drawer: appState.activePage != PageType.login ? const MenuDrawer() : null,
       body: Stack(
         children: [
           Center(
