@@ -12,7 +12,6 @@ import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'package:ui/state/settings_state.dart';
-import 'package:ui/types.dart';
 
 class LoginPage extends StatefulWidget {
   final HttpHelper? httpHelper;
@@ -117,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
               settingsState.updateConfig(config);
               appState.setConnected(true);
               messageState.initialiseChat(messages);
-              appState.setActivePage(PageType.text);
+              appState.setPageText();
               notificationState.clearNotification();
 
               await DataStorageHelper.saveAppState(
