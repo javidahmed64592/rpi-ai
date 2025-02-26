@@ -21,14 +21,26 @@ class Chatbot:
         self._history: list[Message] = []
         self.start_chat()
 
-    def _web_search_config(self) -> Tool:
+    @property
+    def _model_config(self) -> GenerateContentConfig:
         return GenerateContentConfig(
             system_instruction=self._config.system_instruction,
             candidate_count=self._config.candidate_count,
             max_output_tokens=self._config.max_output_tokens,
             temperature=self._config.temperature,
-            tools=[Tool(google_search=GoogleSearchRetrieval)],
         )
+
+    @property
+    def _chat_config(self) -> GenerateContentConfig:
+        _config = self._model_config
+        _config.tools = self._functions
+        return _config
+
+    @property
+    def _web_search_config(self) -> GenerateContentConfig:
+        _config = self._model_config
+        _config.tools = [Tool(google_search=GoogleSearchRetrieval)]
+        return _config
 
     def web_search(self, query: str) -> str:
         """
@@ -43,7 +55,7 @@ class Chatbot:
         response = self._client.models.generate_content(
             contents=query,
             model=self._config.model,
-            config=self._web_search_config(),
+            config=self._web_search_config,
         )
         return response.text
 
@@ -60,13 +72,7 @@ class Chatbot:
         self._history = [Message.new_chat_message()]
         self._chat = self._client.chats.create(
             model=self._config.model,
-            config=GenerateContentConfig(
-                system_instruction=self._config.system_instruction,
-                candidate_count=self._config.candidate_count,
-                max_output_tokens=self._config.max_output_tokens,
-                temperature=self._config.temperature,
-                tools=self._functions,
-            ),
+            config=self._chat_config,
             history=self.get_chat_history().as_contents_list,
         )
 

@@ -13,7 +13,7 @@ class TestChatbot:
         mock_genai_client.assert_called_once_with(api_key=mock_env_vars["GEMINI_API_KEY"])
 
     def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
-        config = mock_chatbot._web_search_config()
+        config = mock_chatbot._web_search_config
         assert config.system_instruction == mock_config.system_instruction
         assert config.candidate_count == mock_config.candidate_count
         assert config.max_output_tokens == mock_config.max_output_tokens
@@ -30,7 +30,7 @@ class TestChatbot:
         mock_genai_client.return_value.models.generate_content.assert_called_once_with(
             contents=query,
             model=mock_chatbot._config.model,
-            config=mock_chatbot._web_search_config(),
+            config=mock_chatbot._web_search_config,
         )
         assert result == "search results"
 
