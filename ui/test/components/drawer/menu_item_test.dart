@@ -36,10 +36,10 @@ void main() {
       (WidgetTester tester) async {
     PageType page = PageType.text;
     await tester.pumpWidget(createMenuItem(page));
+    await tester.tap(find.byType(MenuItem));
     final appState = Provider.of<AppState>(
         tester.element(find.byType(MenuItem)),
         listen: false);
-    page.handlePageChange(appState);
     expect(appState.activePage, page);
   });
 
@@ -55,10 +55,10 @@ void main() {
       (WidgetTester tester) async {
     PageType page = PageType.speech;
     await tester.pumpWidget(createMenuItem(page));
+    await tester.tap(find.byType(MenuItem));
     final appState = Provider.of<AppState>(
         tester.element(find.byType(MenuItem)),
         listen: false);
-    page.handlePageChange(appState);
     expect(appState.activePage, page);
   });
 
@@ -74,10 +74,10 @@ void main() {
       (WidgetTester tester) async {
     PageType page = PageType.settings;
     await tester.pumpWidget(createMenuItem(page));
+    await tester.tap(find.byType(MenuItem));
     final appState = Provider.of<AppState>(
         tester.element(find.byType(MenuItem)),
         listen: false);
-    page.handlePageChange(appState);
     expect(appState.activePage, page);
   });
 }
