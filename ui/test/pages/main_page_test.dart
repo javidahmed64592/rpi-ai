@@ -7,14 +7,12 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:ui/components/app_bar/custom_app_bar.dart';
-import 'package:ui/components/app_bar/logout_button.dart';
 import 'package:ui/components/timeout_dialog.dart';
 import 'package:ui/pages/main_page.dart';
 import 'package:ui/state/app_state.dart';
 import 'package:ui/state/message_state.dart';
 import 'package:ui/state/notification_state.dart';
 import 'package:ui/state/settings_state.dart';
-import 'package:ui/types.dart';
 
 void main() {
   late AppState appState;
@@ -44,19 +42,20 @@ void main() {
     expect(find.byType(CustomAppBar), findsOneWidget);
   });
 
-  testWidgets('MainPage displays LogoutButton', (WidgetTester tester) async {
-    await tester.pumpWidget(createMainPage());
-    appState.setActivePage(PageType.text);
-    await tester.pump();
-    expect(find.byType(LogoutButton), findsOneWidget);
-  });
-
-  testWidgets('MainPage does not display LogoutButton on login page',
+  testWidgets('MainPage displays MenuDrawer button',
       (WidgetTester tester) async {
     await tester.pumpWidget(createMainPage());
-    appState.setActivePage(PageType.login);
+    appState.setPageText();
     await tester.pump();
-    expect(find.byType(LogoutButton), findsNothing);
+    expect(find.byIcon(Icons.menu), findsOneWidget);
+  });
+
+  testWidgets('MainPage does not display MenuDrawer on login page',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(createMainPage());
+    appState.setPageLogin();
+    await tester.pump();
+    expect(find.byIcon(Icons.menu), findsNothing);
   });
 
   testWidgets('MainPage displays error notification',
@@ -86,7 +85,7 @@ void main() {
   testWidgets('MainPage displays TimeoutDialog when disconnected',
       (WidgetTester tester) async {
     await tester.pumpWidget(createMainPage());
-    appState.setActivePage(PageType.text);
+    appState.setPageText();
     appState.setConnected(false);
     await tester.pump();
     expect(find.byType(TimeoutDialog), findsOneWidget);
