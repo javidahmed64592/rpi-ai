@@ -4,7 +4,7 @@ from google.genai.errors import ServerError
 from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
-from rpi_ai.api_types import AIConfigType, Message, MessageList
+from rpi_ai.api_types import AIConfigType
 from rpi_ai.models.chatbot import Chatbot
 
 
@@ -26,7 +26,7 @@ class TestChatbot:
         mock_response = MagicMock(text="search results")
         mock_genai_client.return_value.models.generate_content.return_value = mock_response
 
-        result = mock_chatbot._web_search(query)
+        result = mock_chatbot.web_search(query)
         mock_genai_client.return_value.models.generate_content.assert_called_once_with(
             contents=query,
             model=mock_chatbot._config.model,
@@ -52,7 +52,7 @@ class TestChatbot:
                 temperature=mock_chatbot._config.temperature,
                 tools=mock_chatbot._functions,
             ),
-            history=MessageList([Message(message="What's on your mind today?")]).history,
+            history=mock_chatbot.get_chat_history().as_contents_list,
         )
 
     def test_get_chat_history(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:

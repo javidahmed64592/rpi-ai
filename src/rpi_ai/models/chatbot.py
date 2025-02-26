@@ -17,8 +17,8 @@ class Chatbot:
     def __init__(self, api_key: str, config: AIConfigType, functions: list[Callable]) -> None:
         self._client = Client(api_key=api_key)
         self._config = config
-        functions.append(self._web_search)
-        self._functions = functions
+        self._functions = [*functions, self.web_search]
+        self._history: list[Message] = []
         self.start_chat()
 
     def _web_search_config(self) -> Tool:
@@ -30,7 +30,7 @@ class Chatbot:
             tools=[Tool(google_search=GoogleSearchRetrieval)],
         )
 
-    def _web_search(self, query: str) -> str:
+    def web_search(self, query: str) -> str:
         """
         Search the web for the given query.
 
@@ -54,10 +54,10 @@ class Chatbot:
         self._config = config
 
     def get_chat_history(self) -> MessageList:
-        return MessageList.from_contents_list(self._chat._curated_history)
+        return MessageList(self._history)
 
     def start_chat(self) -> None:
-        messages = MessageList([Message(message="What's on your mind today?")])
+        self._history = [Message.new_chat_message()]
         self._chat = self._client.chats.create(
             model=self._config.model,
             config=GenerateContentConfig(
@@ -67,12 +67,14 @@ class Chatbot:
                 temperature=self._config.temperature,
                 tools=self._functions,
             ),
-            history=messages.history,
+            history=self.get_chat_history().as_contents_list,
         )
 
     def send_message(self, text: str) -> Message:
         try:
             response = self._chat.send_message(text)
+            self._history.append(Message.user_message(text))
+            self._history.append(Message.model_message(response.text))
             return Message(message=response.text)
         except (AttributeError, ValidationError) as e:
             msg = f"Failed to send message to chatbot: {e}"
@@ -87,6 +89,8 @@ class Chatbot:
             response = self._chat.send_message(audio_request)
             reply = response.text
             audio = audiobot.get_audio_bytes_from_text(reply.replace("*", ""))
+            self._history.append(Message.user_message(audio_request[0]))
+            self._history.append(Message.model_message(response.text))
             return SpeechResponse(bytes=audio, message=reply)
         except (AttributeError, ValidationError) as e:
             msg = f"Failed to send audio to chatbot: {e}"
