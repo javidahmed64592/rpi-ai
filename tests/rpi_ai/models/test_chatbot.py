@@ -26,7 +26,7 @@ class TestChatbot:
         mock_response = MagicMock(text="search results")
         mock_genai_client.return_value.models.generate_content.return_value = mock_response
 
-        result = mock_chatbot._web_search(query)
+        result = mock_chatbot.web_search(query)
         mock_genai_client.return_value.models.generate_content.assert_called_once_with(
             contents=query,
             model=mock_chatbot._config.model,

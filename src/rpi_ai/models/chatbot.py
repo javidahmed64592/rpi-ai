@@ -17,7 +17,7 @@ class Chatbot:
     def __init__(self, api_key: str, config: AIConfigType, functions: list[Callable]) -> None:
         self._client = Client(api_key=api_key)
         self._config = config
-        functions.append(self._web_search)
+        self._functions = [*functions, self.web_search]
         self._functions = functions
         self.start_chat()
 
@@ -30,7 +30,7 @@ class Chatbot:
             tools=[Tool(google_search=GoogleSearchRetrieval)],
         )
 
-    def _web_search(self, query: str) -> str:
+    def web_search(self, query: str) -> str:
         """
         Search the web for the given query.
 
