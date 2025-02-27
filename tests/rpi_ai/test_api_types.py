@@ -3,7 +3,7 @@ from unittest.mock import mock_open, patch
 
 from google.genai.types import Content, Part
 
-from rpi_ai.api_types import AIConfigType, MessageList, SpeechResponse
+from rpi_ai.api_types import AIConfigType, Message, MessageList, SpeechResponse
 
 
 # Config
@@ -27,6 +27,23 @@ class TestAIConfigType:
 
 
 # Chatbot responses
+class TestMessage:
+    def test_user_message(self) -> None:
+        message = Message.user_message("test_message")
+        assert message.message == "test_message"
+        assert message.is_user_message
+
+    def test_model_message(self) -> None:
+        message = Message.model_message("test_message")
+        assert message.message == "test_message"
+        assert not message.is_user_message
+
+    def test_new_chat_message(self) -> None:
+        message = Message.new_chat_message()
+        assert message.message == "What's on your mind today?"
+        assert not message.is_user_message
+
+
 class TestMessageList:
     def test_from_contents_list(self) -> None:
         good_data = [
@@ -50,7 +67,7 @@ class TestMessageList:
             Content(parts=[Part(text="model_msg")], role="model"),
         ]
         message_list = MessageList.from_contents_list(data)
-        history = message_list.history
+        history = message_list.as_contents_list
         assert len(history) == len(data)
         assert history[0].parts[0].text == "user_msg"
         assert history[0].role == "user"

@@ -1,6 +1,6 @@
 import os
 from collections.abc import Generator
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 from flask.testing import FlaskClient
@@ -72,6 +72,12 @@ def mock_chatbot(mock_env_vars: MagicMock, mock_config: AIConfigType, mock_chat_
 
 
 @pytest.fixture
+def mock_chat_history() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.main.Chatbot.chat_history", new_callable=PropertyMock) as mock:
+        yield mock
+
+
+@pytest.fixture
 def mock_get_config(mock_config: AIConfigType) -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.Chatbot.get_config") as mock:
         mock.return_value = mock_config
@@ -81,12 +87,6 @@ def mock_get_config(mock_config: AIConfigType) -> Generator[MagicMock, None, Non
 @pytest.fixture
 def mock_update_config() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.Chatbot.update_config") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_get_chat_history() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.Chatbot.get_chat_history") as mock:
         yield mock
 
 
