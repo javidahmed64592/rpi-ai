@@ -12,6 +12,22 @@ class TestChatbot:
     def test_init(self, mock_chatbot: Chatbot, mock_env_vars: MagicMock, mock_genai_client: MagicMock) -> None:
         mock_genai_client.assert_called_once_with(api_key=mock_env_vars["GEMINI_API_KEY"])
 
+    def test_model_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+        config = mock_chatbot._model_config
+        assert config.system_instruction == mock_config.system_instruction
+        assert config.candidate_count == mock_config.candidate_count
+        assert config.max_output_tokens == mock_config.max_output_tokens
+        assert config.temperature == mock_config.temperature
+
+    def test_chat_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+        config = mock_chatbot._chat_config
+        assert config.system_instruction == mock_config.system_instruction
+        assert config.candidate_count == mock_config.candidate_count
+        assert config.max_output_tokens == mock_config.max_output_tokens
+        assert config.temperature == mock_config.temperature
+        assert len(config.tools) == 1
+        assert config.tools[0] in mock_chatbot._functions
+
     def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
         config = mock_chatbot._web_search_config
         assert config.system_instruction == mock_config.system_instruction
@@ -20,6 +36,11 @@ class TestChatbot:
         assert config.temperature == mock_config.temperature
         assert len(config.tools) == 1
         assert config.tools[0].google_search == GoogleSearch()
+
+    def test_chat_history(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
+        history = mock_chatbot.chat_history
+        assert len(history.messages) == 1
+        assert history.messages[0].message == "What's on your mind today?"
 
     def test_web_search(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
         query = "test query"
@@ -54,11 +75,6 @@ class TestChatbot:
             ),
             history=mock_chatbot.chat_history.as_contents_list,
         )
-
-    def test_chat_history(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
-        history = mock_chatbot.chat_history
-        assert len(history.messages) == 1
-        assert history.messages[0].message == "What's on your mind today?"
 
     def test_send_message_with_valid_response(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
         mock_msg = "Hi model!"
