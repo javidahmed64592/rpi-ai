@@ -75,6 +75,7 @@ class TestChatbot:
             ),
             history=mock_chatbot.chat_history.as_contents_list,
         )
+        assert len(mock_chatbot.chat_history.messages) == 1
 
     def test_send_message_with_valid_response(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
         mock_msg = "Hi model!"
