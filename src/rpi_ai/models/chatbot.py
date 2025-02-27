@@ -84,6 +84,7 @@ class Chatbot:
             self._history.append(Message.model_message(response.text))
             return Message(message=response.text)
         except (AttributeError, ValidationError) as e:
+            self._history.pop()
             msg = f"Failed to send message to chatbot: {e}"
             logger.exception(msg)
             return Message(message="An error occurred! Please try again.")
