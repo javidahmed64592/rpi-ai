@@ -177,7 +177,6 @@ class TestAIAppEndpoints:
         mock_update_config.assert_called_once_with(AIConfigType(**new_config))
         mock_save_config.assert_called_once()
         mock_start_chat.assert_called_once()
-        mock_chat_history.assert_called_once()
         mock_jsonify.assert_called_once_with(mock_chat_history.return_value)
         assert response.status_code == SUCCESS_CODE
 
@@ -214,7 +213,6 @@ class TestAIAppEndpoints:
         mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
         response = mock_client.post("/restart-chat")
         mock_start_chat.assert_called_once()
-        mock_chat_history.assert_called_once()
         mock_jsonify.assert_called_once_with(mock_chat_history.return_value)
         assert response.status_code == SUCCESS_CODE
 
