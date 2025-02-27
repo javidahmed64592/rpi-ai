@@ -42,6 +42,10 @@ class Chatbot:
         _config.tools = [Tool(google_search=GoogleSearchRetrieval)]
         return _config
 
+    @property
+    def chat_history(self) -> MessageList:
+        return MessageList(self._history)
+
     def web_search(self, query: str) -> str:
         """
         Search the web for the given query.
@@ -65,15 +69,12 @@ class Chatbot:
     def update_config(self, config: AIConfigType) -> None:
         self._config = config
 
-    def get_chat_history(self) -> MessageList:
-        return MessageList(self._history)
-
     def start_chat(self) -> None:
         self._history = [Message.new_chat_message()]
         self._chat = self._client.chats.create(
             model=self._config.model,
             config=self._chat_config,
-            history=self.get_chat_history().as_contents_list,
+            history=self.chat_history.as_contents_list,
         )
 
     def send_message(self, text: str) -> Message:

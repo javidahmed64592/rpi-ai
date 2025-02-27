@@ -106,14 +106,14 @@ class TestAIAppEndpoints:
         self,
         mock_client: FlaskClient,
         mock_request_headers: MagicMock,
-        mock_get_chat_history: MagicMock,
+        mock_chat_history: MagicMock,
         mock_jsonify: MagicMock,
         mock_create_new_token: MagicMock,
     ) -> None:
         mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
         response = mock_client.get("/login")
-        mock_get_chat_history.assert_called_once()
-        mock_jsonify.assert_called_once_with(mock_get_chat_history.return_value)
+        mock_chat_history.assert_called_once()
+        mock_jsonify.assert_called_once_with(mock_chat_history.return_value)
         assert response.status_code == SUCCESS_CODE
 
     def test_login_unauthorized(
@@ -158,7 +158,7 @@ class TestAIAppEndpoints:
         mock_request_json: MagicMock,
         mock_update_config: MagicMock,
         mock_save_config: MagicMock,
-        mock_get_chat_history: MagicMock,
+        mock_chat_history: MagicMock,
         mock_start_chat: MagicMock,
         mock_jsonify: MagicMock,
         mock_create_new_token: MagicMock,
@@ -177,8 +177,8 @@ class TestAIAppEndpoints:
         mock_update_config.assert_called_once_with(AIConfigType(**new_config))
         mock_save_config.assert_called_once()
         mock_start_chat.assert_called_once()
-        mock_get_chat_history.assert_called_once()
-        mock_jsonify.assert_called_once_with(mock_get_chat_history.return_value)
+        mock_chat_history.assert_called_once()
+        mock_jsonify.assert_called_once_with(mock_chat_history.return_value)
         assert response.status_code == SUCCESS_CODE
 
     def test_update_config_unauthorized(
@@ -206,7 +206,7 @@ class TestAIAppEndpoints:
         self,
         mock_client: FlaskClient,
         mock_request_headers: MagicMock,
-        mock_get_chat_history: MagicMock,
+        mock_chat_history: MagicMock,
         mock_start_chat: MagicMock,
         mock_jsonify: MagicMock,
         mock_create_new_token: MagicMock,
@@ -214,8 +214,8 @@ class TestAIAppEndpoints:
         mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
         response = mock_client.post("/restart-chat")
         mock_start_chat.assert_called_once()
-        mock_get_chat_history.assert_called_once()
-        mock_jsonify.assert_called_once_with(mock_get_chat_history.return_value)
+        mock_chat_history.assert_called_once()
+        mock_jsonify.assert_called_once_with(mock_chat_history.return_value)
         assert response.status_code == SUCCESS_CODE
 
     def test_restart_chat_unauthorized(

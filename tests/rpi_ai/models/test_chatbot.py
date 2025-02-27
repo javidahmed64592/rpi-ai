@@ -52,11 +52,11 @@ class TestChatbot:
                 temperature=mock_chatbot._config.temperature,
                 tools=mock_chatbot._functions,
             ),
-            history=mock_chatbot.get_chat_history().as_contents_list,
+            history=mock_chatbot.chat_history.as_contents_list,
         )
 
-    def test_get_chat_history(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
-        history = mock_chatbot.get_chat_history()
+    def test_chat_history(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
+        history = mock_chatbot.chat_history
         assert len(history.messages) == 1
         assert history.messages[0].message == "What's on your mind today?"
 

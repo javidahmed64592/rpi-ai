@@ -122,14 +122,14 @@ class AIApp:
 
     def login(self) -> Response:
         logger.info("Starting new chat...")
-        response = self.chatbot.get_chat_history()
+        response = self.chatbot.chat_history
         logger.info(f"Loaded chat history: {len(response.messages)} messages")
         return jsonify(response)
 
     def restart_chat(self) -> Response:
         logger.info("Restarting chat...")
         self.chatbot.start_chat()
-        response = self.chatbot.get_chat_history()
+        response = self.chatbot.chat_history
         return jsonify(response)
 
     def get_config(self) -> Response:
@@ -141,7 +141,7 @@ class AIApp:
         self.chatbot.update_config(config)
         config.save(str(self.config_path))
         self.chatbot.start_chat()
-        response = self.chatbot.get_chat_history()
+        response = self.chatbot.chat_history
         return jsonify(response)
 
     def chat(self) -> Response:
