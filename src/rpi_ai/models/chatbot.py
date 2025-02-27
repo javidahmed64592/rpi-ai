@@ -21,14 +21,30 @@ class Chatbot:
         self._history: list[Message] = []
         self.start_chat()
 
-    def _web_search_config(self) -> Tool:
+    @property
+    def _model_config(self) -> GenerateContentConfig:
         return GenerateContentConfig(
             system_instruction=self._config.system_instruction,
             candidate_count=self._config.candidate_count,
             max_output_tokens=self._config.max_output_tokens,
             temperature=self._config.temperature,
-            tools=[Tool(google_search=GoogleSearchRetrieval)],
         )
+
+    @property
+    def _chat_config(self) -> GenerateContentConfig:
+        _config = self._model_config
+        _config.tools = self._functions
+        return _config
+
+    @property
+    def _web_search_config(self) -> GenerateContentConfig:
+        _config = self._model_config
+        _config.tools = [Tool(google_search=GoogleSearchRetrieval)]
+        return _config
+
+    @property
+    def chat_history(self) -> MessageList:
+        return MessageList(self._history)
 
     def web_search(self, query: str) -> str:
         """
@@ -43,7 +59,7 @@ class Chatbot:
         response = self._client.models.generate_content(
             contents=query,
             model=self._config.model,
-            config=self._web_search_config(),
+            config=self._web_search_config,
         )
         return response.text
 
@@ -53,21 +69,12 @@ class Chatbot:
     def update_config(self, config: AIConfigType) -> None:
         self._config = config
 
-    def get_chat_history(self) -> MessageList:
-        return MessageList(self._history)
-
     def start_chat(self) -> None:
         self._history = [Message.new_chat_message()]
         self._chat = self._client.chats.create(
             model=self._config.model,
-            config=GenerateContentConfig(
-                system_instruction=self._config.system_instruction,
-                candidate_count=self._config.candidate_count,
-                max_output_tokens=self._config.max_output_tokens,
-                temperature=self._config.temperature,
-                tools=self._functions,
-            ),
-            history=self.get_chat_history().as_contents_list,
+            config=self._chat_config,
+            history=self.chat_history.as_contents_list,
         )
 
     def send_message(self, text: str) -> Message:
@@ -77,6 +84,7 @@ class Chatbot:
             self._history.append(Message.model_message(response.text))
             return Message(message=response.text)
         except (AttributeError, ValidationError) as e:
+            self._history.pop()
             msg = f"Failed to send message to chatbot: {e}"
             logger.exception(msg)
             return Message(message="An error occurred! Please try again.")
@@ -93,6 +101,7 @@ class Chatbot:
             self._history.append(Message.model_message(response.text))
             return SpeechResponse(bytes=audio, message=reply)
         except (AttributeError, ValidationError) as e:
+            self._history.pop()
             msg = f"Failed to send audio to chatbot: {e}"
             logger.exception(msg)
             reply = "Failed to send audio to chatbot!"
