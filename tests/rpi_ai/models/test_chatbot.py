@@ -97,7 +97,6 @@ class TestChatbot:
     def test_send_audio_with_valid_response(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
     ) -> None:
-        mock_response = MagicMock()
         mock_response = MagicMock(text="Hi user!")
         mock_chat_instance.send_message.return_value = mock_response
 
@@ -105,15 +104,17 @@ class TestChatbot:
         mock_get_audio_bytes_from_text.return_value = mock_audio
         response = mock_chatbot.send_audio(b"test_audio_data")
         mock_chat_instance.send_message.assert_called_once()
-        assert response.message == "Hi user!"
-        assert response.bytes == mock_audio
+
+        assert mock_chatbot.chat_history.messages[-2].message == "Respond to the voice message."
+        assert mock_chatbot.chat_history.messages[-2].is_user_message
+
+        assert mock_chatbot.chat_history.messages[-1].message == response.message
+        assert not mock_chatbot.chat_history.messages[-1].is_user_message
 
     def test_send_audio_with_error(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
     ) -> None:
-        mock_response = MagicMock()
-        mock_response.parts = [MagicMock(text=None)]
-        mock_chat_instance.send_message.return_value = mock_response
+        mock_chat_instance.send_message.return_value = MagicMock(parts=MagicMock(text=None))
 
         mock_audio = "Failed to send messages to chatbot!"
         mock_get_audio_bytes_from_text.return_value = mock_audio
@@ -122,6 +123,7 @@ class TestChatbot:
         mock_chat_instance.send_message.assert_called_once()
         assert response.message == "Failed to send audio to chatbot!"
         assert response.bytes == mock_audio
+        assert len(mock_chatbot.chat_history.messages) == 1
 
     def test_send_audio_with_server_error(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
@@ -137,6 +139,7 @@ class TestChatbot:
         mock_chat_instance.send_message.assert_called_once()
         assert response.message == "Model overloaded! Please try again."
         assert response.bytes == mock_audio
+        assert len(mock_chatbot.chat_history.messages) == 1
 
     def test_send_audio_with_gtts_error(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
@@ -148,3 +151,4 @@ class TestChatbot:
         mock_chat_instance.send_message.assert_called_once()
         assert response.message == "gTTS error"
         assert response.bytes == ""
+        assert len(mock_chatbot.chat_history.messages) == 1

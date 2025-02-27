@@ -101,6 +101,7 @@ class Chatbot:
             self._history.append(Message.model_message(response.text))
             return SpeechResponse(bytes=audio, message=reply)
         except (AttributeError, ValidationError) as e:
+            self._history.pop()
             msg = f"Failed to send audio to chatbot: {e}"
             logger.exception(msg)
             reply = "Failed to send audio to chatbot!"
