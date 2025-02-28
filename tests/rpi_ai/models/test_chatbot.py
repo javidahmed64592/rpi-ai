@@ -4,7 +4,7 @@ from google.genai.errors import ServerError
 from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
-from rpi_ai.api_types import AIConfigType
+from rpi_ai.config import ChatbotConfig
 from rpi_ai.models.chatbot import Chatbot
 
 
@@ -12,14 +12,14 @@ class TestChatbot:
     def test_init(self, mock_chatbot: Chatbot, mock_env_vars: MagicMock, mock_genai_client: MagicMock) -> None:
         mock_genai_client.assert_called_once_with(api_key=mock_env_vars["GEMINI_API_KEY"])
 
-    def test_model_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+    def test_model_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
         config = mock_chatbot._model_config
         assert config.system_instruction == mock_config.system_instruction
         assert config.candidate_count == mock_config.candidate_count
         assert config.max_output_tokens == mock_config.max_output_tokens
         assert config.temperature == mock_config.temperature
 
-    def test_chat_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+    def test_chat_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
         config = mock_chatbot._chat_config
         assert config.system_instruction == mock_config.system_instruction
         assert config.candidate_count == mock_config.candidate_count
@@ -28,7 +28,7 @@ class TestChatbot:
         assert len(config.tools) == 1
         assert config.tools[0] in mock_chatbot._functions
 
-    def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+    def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
         config = mock_chatbot._web_search_config
         assert config.system_instruction == mock_config.system_instruction
         assert config.candidate_count == mock_config.candidate_count
@@ -55,10 +55,10 @@ class TestChatbot:
         )
         assert result == "search results"
 
-    def test_get_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+    def test_get_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
         assert mock_chatbot.get_config() == mock_config
 
-    def test_update_config(self, mock_chatbot: Chatbot, mock_config: AIConfigType) -> None:
+    def test_update_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
         mock_config.model = "new-model"
         mock_chatbot.update_config(mock_config)
         assert mock_chatbot.get_config() == mock_config
