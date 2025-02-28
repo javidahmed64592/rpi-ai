@@ -1,5 +1,4 @@
 import os
-import secrets
 import signal
 from collections.abc import Callable
 from types import FrameType
@@ -31,10 +30,9 @@ def get_request_files() -> ImmutableMultiDict[str, FileStorage]:
 class AIApp:
     def __init__(self) -> None:
         self.config = Config()
+        self.token = self.config.generate_token()
+        logger.info(f"Token: {self.token}")
         self.chatbot = Chatbot(self.config.api_key, self.config.ai_config, FUNCTIONS)
-
-        self.token = self.generate_token()
-        logger.info(f"Generated token: {self.token}")
 
         self._app = Flask(__name__)
         self._add_app_url("/", self.is_alive, ["GET"])
@@ -47,29 +45,6 @@ class AIApp:
 
     def _add_app_url(self, endpoint: str, view_func: Callable, methods: list[str]) -> None:
         self._app.add_url_rule(endpoint, endpoint, view_func, methods=methods)
-
-    def _load_token_from_file(self) -> str:
-        try:
-            with (self.config.logs_dir / "token.txt").open() as file:
-                return file.read().strip()
-        except FileNotFoundError:
-            return ""
-
-    def _create_new_token(self) -> str:
-        return secrets.token_urlsafe(32)
-
-    def _write_token_to_file(self, token: str) -> None:
-        token_file = self.config.logs_dir / "token.txt"
-        with token_file.open("w") as file:
-            file.write(token)
-
-    def generate_token(self) -> str:
-        if token := self._load_token_from_file():
-            return token
-
-        token = self._create_new_token()
-        self._write_token_to_file(token)
-        return token
 
     def authenticate(self) -> bool:
         return get_request_headers().get("Authorization") == self.token

@@ -2,7 +2,7 @@ import json
 import os
 from collections.abc import Generator
 from pathlib import Path
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, call, mock_open, patch
 
 import pytest
 
@@ -70,6 +70,26 @@ class TestConfig:
     def test_logs_dir(self) -> None:
         config = Config()
         assert config.logs_dir == config.root_dir / "logs"
+
+
+class TestConfigToken:
+    def test_generating_token_loads_from_file_if_exists(
+        self,
+        mock_load_token_from_file: MagicMock,
+    ) -> None:
+        mock_load_token_from_file.return_value = "existing_token"
+        assert Config().generate_token() == "existing_token"
+
+    def test_generating_token_writes_to_file_when_file_does_not_exist(
+        self,
+        mock_load_token_from_file: MagicMock,
+        mock_create_new_token: MagicMock,
+        mock_write_token_to_file: MagicMock,
+    ) -> None:
+        mock_load_token_from_file.return_value = ""
+        mock_create_new_token.return_value = "new_token"
+        assert Config().generate_token() == "new_token"
+        mock_write_token_to_file.assert_has_calls([call("new_token")])
 
 
 class TestChatbotConfig:

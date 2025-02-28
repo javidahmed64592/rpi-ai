@@ -22,6 +22,24 @@ def mock_env_vars() -> Generator[None, None, None]:
 
 
 @pytest.fixture
+def mock_load_token_from_file() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.config.Config._load_token_from_file") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_create_new_token() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.config.Config._create_new_token") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_write_token_to_file() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.config.Config._write_token_to_file") as mock:
+        yield mock
+
+
+@pytest.fixture
 def config_data() -> dict[str, str | float]:
     return {
         "model": "test-model",
@@ -149,24 +167,6 @@ def mock_request_files() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_ai_app_class() -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.AIApp") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_load_token_from_file() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp._load_token_from_file") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_create_new_token() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp._create_new_token") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_write_token_to_file() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.main.AIApp._write_token_to_file") as mock:
         yield mock
 
 

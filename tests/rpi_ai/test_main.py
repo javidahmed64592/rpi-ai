@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock
 
 from flask.testing import FlaskClient
 
@@ -9,29 +9,7 @@ SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
 
 
-class TestAIAppToken:
-    def test_generating_token_loads_from_file_if_exists(
-        self,
-        mock_ai_app: AIApp,
-        mock_load_token_from_file: MagicMock,
-    ) -> None:
-        mock_load_token_from_file.return_value = "existing_token"
-        assert mock_ai_app.generate_token() == "existing_token"
-
-    def test_generating_token_writes_to_file_when_file_does_not_exist(
-        self,
-        mock_ai_app: AIApp,
-        mock_load_token_from_file: MagicMock,
-        mock_create_new_token: MagicMock,
-        mock_write_token_to_file: MagicMock,
-    ) -> None:
-        mock_load_token_from_file.return_value = ""
-        mock_create_new_token.return_value = "new_token"
-        assert mock_ai_app.generate_token() == "new_token"
-        mock_write_token_to_file.assert_has_calls([call("new_token")])
-
-
-class TestAIAppEndpoints:
+class TestAIApp:
     def test_authenticate_success(
         self, mock_ai_app: AIApp, mock_request_headers: MagicMock, mock_create_new_token: MagicMock
     ) -> None:

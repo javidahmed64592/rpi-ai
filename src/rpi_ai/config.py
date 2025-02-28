@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -53,6 +54,29 @@ class Config:
     @property
     def logs_dir(self) -> Path:
         return self.root_dir / "logs"
+
+    def _load_token_from_file(self) -> str:
+        try:
+            with (self.logs_dir / "token.txt").open() as file:
+                return file.read().strip()
+        except FileNotFoundError:
+            return ""
+
+    def _create_new_token(self) -> str:
+        return secrets.token_urlsafe(32)
+
+    def _write_token_to_file(self, token: str) -> None:
+        token_file = self.logs_dir / "token.txt"
+        with token_file.open("w") as file:
+            file.write(token)
+
+    def generate_token(self) -> str:
+        if token := self._load_token_from_file():
+            return token
+
+        token = self._create_new_token()
+        self._write_token_to_file(token)
+        return token
 
 
 @dataclass
