@@ -36,7 +36,7 @@ class Config:
         self.root_dir = Path(str(rpi_ai_path.strip()))
         logger.debug(f"Root directory: {self.root_dir}")
 
-        self.ai_config = ChatbotConfig.load(str(self.config_file))
+        self.ai_config = ChatbotConfig.load(self.config_file)
         logger.debug("Successfully loaded AI config!")
 
         self.token = self.generate_token()
