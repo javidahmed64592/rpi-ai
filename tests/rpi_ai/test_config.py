@@ -9,6 +9,12 @@ import pytest
 from rpi_ai.config import ChatbotConfig, Config
 
 
+@pytest.fixture(autouse=True)
+def mock_builtins_open(config_data: dict[str, str | float]) -> Generator[MagicMock, None, None]:
+    with patch("builtins.open", new_callable=mock_open, read_data=json.dumps(config_data)) as mock:
+        yield mock
+
+
 class TestConfig:
     @pytest.fixture
     def mock_env_vars_no_rpi_ai_path(self) -> Generator[None, None, None]:
@@ -31,11 +37,6 @@ class TestConfig:
     @pytest.fixture
     def mock_path_exists(self) -> Generator[MagicMock, None, None]:
         with patch("pathlib.Path.exists") as mock:
-            yield mock
-
-    @pytest.fixture(autouse=True)
-    def mock_builtins_open(self, config_data: dict[str, str | float]) -> Generator[MagicMock, None, None]:
-        with patch("builtins.open", new_callable=mock_open, read_data=json.dumps(config_data)) as mock:
             yield mock
 
     def test_init(
@@ -72,19 +73,18 @@ class TestConfig:
 
 
 class TestChatbotConfig:
-    def test_load(self, config_data: dict[str, str | float]) -> None:
-        with patch("builtins.open", new_callable=mock_open, read_data=json.dumps(config_data)):
-            config = ChatbotConfig.load("dummy_path")
-            assert config.model == "test-model"
-            assert config.candidate_count == config_data["candidate_count"]
-            assert config.max_output_tokens == config_data["max_output_tokens"]
-            assert config.temperature == config_data["temperature"]
+    def test_load(self, mock_builtins_open: MagicMock, config_data: dict[str, str | float]) -> None:
+        config = ChatbotConfig.load("dummy_path")
+        mock_builtins_open.assert_called_once_with("dummy_path")
+        assert config.model == "test-model"
+        assert config.candidate_count == config_data["candidate_count"]
+        assert config.max_output_tokens == config_data["max_output_tokens"]
+        assert config.temperature == config_data["temperature"]
 
-    def test_save(self, config_data: dict[str, str | float]) -> None:
-        with patch("builtins.open", new_callable=mock_open) as mock_file:
-            config = ChatbotConfig(**config_data)
-            config.save("dummy_path")
-            mock_file.assert_called_once_with("dummy_path", "w")
-            handle = mock_file()
-            written_data = "".join(call.args[0] for call in handle.write.call_args_list)
-            assert written_data == json.dumps(config_data, indent=4)
+    def test_save(self, mock_builtins_open: MagicMock, config_data: dict[str, str | float]) -> None:
+        config = ChatbotConfig(**config_data)
+        config.save("dummy_path")
+        mock_builtins_open.assert_called_once_with("dummy_path", "w")
+        handle = mock_builtins_open()
+        written_data = "".join(call.args[0] for call in handle.write.call_args_list)
+        assert written_data == json.dumps(config_data, indent=4)
