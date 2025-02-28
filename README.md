@@ -69,9 +69,8 @@ Requests must have the following header:
 `/get-config`: GET method, retrieve the current AI configuration and return payload:
 ```json
 {
-    "model": "gemini-1.5-flash",
+    "model": "gemini-2.0-flash",
     "system_instruction": "You are a friendly AI assistant.",
-    "candidate_count": 1,
     "max_output_tokens": 1000,
     "temperature": 1.0
 }

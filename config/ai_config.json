@@ -1,7 +1,6 @@
 {
     "model": "gemini-2.0-flash",
     "system_instruction": "You are a friendly AI assistant. You are designed to help the user with daily tasks. You share the output of any tools you use with the user.",
-    "candidate_count": 1,
     "max_output_tokens": 1000,
     "temperature": 1.0
 }
