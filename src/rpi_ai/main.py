@@ -4,7 +4,6 @@ import signal
 from collections.abc import Callable
 from types import FrameType
 
-from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from waitress import serve
 from werkzeug.datastructures import FileStorage, Headers, ImmutableMultiDict
@@ -31,9 +30,6 @@ def get_request_files() -> ImmutableMultiDict[str, FileStorage]:
 
 class AIApp:
     def __init__(self) -> None:
-        logger.debug("Loading environment variables...")
-        load_dotenv()
-
         self.config = Config()
         self.chatbot = Chatbot(self.config.api_key, self.config.ai_config, FUNCTIONS)
 
