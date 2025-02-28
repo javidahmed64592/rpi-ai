@@ -15,25 +15,25 @@ class TestChatbot:
     def test_model_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
         config = mock_chatbot._model_config
         assert config.system_instruction == mock_config.system_instruction
-        assert config.candidate_count == mock_config.candidate_count
         assert config.max_output_tokens == mock_config.max_output_tokens
         assert config.temperature == mock_config.temperature
+        assert config.candidate_count == 1
 
     def test_chat_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
         config = mock_chatbot._chat_config
         assert config.system_instruction == mock_config.system_instruction
-        assert config.candidate_count == mock_config.candidate_count
         assert config.max_output_tokens == mock_config.max_output_tokens
         assert config.temperature == mock_config.temperature
+        assert config.candidate_count == 1
         assert len(config.tools) == 1
         assert config.tools[0] in mock_chatbot._functions
 
     def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
         config = mock_chatbot._web_search_config
         assert config.system_instruction == mock_config.system_instruction
-        assert config.candidate_count == mock_config.candidate_count
         assert config.max_output_tokens == mock_config.max_output_tokens
         assert config.temperature == mock_config.temperature
+        assert config.candidate_count == 1
         assert len(config.tools) == 1
         assert config.tools[0].google_search == GoogleSearch()
 
@@ -68,9 +68,9 @@ class TestChatbot:
             model=mock_chatbot._config.model,
             config=GenerateContentConfig(
                 system_instruction=mock_chatbot._config.system_instruction,
-                candidate_count=mock_chatbot._config.candidate_count,
                 max_output_tokens=mock_chatbot._config.max_output_tokens,
                 temperature=mock_chatbot._config.temperature,
+                candidate_count=1,
                 tools=mock_chatbot._functions,
             ),
             history=mock_chatbot.chat_history.as_contents_list,
