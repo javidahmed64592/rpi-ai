@@ -65,6 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget systemInstructionTextField() {
     return TextField(
       controller: systemInstructionController,
+      maxLines: 7,
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
         labelText: 'System Instruction',
