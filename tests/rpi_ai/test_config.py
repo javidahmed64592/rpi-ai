@@ -1,8 +1,9 @@
 import json
 import os
+import tempfile
 from collections.abc import Generator
 from pathlib import Path
-from unittest.mock import MagicMock, call, mock_open, patch
+from unittest.mock import MagicMock, PropertyMock, call, mock_open, patch
 
 import pytest
 
@@ -73,6 +74,40 @@ class TestConfig:
 
 
 class TestConfigToken:
+    @pytest.fixture
+    def mock_temp_logs_dir(self) -> Generator[PropertyMock, None, None]:
+        with patch("rpi_ai.config.Config.logs_dir", new_callable=PropertyMock) as mock:
+            yield mock
+
+    def test_loading_token_from_file(self, mock_temp_logs_dir: MagicMock) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            token_file = temp_path / "token.txt"
+            token_file.write_text("test_token")
+            mock_temp_logs_dir.return_value = temp_path
+            config = Config()
+            assert config._load_token_from_file() == "test_token"
+
+    def test_loading_token_from_file_when_file_does_not_exist(self, mock_temp_logs_dir: MagicMock) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            mock_temp_logs_dir.return_value = temp_path
+            config = Config()
+            assert config._load_token_from_file() == ""
+
+    def test_creating_new_token(self) -> None:
+        config = Config()
+        assert len(config._create_new_token()) == config.TOKEN_LENGTH + 11
+
+    def test_writing_token_to_file(self, mock_temp_logs_dir: MagicMock) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            token_file = temp_path / "token.txt"
+            mock_temp_logs_dir.return_value = temp_path
+            config = Config()
+            config._write_token_to_file("test_token")
+            assert token_file.read_text() == "test_token"
+
     def test_generating_token_loads_from_file_if_exists(
         self,
         mock_load_token_from_file: MagicMock,

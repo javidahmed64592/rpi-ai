@@ -14,6 +14,8 @@ logger = Logger(__name__)
 
 
 class Config:
+    TOKEN_LENGTH = 32
+
     def __init__(self) -> None:
         logger.debug("Loading environment variables...")
         load_dotenv()
@@ -63,7 +65,7 @@ class Config:
             return ""
 
     def _create_new_token(self) -> str:
-        return secrets.token_urlsafe(32)
+        return secrets.token_urlsafe(self.TOKEN_LENGTH)
 
     def _write_token_to_file(self, token: str) -> None:
         token_file = self.logs_dir / "token.txt"
