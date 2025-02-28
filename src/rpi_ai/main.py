@@ -30,8 +30,6 @@ def get_request_files() -> ImmutableMultiDict[str, FileStorage]:
 class AIApp:
     def __init__(self) -> None:
         self.config = Config()
-        self.token = self.config.generate_token()
-        logger.info(f"Token: {self.token}")
         self.chatbot = Chatbot(self.config.api_key, self.config.ai_config, FUNCTIONS)
 
         self._app = Flask(__name__)
@@ -47,7 +45,7 @@ class AIApp:
         self._app.add_url_rule(endpoint, endpoint, view_func, methods=methods)
 
     def authenticate(self) -> bool:
-        return get_request_headers().get("Authorization") == self.token
+        return get_request_headers().get("Authorization") == self.config.token
 
     def token_required(self, f: Callable) -> Callable:
         """Decorator to protect endpoints with token authentication."""

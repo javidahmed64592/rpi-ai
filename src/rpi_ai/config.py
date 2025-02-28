@@ -39,6 +39,9 @@ class Config:
         self.ai_config = ChatbotConfig.load(str(self.config_file))
         logger.debug("Successfully loaded AI config!")
 
+        self.token = self.generate_token()
+        logger.info(f"Token: {self.token}")
+
     @property
     def config_dir(self) -> Path:
         if not (config_dir := Path.home() / ".config" / "rpi_ai").exists():
