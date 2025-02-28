@@ -2,7 +2,6 @@ import os
 import secrets
 import signal
 from collections.abc import Callable
-from pathlib import Path
 from types import FrameType
 
 from dotenv import load_dotenv
@@ -10,7 +9,7 @@ from flask import Flask, Response, jsonify, request
 from waitress import serve
 from werkzeug.datastructures import FileStorage, Headers, ImmutableMultiDict
 
-from rpi_ai.api_types import AIConfigType
+from rpi_ai.config import ChatbotConfig, Config
 from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models.chatbot import Chatbot
 from rpi_ai.models.logger import Logger
@@ -35,26 +34,8 @@ class AIApp:
         logger.debug("Loading environment variables...")
         load_dotenv()
 
-        if not (rpi_ai_path := os.environ.get("RPI_AI_PATH")):
-            msg = "RPI_AI_PATH variable not set!"
-            logger.error(msg)
-            raise ValueError(msg)
-
-        if not (gemini_api_key := os.environ.get("GEMINI_API_KEY")):
-            msg = "GEMINI_API_KEY variable not set!"
-            logger.error(msg)
-            raise ValueError(msg)
-
-        self.root_dir = Path(str(rpi_ai_path.strip()))
-        logger.debug(f"Root directory: {self.root_dir}")
-
-        self.api_key = str(gemini_api_key)
-        logger.debug("Successfully loaded API key!")
-
-        self.config_path = self.config_dir / "ai_config.json"
-        self.config = AIConfigType.load(str(self.config_path))
-        logger.debug("Successfully loaded AI config!")
-        self.chatbot = Chatbot(self.api_key, self.config, FUNCTIONS)
+        self.config = Config()
+        self.chatbot = Chatbot(self.config.api_key, self.config.ai_config, FUNCTIONS)
 
         self.token = self.generate_token()
         logger.info(f"Generated token: {self.token}")
@@ -68,19 +49,9 @@ class AIApp:
         self.add_app_url("/chat", self.token_required(self.chat), ["POST"])
         self.add_app_url("/send-audio", self.token_required(self.send_audio), ["POST"])
 
-    @property
-    def config_dir(self) -> Path:
-        if (_config_dir := Path.home() / ".config" / "rpi_ai").exists():
-            return _config_dir
-        return self.root_dir / "config"
-
-    @property
-    def logs_dir(self) -> Path:
-        return self.root_dir / "logs"
-
     def _load_token_from_file(self) -> str:
         try:
-            with (self.logs_dir / "token.txt").open() as file:
+            with (self.config.logs_dir / "token.txt").open() as file:
                 return file.read().strip()
         except FileNotFoundError:
             return ""
@@ -89,7 +60,7 @@ class AIApp:
         return secrets.token_urlsafe(32)
 
     def _write_token_to_file(self, token: str) -> None:
-        token_file = self.logs_dir / "token.txt"
+        token_file = self.config.logs_dir / "token.txt"
         with token_file.open("w") as file:
             file.write(token)
 
@@ -137,9 +108,9 @@ class AIApp:
 
     def update_config(self) -> Response:
         logger.info("Updating AI config...")
-        config = AIConfigType(**get_request_json())
+        config = ChatbotConfig(**get_request_json())
         self.chatbot.update_config(config)
-        config.save(str(self.config_path))
+        config.save(str(self.config.config_file))
         self.chatbot.start_chat()
         response = self.chatbot.chat_history
         return jsonify(response)
