@@ -26,9 +26,9 @@ class Chatbot:
     def _model_config(self) -> GenerateContentConfig:
         return GenerateContentConfig(
             system_instruction=self._config.system_instruction,
-            candidate_count=self._config.candidate_count,
             max_output_tokens=self._config.max_output_tokens,
             temperature=self._config.temperature,
+            candidate_count=1,
         )
 
     @property
