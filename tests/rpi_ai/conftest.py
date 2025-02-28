@@ -22,20 +22,8 @@ def mock_env_vars() -> Generator[None, None, None]:
 
 
 @pytest.fixture
-def mock_load_token_from_file() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.config.Config._load_token_from_file") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_create_new_token() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.config.Config._create_new_token") as mock:
-        yield mock
-
-
-@pytest.fixture
-def mock_write_token_to_file() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.config.Config._write_token_to_file") as mock:
+def mock_generate_token() -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.config.Config.generate_token") as mock:
         yield mock
 
 
@@ -171,12 +159,7 @@ def mock_ai_app_class() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_ai_app(
-    mock_chatbot: Chatbot,
-    mock_load_config: MagicMock,
-    mock_create_new_token: MagicMock,
-    mock_write_token_to_file: MagicMock,
-) -> AIApp:
+def mock_ai_app(mock_chatbot: Chatbot, mock_load_config: MagicMock, mock_generate_token: MagicMock) -> AIApp:
     app = AIApp()
     app.chatbot = mock_chatbot
     return app

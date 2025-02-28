@@ -79,6 +79,21 @@ class TestConfigToken:
         with patch("rpi_ai.config.Config.logs_dir", new_callable=PropertyMock) as mock:
             yield mock
 
+    @pytest.fixture
+    def mock_load_token_from_file(self) -> Generator[MagicMock, None, None]:
+        with patch("rpi_ai.config.Config._load_token_from_file") as mock:
+            yield mock
+
+    @pytest.fixture
+    def mock_create_new_token(self) -> Generator[MagicMock, None, None]:
+        with patch("rpi_ai.config.Config._create_new_token") as mock:
+            yield mock
+
+    @pytest.fixture
+    def mock_write_token_to_file(self) -> Generator[MagicMock, None, None]:
+        with patch("rpi_ai.config.Config._write_token_to_file") as mock:
+            yield mock
+
     def test_loading_token_from_file(self, mock_temp_logs_dir: MagicMock) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)

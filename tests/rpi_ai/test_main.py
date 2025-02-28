@@ -11,9 +11,9 @@ UNAUTHORIZED_CODE = 401
 
 class TestAIApp:
     def test_authenticate_success(
-        self, mock_ai_app: AIApp, mock_request_headers: MagicMock, mock_create_new_token: MagicMock
+        self, mock_ai_app: AIApp, mock_request_headers: MagicMock, mock_generate_token: MagicMock
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         assert mock_ai_app.authenticate() is True
 
     def test_authenticate_failure(self, mock_ai_app: AIApp, mock_request_headers: MagicMock) -> None:
@@ -31,9 +31,9 @@ class TestAIApp:
         mock_request_headers: MagicMock,
         mock_chat_history: MagicMock,
         mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
+        mock_generate_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         response = mock_client.get("/login")
         mock_chat_history.assert_called_once()
         mock_jsonify.assert_called_once_with(mock_chat_history.return_value)
@@ -56,9 +56,9 @@ class TestAIApp:
         mock_request_headers: MagicMock,
         mock_get_config: MagicMock,
         mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
+        mock_generate_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         response = mock_client.get("/get-config")
         mock_jsonify.assert_called_once_with(mock_get_config.return_value)
         assert response.status_code == SUCCESS_CODE
@@ -84,9 +84,9 @@ class TestAIApp:
         mock_chat_history: MagicMock,
         mock_start_chat: MagicMock,
         mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
+        mock_generate_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         new_config = {
             "model": "new-model",
             "system_instruction": "new-instruction",
@@ -131,9 +131,9 @@ class TestAIApp:
         mock_chat_history: MagicMock,
         mock_start_chat: MagicMock,
         mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
+        mock_generate_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         response = mock_client.post("/restart-chat")
         mock_start_chat.assert_called_once()
         mock_jsonify.assert_called_once_with(mock_chat_history.return_value)
@@ -157,9 +157,9 @@ class TestAIApp:
         mock_request_json: MagicMock,
         mock_send_message: MagicMock,
         mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
+        mock_generate_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         user_message = "Hello, World!"
         mock_request_json.return_value = {"message": user_message}
 
@@ -190,9 +190,9 @@ class TestAIApp:
         mock_request_json: MagicMock,
         mock_send_message: MagicMock,
         mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
+        mock_generate_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         mock_request_json.return_value = {}
 
         response = mock_client.post("/chat")
@@ -207,9 +207,9 @@ class TestAIApp:
         mock_request_files: MagicMock,
         mock_send_audio: MagicMock,
         mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
+        mock_generate_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         mock_request_files.return_value = {"audio": MagicMock(read=MagicMock(return_value="audio_data"))}
 
         response = mock_client.post("/send-audio")
@@ -238,9 +238,9 @@ class TestAIApp:
         mock_request_files: MagicMock,
         mock_send_audio: MagicMock,
         mock_jsonify: MagicMock,
-        mock_create_new_token: MagicMock,
+        mock_generate_token: MagicMock,
     ) -> None:
-        mock_request_headers.return_value = {"Authorization": mock_create_new_token.return_value}
+        mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         mock_request_files.return_value = {}
 
         response = mock_client.post("/send-audio")
