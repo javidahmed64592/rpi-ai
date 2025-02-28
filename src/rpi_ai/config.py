@@ -97,6 +97,6 @@ class ChatbotConfig:
         with open(str(path)) as file:
             return cls(**json.load(file))
 
-    def save(self, path: str) -> None:
-        with open(path, "w") as file:
+    def save(self, path: Path) -> None:
+        with open(str(path), "w") as file:
             json.dump(self.__dict__, file, indent=4)
