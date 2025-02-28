@@ -49,7 +49,7 @@ class TestConfig:
         config = Config()
         assert config.api_key == mock_env_vars["GEMINI_API_KEY"]
         assert config.root_dir == Path(mock_env_vars["RPI_AI_PATH"])
-        mock_load_config.assert_called_once_with(str(config.config_file))
+        mock_load_config.assert_called_once_with(config.config_file)
         mock_generate_token.assert_called_once()
 
     def test_init_no_rpi_ai_path(self, mock_env_vars_no_rpi_ai_path: None) -> None:
