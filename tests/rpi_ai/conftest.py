@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, PropertyMock, patch
 import pytest
 from flask.testing import FlaskClient
 
-from rpi_ai.api_types import AIConfigType
+from rpi_ai.config import ChatbotConfig
 from rpi_ai.main import AIApp
 from rpi_ai.models.chatbot import Chatbot
 
@@ -33,20 +33,20 @@ def config_data() -> dict[str, str | float]:
 
 
 @pytest.fixture
-def mock_config(config_data: dict[str, str | float]) -> AIConfigType:
-    return AIConfigType(**config_data)
+def mock_config(config_data: dict[str, str | float]) -> ChatbotConfig:
+    return ChatbotConfig(**config_data)
 
 
 @pytest.fixture
-def mock_load_config(mock_config: AIConfigType) -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.api_types.AIConfigType.load") as mock:
+def mock_load_config(mock_config: ChatbotConfig) -> Generator[MagicMock, None, None]:
+    with patch("rpi_ai.config.ChatbotConfig.load") as mock:
         mock.return_value = mock_config
         yield mock
 
 
 @pytest.fixture
 def mock_save_config() -> Generator[MagicMock, None, None]:
-    with patch("rpi_ai.api_types.AIConfigType.save") as mock:
+    with patch("rpi_ai.config.ChatbotConfig.save") as mock:
         yield mock
 
 
@@ -67,7 +67,7 @@ def mock_chat_instance(mock_genai_client: MagicMock) -> MagicMock:
 
 
 @pytest.fixture
-def mock_chatbot(mock_env_vars: MagicMock, mock_config: AIConfigType, mock_chat_instance: MagicMock) -> Chatbot:
+def mock_chatbot(mock_env_vars: MagicMock, mock_config: ChatbotConfig, mock_chat_instance: MagicMock) -> Chatbot:
     return Chatbot(mock_env_vars["GEMINI_API_KEY"], mock_config, [])
 
 
@@ -78,7 +78,7 @@ def mock_chat_history() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_get_config(mock_config: AIConfigType) -> Generator[MagicMock, None, None]:
+def mock_get_config(mock_config: ChatbotConfig) -> Generator[MagicMock, None, None]:
     with patch("rpi_ai.main.Chatbot.get_config") as mock:
         mock.return_value = mock_config
         yield mock
