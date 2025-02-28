@@ -184,7 +184,7 @@ def mock_ai_app(
 
 @pytest.fixture
 def mock_client(mock_ai_app: AIApp) -> Generator[FlaskClient, None, None]:
-    with mock_ai_app.app.test_client() as client:
+    with mock_ai_app._app.test_client() as client:
         yield client
 
 

@@ -36,14 +36,17 @@ class AIApp:
         self.token = self.generate_token()
         logger.info(f"Generated token: {self.token}")
 
-        self.app = Flask(__name__)
-        self.add_app_url("/", self.is_alive, ["GET"])
-        self.add_app_url("/login", self.token_required(self.login), ["GET"])
-        self.add_app_url("/restart-chat", self.token_required(self.restart_chat), ["POST"])
-        self.add_app_url("/get-config", self.token_required(self.get_config), ["GET"])
-        self.add_app_url("/update-config", self.token_required(self.update_config), ["POST"])
-        self.add_app_url("/chat", self.token_required(self.chat), ["POST"])
-        self.add_app_url("/send-audio", self.token_required(self.send_audio), ["POST"])
+        self._app = Flask(__name__)
+        self._add_app_url("/", self.is_alive, ["GET"])
+        self._add_app_url("/login", self.token_required(self.login), ["GET"])
+        self._add_app_url("/restart-chat", self.token_required(self.restart_chat), ["POST"])
+        self._add_app_url("/get-config", self.token_required(self.get_config), ["GET"])
+        self._add_app_url("/update-config", self.token_required(self.update_config), ["POST"])
+        self._add_app_url("/chat", self.token_required(self.chat), ["POST"])
+        self._add_app_url("/send-audio", self.token_required(self.send_audio), ["POST"])
+
+    def _add_app_url(self, endpoint: str, view_func: Callable, methods: list[str]) -> None:
+        self._app.add_url_rule(endpoint, endpoint, view_func, methods=methods)
 
     def _load_token_from_file(self) -> str:
         try:
@@ -67,9 +70,6 @@ class AIApp:
         token = self._create_new_token()
         self._write_token_to_file(token)
         return token
-
-    def add_app_url(self, endpoint: str, view_func: Callable, methods: list[str]) -> None:
-        self.app.add_url_rule(endpoint, endpoint, view_func, methods=methods)
 
     def authenticate(self) -> bool:
         return get_request_headers().get("Authorization") == self.token
@@ -136,12 +136,12 @@ class AIApp:
 
     def shutdown_handler(self, signum: int, frame: FrameType | None) -> None:
         logger.info("Shutting down AI...")
-        self.app.do_teardown_appcontext()
+        self._app.do_teardown_appcontext()
         os._exit(0)
 
     def run(self, host: str, port: int) -> None:
         signal.signal(signal.SIGINT, self.shutdown_handler)
-        serve(self.app, host=host, port=port)
+        serve(self._app, host=host, port=port)
 
 
 def main() -> None:
