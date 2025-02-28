@@ -6,7 +6,8 @@ from google.genai.types import GenerateContentConfig, GoogleSearchRetrieval, Too
 from gtts import gTTSError
 from pydantic import ValidationError
 
-from rpi_ai.api_types import AIConfigType, Message, MessageList, SpeechResponse
+from rpi_ai.api_types import Message, MessageList, SpeechResponse
+from rpi_ai.config import ChatbotConfig
 from rpi_ai.models import audiobot
 from rpi_ai.models.logger import Logger
 
@@ -14,7 +15,7 @@ logger = Logger(__name__)
 
 
 class Chatbot:
-    def __init__(self, api_key: str, config: AIConfigType, functions: list[Callable]) -> None:
+    def __init__(self, api_key: str, config: ChatbotConfig, functions: list[Callable]) -> None:
         self._client = Client(api_key=api_key)
         self._config = config
         self._functions = [*functions, self.web_search]
@@ -63,10 +64,10 @@ class Chatbot:
         )
         return response.text
 
-    def get_config(self) -> AIConfigType:
+    def get_config(self) -> ChatbotConfig:
         return self._config
 
-    def update_config(self, config: AIConfigType) -> None:
+    def update_config(self, config: ChatbotConfig) -> None:
         self._config = config
 
     def start_chat(self) -> None:

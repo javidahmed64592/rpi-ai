@@ -1,31 +1,9 @@
 from __future__ import annotations
 
-import json
-
 from google.genai.types import Content, Part
 from pydantic.dataclasses import dataclass
 
 
-# Config
-@dataclass
-class AIConfigType:
-    model: str
-    system_instruction: str
-    candidate_count: int = 1
-    max_output_tokens: int = 20
-    temperature: float = 1.0
-
-    @classmethod
-    def load(cls, path: str) -> AIConfigType:
-        with open(path) as file:
-            return cls(**json.load(file))
-
-    def save(self, path: str) -> None:
-        with open(path, "w") as file:
-            json.dump(self.__dict__, file, indent=4)
-
-
-# Chatbot responses
 @dataclass
 class Message:
     message: str

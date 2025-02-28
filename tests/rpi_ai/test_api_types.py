@@ -1,32 +1,8 @@
-import json
-from unittest.mock import mock_open, patch
-
 from google.genai.types import Content, Part
 
-from rpi_ai.api_types import AIConfigType, Message, MessageList, SpeechResponse
+from rpi_ai.api_types import Message, MessageList, SpeechResponse
 
 
-# Config
-class TestAIConfigType:
-    def test_load(self, config_data: dict[str, str | float]) -> None:
-        with patch("builtins.open", new_callable=mock_open, read_data=json.dumps(config_data)):
-            config = AIConfigType.load("dummy_path")
-            assert config.model == "test-model"
-            assert config.candidate_count == config_data["candidate_count"]
-            assert config.max_output_tokens == config_data["max_output_tokens"]
-            assert config.temperature == config_data["temperature"]
-
-    def test_save(self, config_data: dict[str, str | float]) -> None:
-        with patch("builtins.open", new_callable=mock_open) as mock_file:
-            config = AIConfigType(**config_data)
-            config.save("dummy_path")
-            mock_file.assert_called_once_with("dummy_path", "w")
-            handle = mock_file()
-            written_data = "".join(call.args[0] for call in handle.write.call_args_list)
-            assert written_data == json.dumps(config_data, indent=4)
-
-
-# Chatbot responses
 class TestMessage:
     def test_user_message(self) -> None:
         message = Message.user_message("test_message")
