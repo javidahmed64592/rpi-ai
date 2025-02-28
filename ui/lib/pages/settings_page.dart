@@ -32,7 +32,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   late TextEditingController modelController;
   late TextEditingController systemInstructionController;
-  late TextEditingController candidateCountController;
   late TextEditingController maxOutputTokensController;
   late TextEditingController temperatureController;
 
@@ -47,8 +46,6 @@ class _SettingsPageState extends State<SettingsPage> {
     modelController = TextEditingController(text: settingsState.model);
     systemInstructionController =
         TextEditingController(text: settingsState.systemInstruction);
-    candidateCountController =
-        TextEditingController(text: settingsState.candidateCount.toString());
     maxOutputTokensController =
         TextEditingController(text: settingsState.maxOutputTokens.toString());
     temperatureController =
@@ -72,17 +69,6 @@ class _SettingsPageState extends State<SettingsPage> {
         border: OutlineInputBorder(),
         labelText: 'System Instruction',
       ),
-    );
-  }
-
-  Widget candidateCountTextField() {
-    return TextField(
-      controller: candidateCountController,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Candidate Count',
-      ),
-      keyboardType: TextInputType.number,
     );
   }
 
@@ -139,7 +125,6 @@ class _SettingsPageState extends State<SettingsPage> {
           final Map<String, dynamic> config = {
             'model': modelController.text,
             'system_instruction': systemInstructionController.text,
-            'candidate_count': int.parse(candidateCountController.text),
             'max_output_tokens': int.parse(maxOutputTokensController.text),
             'temperature': double.parse(temperatureController.text),
           };
@@ -151,7 +136,6 @@ class _SettingsPageState extends State<SettingsPage> {
               settingsState.updateConfig({
                 'model': config['model'],
                 'systemInstruction': config['system_instruction'],
-                'candidateCount': config['candidate_count'],
                 'maxOutputTokens': config['max_output_tokens'],
                 'temperature': config['temperature'],
               });
@@ -212,8 +196,6 @@ class _SettingsPageState extends State<SettingsPage> {
             modelTextField(),
             const SizedBox(height: 10),
             systemInstructionTextField(),
-            const SizedBox(height: 10),
-            candidateCountTextField(),
             const SizedBox(height: 10),
             maxOutputTokensTextField(),
             const SizedBox(height: 10),

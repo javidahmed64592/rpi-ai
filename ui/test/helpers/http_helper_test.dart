@@ -138,7 +138,6 @@ void main() {
         jsonEncode({
           'model': 'testModel',
           'system_instruction': 'testInstruction',
-          'candidate_count': 5,
           'max_output_tokens': 100,
           'temperature': 0.7,
         }),
@@ -147,7 +146,6 @@ void main() {
     expect(await httpHelper.getConfig(uri, authToken), {
       'model': 'testModel',
       'systemInstruction': 'testInstruction',
-      'candidateCount': 5,
       'maxOutputTokens': 100,
       'temperature': 0.7,
     });
@@ -176,7 +174,6 @@ void main() {
     final config = {
       'model': 'newModel',
       'system_instruction': 'newInstruction',
-      'candidate_count': 10,
       'max_output_tokens': 200,
       'temperature': 0.9,
     };
@@ -216,7 +213,6 @@ void main() {
     final config = {
       'model': 'newModel',
       'system_instruction': 'newInstruction',
-      'candidate_count': 10,
       'max_output_tokens': 200,
       'temperature': 0.9,
     };

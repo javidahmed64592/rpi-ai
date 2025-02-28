@@ -76,7 +76,6 @@ class HttpHelper {
       return {
         'model': body['model'].toString().trim(),
         'systemInstruction': body['system_instruction'].toString().trim(),
-        'candidateCount': body['candidate_count'],
         'maxOutputTokens': body['max_output_tokens'],
         'temperature': body['temperature'],
       };

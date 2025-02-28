@@ -45,11 +45,10 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(createSettingsPage());
 
-    expect(find.byType(TextField), findsNWidgets(5));
+    expect(find.byType(TextField), findsNWidgets(4));
     expect(find.widgetWithText(TextField, 'Model'), findsOneWidget);
     expect(
         find.widgetWithText(TextField, 'System Instruction'), findsOneWidget);
-    expect(find.widgetWithText(TextField, 'Candidate Count'), findsOneWidget);
     expect(find.widgetWithText(TextField, 'Max Output Tokens'), findsOneWidget);
     expect(find.widgetWithText(TextField, 'Temperature'), findsOneWidget);
   });
@@ -72,9 +71,8 @@ void main() {
     await tester.enterText(find.byType(TextField).at(0), 'newModel');
     await tester.enterText(
         find.byType(TextField).at(1), 'newSystemInstruction');
-    await tester.enterText(find.byType(TextField).at(2), '5');
-    await tester.enterText(find.byType(TextField).at(3), '1500');
-    await tester.enterText(find.byType(TextField).at(4), '1.5');
+    await tester.enterText(find.byType(TextField).at(2), '1500');
+    await tester.enterText(find.byType(TextField).at(3), '1.5');
 
     await tester.tap(find.text('Update'));
     await tester.pumpAndSettle();
@@ -87,7 +85,6 @@ void main() {
         listen: false);
     expect(settingsState.model, 'newModel');
     expect(settingsState.systemInstruction, 'newSystemInstruction');
-    expect(settingsState.candidateCount, 5);
     expect(settingsState.maxOutputTokens, 1500);
     expect(settingsState.temperature, 1.5);
     expect(messageState.messages.length, 1);
