@@ -17,15 +17,16 @@ class TestChatbot:
         assert config.system_instruction == mock_config.system_instruction
         assert config.max_output_tokens == mock_config.max_output_tokens
         assert config.temperature == mock_config.temperature
-        assert config.safety_settings == Chatbot.SAFETY_SETTINGS
-        assert config.candidate_count == 1
+        assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
+        assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
 
     def test_chat_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
         config = mock_chatbot._chat_config
         assert config.system_instruction == mock_config.system_instruction
         assert config.max_output_tokens == mock_config.max_output_tokens
         assert config.temperature == mock_config.temperature
-        assert config.candidate_count == 1
+        assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
+        assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
         assert len(config.tools) == 1
         assert config.tools[0] in mock_chatbot._functions
 
@@ -34,7 +35,8 @@ class TestChatbot:
         assert config.system_instruction == mock_config.system_instruction
         assert config.max_output_tokens == mock_config.max_output_tokens
         assert config.temperature == mock_config.temperature
-        assert config.candidate_count == 1
+        assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
+        assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
         assert len(config.tools) == 1
         assert config.tools[0].google_search == GoogleSearch()
 

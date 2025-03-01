@@ -36,6 +36,8 @@ class Chatbot:
         SafetySetting(category=category, threshold=HarmBlockThreshold.BLOCK_ONLY_HIGH) for category in SAFETY_CATEGORIES
     ]
 
+    CANDIDATE_COUNT: int = 1
+
     def __init__(self, api_key: str, config: ChatbotConfig, functions: list[Callable]) -> None:
         self._client = Client(api_key=api_key)
         self._config = config
@@ -50,7 +52,7 @@ class Chatbot:
             max_output_tokens=self._config.max_output_tokens,
             temperature=self._config.temperature,
             safety_settings=self.SAFETY_SETTINGS,
-            candidate_count=1,
+            candidate_count=self.CANDIDATE_COUNT,
         )
 
     @property
