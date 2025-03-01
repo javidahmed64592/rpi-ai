@@ -55,8 +55,9 @@ class HttpHelper {
       return messages.map((message) {
         return {
           'text': message['message'].toString().trim(),
+          'timestamp': DateTime.fromMillisecondsSinceEpoch(
+              (message['timestamp'] * 1000).toInt()),
           'isUserMessage': message['is_user_message'],
-          'timestamp': DateTime.now(),
         };
       }).toList();
     }
@@ -102,8 +103,9 @@ class HttpHelper {
       return messages.map((message) {
         return {
           'text': message['message'].toString().trim(),
+          'timestamp': DateTime.fromMillisecondsSinceEpoch(
+              (message['timestamp'] * 1000).toInt()),
           'isUserMessage': message['is_user_message'],
-          'timestamp': DateTime.now(),
         };
       }).toList();
     }
@@ -126,8 +128,9 @@ class HttpHelper {
       return messages.map((message) {
         return {
           'text': message['message'].toString().trim(),
+          'timestamp': DateTime.fromMillisecondsSinceEpoch(
+              (message['timestamp'] * 1000).toInt()),
           'isUserMessage': message['is_user_message'],
-          'timestamp': DateTime.now(),
         };
       }).toList();
     }
@@ -158,8 +161,9 @@ class HttpHelper {
         final Map<String, dynamic> body = jsonDecode(response.body);
         return {
           'text': body['message'].toString().trim(),
+          'timestamp': DateTime.fromMillisecondsSinceEpoch(
+              (body['timestamp'] * 1000).toInt()),
           'isUserMessage': body['is_user_message'],
-          'timestamp': DateTime.now(),
         };
       }
 
@@ -200,6 +204,8 @@ class HttpHelper {
         final Map<String, dynamic> body = jsonDecode(response.body);
         return {
           'text': body['message'].toString().trim(),
+          'timestamp': DateTime.fromMillisecondsSinceEpoch(
+              (body['timestamp'] * 1000).toInt()),
           'bytes': body['bytes'],
         };
       }

@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from datetime import datetime
 from typing import ClassVar
 
 from google.genai import Client
@@ -99,7 +100,7 @@ class Chatbot:
         error_message = f"The previous message was blocked because it violates the following categories: {', '.join(blocked_categories)}."
         response = self._chat.send_message(error_message)
         reply = response.text
-        self._history.append(Message.model_message(reply))
+        self._history.append(Message.model_message(reply, int(datetime.now().timestamp())))
         return reply
 
     def get_config(self) -> ChatbotConfig:
@@ -109,7 +110,7 @@ class Chatbot:
         self._config = config
 
     def start_chat(self) -> None:
-        self._history = [Message.new_chat_message()]
+        self._history = [Message.new_chat_message(int(datetime.now().timestamp()))]
         self._chat = self._client.chats.create(
             model=self._config.model,
             config=self._chat_config,
@@ -118,10 +119,12 @@ class Chatbot:
 
     def send_message(self, text: str) -> Message:
         try:
+            user_message = Message.user_message(text, int(datetime.now().timestamp()))
+            self._history.append(user_message)
+
             response = self._chat.send_message(text)
-            self._history.append(Message.user_message(text))
-            self._history.append(Message.model_message(response.text))
-            return Message(message=response.text)
+            model_message = Message.model_message(response.text, int(datetime.now().timestamp()))
+            self._history.append(model_message)
         except (AttributeError, ValidationError) as e:
             msg = f"Failed to send message to chatbot: {e}"
             logger.exception(msg)
@@ -132,19 +135,25 @@ class Chatbot:
                 self._history.pop()
                 reply = "Failed to send message to chatbot!"
 
-            return Message(message=reply)
+            return Message(message=reply, timestamp=int(datetime.now().timestamp()))
         except ServerError:
-            return Message(message="Model overloaded! Please try again.")
+            self._history.pop()
+            return Message(message="Model overloaded! Please try again.", timestamp=int(datetime.now().timestamp()))
+        else:
+            return model_message
 
     def send_audio(self, audio_data: bytes) -> SpeechResponse:
         try:
             audio_request = audiobot.get_audio_request(audio_data)
+            user_message = Message.user_message(audio_request[0], int(datetime.now().timestamp()))
+            self._history.append(user_message)
+
             response = self._chat.send_message(audio_request)
-            reply = response.text
-            audio = audiobot.get_audio_bytes_from_text(reply.replace("*", ""))
-            self._history.append(Message.user_message(audio_request[0]))
-            self._history.append(Message.model_message(reply))
-            return SpeechResponse(bytes=audio, message=reply)
+            model_message = Message.model_message(response.text, int(datetime.now().timestamp()))
+            self._history.append(model_message)
+
+            audio = audiobot.get_audio_bytes_from_text(response.text)
+            return SpeechResponse(bytes=audio, message=response.text, timestamp=int(datetime.now().timestamp()))
         except (AttributeError, ValidationError) as e:
             msg = f"Failed to send audio to chatbot: {e}"
             logger.exception(msg)
@@ -156,12 +165,15 @@ class Chatbot:
                 reply = "Failed to send audio to chatbot!"
 
             audio = audiobot.get_audio_bytes_from_text(reply)
-            return SpeechResponse(bytes=audio, message=reply)
+            return SpeechResponse(bytes=audio, message=reply, timestamp=int(datetime.now().timestamp()))
         except ServerError:
+            self._history.pop()
             reply = "Model overloaded! Please try again."
             audio = audiobot.get_audio_bytes_from_text(reply)
-            return SpeechResponse(bytes=audio, message=reply)
+            return SpeechResponse(bytes=audio, message=reply, timestamp=int(datetime.now().timestamp()))
         except gTTSError as e:
+            self._history.pop()
+            self._history.pop()
             msg = f"A gTTSError occurred: {e}"
             logger.exception(msg)
-            return SpeechResponse(bytes="", message=str(e))
+            return SpeechResponse(bytes="", message=str(e), timestamp=int(datetime.now().timestamp()))

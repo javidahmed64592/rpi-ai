@@ -27,13 +27,13 @@ void main() {
     final messages = [
       {
         'text': 'Hello, this is a user message',
-        'isUserMessage': true,
         'timestamp': timestamp,
+        'isUserMessage': true,
       },
       {
         'text': 'Hello, this is a non-user message',
-        'isUserMessage': false,
         'timestamp': timestamp,
+        'isUserMessage': false,
       },
     ];
 
@@ -67,8 +67,8 @@ void main() {
         20,
         (index) => {
               'text': 'Message $index',
-              'isUserMessage': index % 2 == 0,
               'timestamp': DateTime.now(),
+              'isUserMessage': index % 2 == 0,
             });
     final scrollController = ScrollController();
 
