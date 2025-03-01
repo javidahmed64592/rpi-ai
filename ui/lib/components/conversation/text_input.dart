@@ -108,7 +108,8 @@ class _TextInputState extends State<TextInput> {
         Expanded(
           child: TextField(
             controller: textController,
-            maxLines: null,
+            minLines: 1,
+            maxLines: 6,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'Type a message...',

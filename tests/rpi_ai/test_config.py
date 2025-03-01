@@ -163,7 +163,6 @@ class TestChatbotConfig:
         config = ChatbotConfig.load("dummy_path")
         mock_read_ai_config.assert_called_once_with("dummy_path")
         assert config.model == "test-model"
-        assert config.candidate_count == config_data["candidate_count"]
         assert config.max_output_tokens == config_data["max_output_tokens"]
         assert config.temperature == config_data["temperature"]
 

@@ -90,7 +90,6 @@ class TestAIApp:
         new_config = {
             "model": "new-model",
             "system_instruction": "new-instruction",
-            "candidate_count": 3,
             "max_output_tokens": 100,
             "temperature": 0.9,
         }
@@ -114,7 +113,6 @@ class TestAIApp:
         new_config = {
             "model": "new-model",
             "system_instruction": "new-instruction",
-            "candidate_count": 3,
             "max_output_tokens": 100,
             "temperature": 0.9,
         }
