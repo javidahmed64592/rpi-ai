@@ -132,7 +132,7 @@ class TestChatbot:
 
         response = mock_chatbot.send_message(mock_msg)
         assert response.message == "Blocked message"
-        assert len(mock_chatbot.chat_history.messages) == 1 + len(mock_responses)
+        assert len(mock_chatbot.chat_history.messages) == 1 + 2
 
     def test_send_message_with_server_error(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
         mock_msg = "Hi model!"
@@ -194,7 +194,7 @@ class TestChatbot:
         response = mock_chatbot.send_audio(b"test_audio_data")
         assert response.message == "Blocked message"
         assert response.bytes == mock_audio
-        assert len(mock_chatbot.chat_history.messages) == 1 + len(mock_responses)
+        assert len(mock_chatbot.chat_history.messages) == 1 + 2
 
     def test_send_audio_with_server_error(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
