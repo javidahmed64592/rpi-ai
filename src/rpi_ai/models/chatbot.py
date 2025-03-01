@@ -1,8 +1,18 @@
 from collections.abc import Callable
+from datetime import datetime
+from typing import ClassVar
 
 from google.genai import Client
 from google.genai.errors import ServerError
-from google.genai.types import GenerateContentConfig, GoogleSearchRetrieval, Tool
+from google.genai.types import (
+    GenerateContentConfig,
+    GenerateContentResponse,
+    GoogleSearchRetrieval,
+    HarmBlockThreshold,
+    HarmCategory,
+    SafetySetting,
+    Tool,
+)
 from gtts import gTTSError
 from pydantic import ValidationError
 
@@ -15,6 +25,20 @@ logger = Logger(__name__)
 
 
 class Chatbot:
+    SAFETY_CATEGORIES: ClassVar[list[HarmCategory]] = [
+        HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY,
+        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        HarmCategory.HARM_CATEGORY_HARASSMENT,
+        HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    ]
+
+    SAFETY_SETTINGS: ClassVar[list[SafetySetting]] = [
+        SafetySetting(category=category, threshold=HarmBlockThreshold.BLOCK_ONLY_HIGH) for category in SAFETY_CATEGORIES
+    ]
+
+    CANDIDATE_COUNT: int = 1
+
     def __init__(self, api_key: str, config: ChatbotConfig, functions: list[Callable]) -> None:
         self._client = Client(api_key=api_key)
         self._config = config
@@ -26,9 +50,10 @@ class Chatbot:
     def _model_config(self) -> GenerateContentConfig:
         return GenerateContentConfig(
             system_instruction=self._config.system_instruction,
-            candidate_count=self._config.candidate_count,
             max_output_tokens=self._config.max_output_tokens,
             temperature=self._config.temperature,
+            safety_settings=self.SAFETY_SETTINGS,
+            candidate_count=self.CANDIDATE_COUNT,
         )
 
     @property
@@ -64,6 +89,20 @@ class Chatbot:
         )
         return response.text
 
+    def _extract_blocked_categories(self, response: GenerateContentResponse) -> list[str]:
+        blocked_categories = []
+        for safety_rating in response.candidates[0].safety_ratings:
+            if safety_rating.blocked:
+                blocked_categories.extend(safety_rating.category)
+        return blocked_categories
+
+    def _handle_blocked_message(self, blocked_categories: list[str]) -> str:
+        error_message = f"The previous message was blocked because it violates the following categories: {', '.join(blocked_categories)}."
+        response = self._chat.send_message(error_message)
+        reply = response.text
+        self._history.append(Message.model_message(reply, int(datetime.now().timestamp())))
+        return reply
+
     def get_config(self) -> ChatbotConfig:
         return self._config
 
@@ -71,7 +110,7 @@ class Chatbot:
         self._config = config
 
     def start_chat(self) -> None:
-        self._history = [Message.new_chat_message()]
+        self._history = [Message.new_chat_message(int(datetime.now().timestamp()))]
         self._chat = self._client.chats.create(
             model=self._config.model,
             config=self._chat_config,
@@ -80,39 +119,61 @@ class Chatbot:
 
     def send_message(self, text: str) -> Message:
         try:
+            user_message = Message.user_message(text, int(datetime.now().timestamp()))
+            self._history.append(user_message)
+
             response = self._chat.send_message(text)
-            self._history.append(Message.user_message(text))
-            self._history.append(Message.model_message(response.text))
-            return Message(message=response.text)
+            model_message = Message.model_message(response.text, int(datetime.now().timestamp()))
+            self._history.append(model_message)
         except (AttributeError, ValidationError) as e:
-            self._history.pop()
             msg = f"Failed to send message to chatbot: {e}"
             logger.exception(msg)
-            return Message(message="An error occurred! Please try again.")
+
+            if blocked_categories := self._extract_blocked_categories(response):
+                reply = self._handle_blocked_message(blocked_categories)
+            else:
+                self._history.pop()
+                reply = "Failed to send message to chatbot!"
+
+            return Message(message=reply, timestamp=int(datetime.now().timestamp()))
         except ServerError:
-            return Message(message="Model overloaded! Please try again.")
+            self._history.pop()
+            return Message(message="Model overloaded! Please try again.", timestamp=int(datetime.now().timestamp()))
+        else:
+            return model_message
 
     def send_audio(self, audio_data: bytes) -> SpeechResponse:
         try:
             audio_request = audiobot.get_audio_request(audio_data)
+            user_message = Message.user_message(audio_request[0], int(datetime.now().timestamp()))
+            self._history.append(user_message)
+
             response = self._chat.send_message(audio_request)
-            reply = response.text
-            audio = audiobot.get_audio_bytes_from_text(reply.replace("*", ""))
-            self._history.append(Message.user_message(audio_request[0]))
-            self._history.append(Message.model_message(response.text))
-            return SpeechResponse(bytes=audio, message=reply)
+            model_message = Message.model_message(response.text, int(datetime.now().timestamp()))
+            self._history.append(model_message)
+
+            audio = audiobot.get_audio_bytes_from_text(response.text)
+            return SpeechResponse(bytes=audio, message=response.text, timestamp=int(datetime.now().timestamp()))
         except (AttributeError, ValidationError) as e:
-            self._history.pop()
             msg = f"Failed to send audio to chatbot: {e}"
             logger.exception(msg)
-            reply = "Failed to send audio to chatbot!"
+
+            if blocked_categories := self._extract_blocked_categories(response):
+                reply = self._handle_blocked_message(blocked_categories)
+            else:
+                self._history.pop()
+                reply = "Failed to send audio to chatbot!"
+
             audio = audiobot.get_audio_bytes_from_text(reply)
-            return SpeechResponse(bytes=audio, message=reply)
+            return SpeechResponse(bytes=audio, message=reply, timestamp=int(datetime.now().timestamp()))
         except ServerError:
+            self._history.pop()
             reply = "Model overloaded! Please try again."
             audio = audiobot.get_audio_bytes_from_text(reply)
-            return SpeechResponse(bytes=audio, message=reply)
+            return SpeechResponse(bytes=audio, message=reply, timestamp=int(datetime.now().timestamp()))
         except gTTSError as e:
+            self._history.pop()
+            self._history.pop()
             msg = f"A gTTSError occurred: {e}"
             logger.exception(msg)
-            return SpeechResponse(bytes="", message=str(e))
+            return SpeechResponse(bytes="", message=str(e), timestamp=int(datetime.now().timestamp()))

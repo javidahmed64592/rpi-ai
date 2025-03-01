@@ -89,7 +89,6 @@ void main() {
     when(mockHttpHelper.getConfig(any, any)).thenAnswer((_) async => {
           'model': 'model',
           'systemInstruction': 'instruction',
-          'candidateCount': 1,
           'maxOutputTokens': 10,
           'temperature': 1.0,
         });

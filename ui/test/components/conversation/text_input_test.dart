@@ -59,8 +59,8 @@ void main() {
     when(mockAppState.authToken).thenReturn('token');
     when(mockHttpHelper.chat(any, any, any)).thenAnswer((_) async => {
           'text': 'response',
+          'timestamp': DateTime.now(),
           'isUserMessage': false,
-          'timestamp': DateTime.now()
         });
 
     await tester.pumpWidget(createTextInput());
@@ -97,8 +97,8 @@ void main() {
     when(mockAppState.authToken).thenReturn('token');
     when(mockHttpHelper.chat(any, any, any)).thenAnswer((_) async => {
           'text': 'response',
+          'timestamp': DateTime.now(),
           'isUserMessage': false,
-          'timestamp': DateTime.now()
         });
 
     await tester

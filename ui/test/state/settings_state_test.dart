@@ -15,7 +15,6 @@ void main() {
     test('initial values are correct', () {
       expect(settingsState.model, '');
       expect(settingsState.systemInstruction, '');
-      expect(settingsState.candidateCount, 1);
       expect(settingsState.maxOutputTokens, 1000);
       expect(settingsState.temperature, 1.0);
     });
@@ -24,13 +23,11 @@ void main() {
       settingsState.updateConfig({
         'model': 'newModel',
         'systemInstruction': 'newSystemInstruction',
-        'candidateCount': 2,
         'maxOutputTokens': 2000,
         'temperature': 2.0,
       });
       expect(settingsState.model, 'newModel');
       expect(settingsState.systemInstruction, 'newSystemInstruction');
-      expect(settingsState.candidateCount, 2);
       expect(settingsState.maxOutputTokens, 2000);
       expect(settingsState.temperature, 2.0);
     });

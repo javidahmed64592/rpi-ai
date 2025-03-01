@@ -17,8 +17,8 @@ void main() {
       home: Scaffold(
         body: MessageContainer(
           message: message,
-          isUserMessage: isUserMessage,
           timestamp: timestamp,
+          isUserMessage: isUserMessage,
         ),
       ),
     );
@@ -30,8 +30,8 @@ void main() {
     await tester.pumpWidget(
       createMessageContainer(
         message: 'Hello, this is a user message',
-        isUserMessage: true,
         timestamp: timestamp,
+        isUserMessage: true,
       ),
     );
 
@@ -60,8 +60,8 @@ void main() {
     await tester.pumpWidget(
       createMessageContainer(
         message: 'Hello, this is a non-user message',
-        isUserMessage: false,
         timestamp: timestamp,
+        isUserMessage: false,
       ),
     );
 
@@ -92,8 +92,8 @@ void main() {
       createMessageContainer(
         message:
             'This is **bold** text\n* Bullet point 1\n* Bullet point 2\nThis is ***bold and italic*** text',
-        isUserMessage: true,
         timestamp: timestamp,
+        isUserMessage: true,
       ),
     );
 

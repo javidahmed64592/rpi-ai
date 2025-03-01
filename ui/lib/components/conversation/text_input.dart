@@ -67,8 +67,8 @@ class _TextInputState extends State<TextInput> {
 
     final Map<String, dynamic> userMessageDict = {
       'text': userMessage,
+      'timestamp': DateTime.now(),
       'isUserMessage': true,
-      'timestamp': DateTime.now()
     };
 
     messageType.handleAddMessage(messageState, userMessageDict);
@@ -108,7 +108,8 @@ class _TextInputState extends State<TextInput> {
         Expanded(
           child: TextField(
             controller: textController,
-            maxLines: null,
+            minLines: 1,
+            maxLines: 6,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'Type a message...',
