@@ -7,14 +7,14 @@ import 'package:ui/helpers/text_format_helper.dart';
 
 class MessageContainer extends StatelessWidget {
   final String message;
-  final bool isUserMessage;
   final DateTime timestamp;
+  final bool isUserMessage;
 
   const MessageContainer({
     Key? key,
     required this.message,
-    required this.isUserMessage,
     required this.timestamp,
+    required this.isUserMessage,
   }) : super(key: key);
 
   @override

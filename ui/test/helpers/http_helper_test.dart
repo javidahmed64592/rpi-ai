@@ -90,8 +90,16 @@ void main() {
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
           'messages': [
-            {'message': 'Welcome', 'is_user_message': true},
-            {'message': 'Hello', 'is_user_message': false}
+            {
+              'message': 'Welcome',
+              'timestamp': 1678886400,
+              'is_user_message': true,
+            },
+            {
+              'message': 'Hello',
+              'timestamp': 1678886460,
+              'is_user_message': false,
+            }
           ]
         }),
         200));
@@ -100,13 +108,13 @@ void main() {
     expect(messages.length, 2);
     expect(messages[0], {
       'text': 'Welcome',
-      'isUserMessage': true,
       'timestamp': isA<DateTime>(),
+      'isUserMessage': true,
     });
     expect(messages[1], {
       'text': 'Hello',
-      'isUserMessage': false,
       'timestamp': isA<DateTime>(),
+      'isUserMessage': false,
     });
   });
 
@@ -190,6 +198,7 @@ void main() {
           'messages': [
             {
               'message': 'Config updated successfully',
+              'timestamp': 1678886400,
               'is_user_message': false
             },
           ]
@@ -199,8 +208,8 @@ void main() {
     final messages = await httpHelper.updateConfig(uri, authToken, config);
     expect(messages[0], {
       'text': 'Config updated successfully',
-      'isUserMessage': false,
       'timestamp': isA<DateTime>(),
+      'isUserMessage': false,
     });
   });
 
@@ -243,7 +252,11 @@ void main() {
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
           'messages': [
-            {'message': 'Chat restarted', 'is_user_message': false},
+            {
+              'message': 'Chat restarted',
+              'timestamp': 1678886400,
+              'is_user_message': false,
+            },
           ]
         }),
         200));
@@ -252,8 +265,8 @@ void main() {
     expect(messages.length, 1);
     expect(messages[0], {
       'text': 'Chat restarted',
-      'isUserMessage': false,
       'timestamp': isA<DateTime>(),
+      'isUserMessage': false,
     });
   });
 
@@ -288,12 +301,17 @@ void main() {
       },
       body: jsonEncode({'message': message}),
     )).thenAnswer((_) async => http.Response(
-        jsonEncode({'message': 'Hi', 'is_user_message': false}), 200));
+        jsonEncode({
+          'message': 'Hi',
+          'timestamp': 1678886400,
+          'is_user_message': false,
+        }),
+        200));
 
     expect(await httpHelper.chat(uri, authToken, message), {
       'text': 'Hi',
-      'isUserMessage': false,
       'timestamp': isA<DateTime>(),
+      'isUserMessage': false,
     });
   });
 

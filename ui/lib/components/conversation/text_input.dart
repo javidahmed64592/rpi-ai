@@ -67,8 +67,8 @@ class _TextInputState extends State<TextInput> {
 
     final Map<String, dynamic> userMessageDict = {
       'text': userMessage,
+      'timestamp': DateTime.now(),
       'isUserMessage': true,
-      'timestamp': DateTime.now()
     };
 
     messageType.handleAddMessage(messageState, userMessageDict);
