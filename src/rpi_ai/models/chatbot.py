@@ -149,10 +149,10 @@ class Chatbot:
             self._history.append(user_message)
 
             response = self._chat.send_message(audio_request)
-            audio = audiobot.get_audio_bytes_from_text(response.text)
             model_message = Message.model_message(response.text, int(datetime.now().timestamp()))
             self._history.append(model_message)
 
+            audio = audiobot.get_audio_bytes_from_text(response.text)
             return SpeechResponse(bytes=audio, message=response.text, timestamp=int(datetime.now().timestamp()))
         except (AttributeError, ValidationError) as e:
             msg = f"Failed to send audio to chatbot: {e}"
@@ -172,6 +172,7 @@ class Chatbot:
             audio = audiobot.get_audio_bytes_from_text(reply)
             return SpeechResponse(bytes=audio, message=reply, timestamp=int(datetime.now().timestamp()))
         except gTTSError as e:
+            self._history.pop()
             self._history.pop()
             msg = f"A gTTSError occurred: {e}"
             logger.exception(msg)

@@ -215,7 +215,7 @@ class TestChatbot:
     def test_send_audio_with_gtts_error(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
     ) -> None:
-        mock_chat_instance.send_message.return_value = MagicMock(parts=[MagicMock(text="Hi user!")])
+        mock_chat_instance.send_message.return_value = MagicMock(text="Hi user!")
         mock_get_audio_bytes_from_text.side_effect = gTTSError("gTTS error")
 
         response = mock_chatbot.send_audio(b"test_audio_data")
