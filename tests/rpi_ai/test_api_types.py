@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from google.genai.types import Content, Part
 
 from rpi_ai.api_types import Message, MessageList, SpeechResponse
@@ -5,18 +7,24 @@ from rpi_ai.api_types import Message, MessageList, SpeechResponse
 
 class TestMessage:
     def test_user_message(self) -> None:
-        message = Message.user_message("test_message")
+        timestamp = int(datetime.now().timestamp())
+        message = Message.user_message("test_message", timestamp)
         assert message.message == "test_message"
+        assert message.timestamp == timestamp
         assert message.is_user_message
 
     def test_model_message(self) -> None:
-        message = Message.model_message("test_message")
+        timestamp = int(datetime.now().timestamp())
+        message = Message.model_message("test_message", timestamp)
         assert message.message == "test_message"
+        assert message.timestamp == timestamp
         assert not message.is_user_message
 
     def test_new_chat_message(self) -> None:
-        message = Message.new_chat_message()
+        timestamp = int(datetime.now().timestamp())
+        message = Message.new_chat_message(timestamp)
         assert message.message == "What's on your mind today?"
+        assert message.timestamp == timestamp
         assert not message.is_user_message
 
 
@@ -53,7 +61,9 @@ class TestMessageList:
 
 class TestSpeechResponse:
     def test_from_dict(self) -> None:
-        data = {"message": "Hello, world!", "bytes": "audio_data"}
+        timestamp = int(datetime.now().timestamp())
+        data = {"bytes": "audio_data", "timestamp": timestamp, "message": "Hello, world!"}
         response = SpeechResponse(**data)
         assert response.message == "Hello, world!"
+        assert response.timestamp == timestamp
         assert response.bytes == "audio_data"
