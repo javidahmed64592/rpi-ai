@@ -92,130 +92,130 @@ class VybraSpire(TuyaDevice):
             VybraSpire.turn_on_uv_sterilisation,
         ]
 
-    @staticmethod
-    def get_current_temperature() -> str:
+    @classmethod
+    def get_current_temperature(cls) -> str:
         """Get the current temperature in the room."""
-        result = VybraSpire._get_value(VybraSpireOptions.CURRENT_TEMPERATURE.value)
+        result = cls._get_value(VybraSpireOptions.CURRENT_TEMPERATURE.value)
         return f"Current temperature: {result}"
 
-    @staticmethod
-    def turn_on() -> str:
+    @classmethod
+    def turn_on(cls) -> str:
         """Turn on the Vybra Spire (fan/heater) device."""
         bool_value = True
-        result = VybraSpire._set_value(VybraSpireOptions.POWER.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.POWER.value, bool_value)
         return f"Device power: {result}"
 
-    @staticmethod
-    def turn_off() -> str:
+    @classmethod
+    def turn_off(cls) -> str:
         """Turn off the Vybra Spire (fan/heater) device."""
         bool_value = False
-        result = VybraSpire._set_value(VybraSpireOptions.POWER.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.POWER.value, bool_value)
         return f"Device power: {result}"
 
-    @staticmethod
-    def set_heating_mode_cold() -> str:
+    @classmethod
+    def set_heating_mode_cold(cls) -> str:
         """
         Set the heating mode to cold.
         """
         bool_value = False
-        result = VybraSpire._set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
         return f"Heating mode: {result}"
 
-    @staticmethod
-    def set_heating_mode_hot() -> str:
+    @classmethod
+    def set_heating_mode_hot(cls) -> str:
         """
         Set the heating mode to hot.
         """
         bool_value = True
-        result = VybraSpire._set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.HEAT_MODE.value, bool_value)
         return f"Heating mode: {result}"
 
-    @staticmethod
-    def set_fan_mode_fresh() -> str:
+    @classmethod
+    def set_fan_mode_fresh(cls) -> str:
         """
         Set the fan mode to fresh.
         """
         mode = "fresh"
-        result = VybraSpire._set_value(VybraSpireOptions.FAN_MODE.value, mode)
+        result = cls._set_value(VybraSpireOptions.FAN_MODE.value, mode)
         return f"Fan mode: {result}"
 
-    @staticmethod
-    def set_fan_mode_close() -> str:
+    @classmethod
+    def set_fan_mode_close(cls) -> str:
         """
         Set the fan mode to close.
         """
         mode = "close"
-        result = VybraSpire._set_value(VybraSpireOptions.FAN_MODE.value, mode)
+        result = cls._set_value(VybraSpireOptions.FAN_MODE.value, mode)
         return f"Fan mode: {result}"
 
-    @staticmethod
-    def set_fan_mode_strong() -> str:
+    @classmethod
+    def set_fan_mode_strong(cls) -> str:
         """
         Set the fan mode to strong.
         """
         mode = "heavy"
-        result = VybraSpire._set_value(VybraSpireOptions.FAN_MODE.value, mode)
+        result = cls._set_value(VybraSpireOptions.FAN_MODE.value, mode)
         return f"Fan mode: {result}"
 
-    @staticmethod
-    def set_fan_mode_quiet() -> str:
+    @classmethod
+    def set_fan_mode_quiet(cls) -> str:
         """
         Set the fan mode to quiet.
         """
         mode = "sleep"
-        result = VybraSpire._set_value(VybraSpireOptions.FAN_MODE.value, mode)
+        result = cls._set_value(VybraSpireOptions.FAN_MODE.value, mode)
         return f"Fan mode: {result}"
 
-    @staticmethod
-    def turn_on_horizontal_wind() -> str:
+    @classmethod
+    def turn_on_horizontal_wind(cls) -> str:
         """
         Turn on the horizontal wind to rotate the device.
         """
         bool_value = True
-        result = VybraSpire._set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
         return f"Horizontal wind: {result}"
 
-    @staticmethod
-    def turn_off_horizontal_wind() -> str:
+    @classmethod
+    def turn_off_horizontal_wind(cls) -> str:
         """
         Turn off the horizontal wind to stop rotating the device.
         """
         bool_value = False
-        result = VybraSpire._set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.HORIZONTAL_WIND.value, bool_value)
         return f"Horizontal wind: {result}"
 
-    @staticmethod
-    def turn_on_sound() -> str:
+    @classmethod
+    def turn_on_sound(cls) -> str:
         """
         Turn on the sound.
         """
         bool_value = True
-        result = VybraSpire._set_value(VybraSpireOptions.SOUND.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.SOUND.value, bool_value)
         return f"Sound: {result}"
 
-    @staticmethod
-    def turn_off_sound() -> str:
+    @classmethod
+    def turn_off_sound(cls) -> str:
         """
         Turn off the sound.
         """
         bool_value = False
-        result = VybraSpire._set_value(VybraSpireOptions.SOUND.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.SOUND.value, bool_value)
         return f"Sound: {result}"
 
-    @staticmethod
-    def turn_on_uv_sterilisation() -> str:
+    @classmethod
+    def turn_on_uv_sterilisation(cls) -> str:
         """
         Turn on the UV sterilisation.
         """
         bool_value = True
-        result = VybraSpire._set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
         return f"UV sterilisation: {result}"
 
-    @staticmethod
-    def turn_off_uv_sterilisation() -> str:
+    @classmethod
+    def turn_off_uv_sterilisation(cls) -> str:
         """
         Turn off the UV sterilisation.
         """
         bool_value = False
-        result = VybraSpire._set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
+        result = cls._set_value(VybraSpireOptions.UV_STERILISATION.value, bool_value)
         return f"UV sterilisation: {result}"
