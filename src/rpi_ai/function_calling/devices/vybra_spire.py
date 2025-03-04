@@ -5,7 +5,7 @@ from enum import Enum
 
 import tinytuya
 
-from rpi_ai.function_calling.functions_list_base import FunctionsListBase
+from rpi_ai.function_calling.devices.tuya_device import TuyaDevice
 from rpi_ai.models.logger import Logger
 
 logger = Logger(__name__)
@@ -61,7 +61,7 @@ class VybraSpireOptions(Enum):
         raise ValueError(msg)
 
 
-class VybraSpire(FunctionsListBase):
+class VybraSpire(TuyaDevice):
     try:
         DEVICE = tinytuya.Device(
             dev_id=str(os.environ.get("VYBRA_SPIRE_ID")),
@@ -91,28 +91,6 @@ class VybraSpire(FunctionsListBase):
             VybraSpire.turn_off_uv_sterilisation,
             VybraSpire.turn_on_uv_sterilisation,
         ]
-
-    @staticmethod
-    def _get_value(index: str) -> str | bool | None:
-        try:
-            if status := VybraSpire.DEVICE.status():
-                dps: dict = status.get("dps", {})
-                return dps.get(index)
-        except Exception as e:
-            return f"Error when getting value: {e}"
-        else:
-            return "Failed to fetch device status!"
-
-    @staticmethod
-    def _set_value(index: str, new_val: str | bool) -> str | bool | None:
-        try:
-            if VybraSpire.DEVICE.status():
-                VybraSpire.DEVICE.set_value(index, new_val)
-                return VybraSpire._get_value(index)
-        except Exception as e:
-            return f"Error when setting value: {e}"
-        else:
-            return "Failed to fetch device status!"
 
     @staticmethod
     def get_current_temperature() -> str:
