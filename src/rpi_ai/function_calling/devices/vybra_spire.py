@@ -38,26 +38,25 @@ class VybraSpireOptions(Enum):
             "107": [False, True],  # UV sterilisation
         }
 
-    @staticmethod
-    def validate_option(option: VybraSpireOptions, value: int | str | bool) -> int | str | bool:
-        valid_options = VybraSpireOptions.get_valid_options()
+    def validate_option(self, value: int | str | bool) -> int | str | bool:
+        valid_options = self.get_valid_options()
 
-        if option.value not in valid_options:
-            msg = f"Invalid option: {option}"
+        if self.value not in valid_options:
+            msg = f"Invalid option: {self}"
             raise ValueError(msg)
 
         if not isinstance(value, int | str | bool):
-            msg = f"Invalid value type for {option}: {value}"
+            msg = f"Invalid value type for {self}: {value}"
             raise TypeError(msg)
 
-        valid_values = valid_options[option.value]
+        valid_values = valid_options[self.value]
         if isinstance(valid_values, tuple) and isinstance(value, int):
             if valid_values[0] <= value <= valid_values[1]:
                 return value
         elif isinstance(valid_values, list) and value in valid_values:
             return value
 
-        msg = f"Invalid value for {option}: {value}"
+        msg = f"Invalid value for {self}: {value}"
         raise ValueError(msg)
 
 
@@ -95,23 +94,22 @@ class VybraSpire(TuyaDevice):
     @classmethod
     def get_current_temperature(cls) -> str:
         """Get the current temperature in the room."""
-        result = cls._get_value(VybraSpireOptions.CURRENT_TEMPERATURE.value)
+        option = VybraSpireOptions.CURRENT_TEMPERATURE
+        result = cls._get_value(option.value)
         return f"Current temperature: {result}"
 
     @classmethod
     def turn_on(cls) -> str:
         """Turn on the Vybra Spire (fan/heater) device."""
         option = VybraSpireOptions.POWER
-        bool_value = True
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(True))
         return f"Device power: {result}"
 
     @classmethod
     def turn_off(cls) -> str:
         """Turn off the Vybra Spire (fan/heater) device."""
         option = VybraSpireOptions.POWER
-        bool_value = False
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(False))
         return f"Device power: {result}"
 
     @classmethod
@@ -120,8 +118,7 @@ class VybraSpire(TuyaDevice):
         Set the heating mode to cold.
         """
         option = VybraSpireOptions.HEAT_MODE
-        bool_value = False
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(False))
         return f"Heating mode: {result}"
 
     @classmethod
@@ -130,8 +127,7 @@ class VybraSpire(TuyaDevice):
         Set the heating mode to hot.
         """
         option = VybraSpireOptions.HEAT_MODE
-        bool_value = True
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(True))
         return f"Heating mode: {result}"
 
     @classmethod
@@ -140,8 +136,7 @@ class VybraSpire(TuyaDevice):
         Set the fan mode to fresh.
         """
         option = VybraSpireOptions.FAN_MODE
-        mode = "fresh"
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, mode))
+        result = cls._set_value(option.value, option.validate_option("fresh"))
         return f"Fan mode: {result}"
 
     @classmethod
@@ -150,8 +145,7 @@ class VybraSpire(TuyaDevice):
         Set the fan mode to close.
         """
         option = VybraSpireOptions.FAN_MODE
-        mode = "close"
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, mode))
+        result = cls._set_value(option.value, option.validate_option("close"))
         return f"Fan mode: {result}"
 
     @classmethod
@@ -160,8 +154,7 @@ class VybraSpire(TuyaDevice):
         Set the fan mode to strong.
         """
         option = VybraSpireOptions.FAN_MODE
-        mode = "heavy"
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, mode))
+        result = cls._set_value(option.value, option.validate_option("heavy"))
         return f"Fan mode: {result}"
 
     @classmethod
@@ -170,8 +163,7 @@ class VybraSpire(TuyaDevice):
         Set the fan mode to quiet.
         """
         option = VybraSpireOptions.FAN_MODE
-        mode = "sleep"
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, mode))
+        result = cls._set_value(option.value, option.validate_option("sleep"))
         return f"Fan mode: {result}"
 
     @classmethod
@@ -180,8 +172,7 @@ class VybraSpire(TuyaDevice):
         Turn on the horizontal wind to rotate the device.
         """
         option = VybraSpireOptions.HORIZONTAL_WIND
-        bool_value = True
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(True))
         return f"Horizontal wind: {result}"
 
     @classmethod
@@ -190,8 +181,7 @@ class VybraSpire(TuyaDevice):
         Turn off the horizontal wind to stop rotating the device.
         """
         option = VybraSpireOptions.HORIZONTAL_WIND
-        bool_value = False
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(False))
         return f"Horizontal wind: {result}"
 
     @classmethod
@@ -200,8 +190,7 @@ class VybraSpire(TuyaDevice):
         Turn on the sound.
         """
         option = VybraSpireOptions.SOUND
-        bool_value = True
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(True))
         return f"Sound: {result}"
 
     @classmethod
@@ -210,8 +199,7 @@ class VybraSpire(TuyaDevice):
         Turn off the sound.
         """
         option = VybraSpireOptions.SOUND
-        bool_value = False
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(False))
         return f"Sound: {result}"
 
     @classmethod
@@ -220,8 +208,7 @@ class VybraSpire(TuyaDevice):
         Turn on the UV sterilisation.
         """
         option = VybraSpireOptions.UV_STERILISATION
-        bool_value = True
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(True))
         return f"UV sterilisation: {result}"
 
     @classmethod
@@ -230,6 +217,5 @@ class VybraSpire(TuyaDevice):
         Turn off the UV sterilisation.
         """
         option = VybraSpireOptions.UV_STERILISATION
-        bool_value = False
-        result = cls._set_value(option.value, VybraSpireOptions.validate_option(option, bool_value))
+        result = cls._set_value(option.value, option.validate_option(False))
         return f"UV sterilisation: {result}"
