@@ -20,8 +20,8 @@ class TuyaDevice(FunctionsListBase):
                 local_key=local_key,
                 version=version,
             )
-            if not cls.DEVICE.status():
-                msg = "Failed to fetch device status!"
+            if error := cls.DEVICE.status().get("Error"):
+                msg = f"Error when initialising device: {error}"
                 logger.error(msg)
         except Exception as e:
             msg = f"Error when initialising device: {e}"
