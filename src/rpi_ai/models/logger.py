@@ -20,3 +20,8 @@ class Logger:
 
     def exception(self, msg: str) -> None:
         self._logger.exception(msg.strip())
+
+    @staticmethod
+    def suppress_logging(package_name: str) -> None:
+        package_logger = logging.getLogger(package_name)
+        package_logger.setLevel(logging.CRITICAL)

@@ -6,6 +6,7 @@ from rpi_ai.function_calling.functions_list_base import FunctionsListBase
 from rpi_ai.models.logger import Logger
 
 logger = Logger(__name__)
+Logger.suppress_logging("tinytuya")
 
 
 class TuyaDevice(FunctionsListBase):
