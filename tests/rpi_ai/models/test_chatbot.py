@@ -91,7 +91,6 @@ class TestChatbot:
                 candidate_count=1,
                 tools=mock_chatbot._functions,
             ),
-            history=mock_chatbot.chat_history.as_contents_list,
         )
         assert len(mock_chatbot.chat_history.messages) == 1
 
