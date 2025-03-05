@@ -114,7 +114,6 @@ class Chatbot:
         self._chat = self._client.chats.create(
             model=self._config.model,
             config=self._chat_config,
-            history=self.chat_history.as_contents_list,
         )
 
     def send_message(self, text: str) -> Message:
