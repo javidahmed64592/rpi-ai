@@ -26,6 +26,7 @@ dependencies = [
     "python-dotenv",
     "pydantic",
     "psutil",
+    "tinytuya",
 ]
 
 [project.optional-dependencies]
@@ -115,6 +116,7 @@ select = [
 ignore = [
     "E501",
     "E741",
+    "FBT003",
     "G004",
     "ISC001",
     "N999",
@@ -144,6 +146,7 @@ module = [
     "gtts.*",
     "psutil.*",
     "rpi_ai.*",
+    "tinytuya.*",
     "waitress.*",
 ]
 ignore_missing_imports = true

@@ -5,6 +5,22 @@ if [ -z "${GEMINI_API_KEY:-}" ]; then
     read -p "(Gemini) Enter Gemini API key: " GEMINI_API_KEY
 fi
 
+if [ -z "${VYBRA_SPIRE_ID:-}" ]; then
+    read -p "(Tuya) Enter Vybra Spire ID: " VYBRA_SPIRE_ID
+fi
+
+if [ -z "${VYBRA_SPIRE_ADDRESS:-}" ]; then
+    read -p "(Tuya) Enter Vybra Spire Address: " VYBRA_SPIRE_ADDRESS
+fi
+
+if [ -z "${VYBRA_SPIRE_KEY:-}" ]; then
+    read -p "(Tuya) Enter Vybra Spire Local Key: " VYBRA_SPIRE_KEY
+fi
+
+if [ -z "${VYBRA_SPIRE_VERSION:-}" ]; then
+    read -p "(Tuya) Enter Vybra Spire Version: " VYBRA_SPIRE_VERSION
+fi
+
 WD=$(pwd)
 VENV_NAME="venv"
 EXE_NAME="rpi-ai"
@@ -64,6 +80,10 @@ cat > "${EXE_PATH}" << EOF
 #!/bin/bash
 export RPI_AI_PATH=${WD}
 export GEMINI_API_KEY=${GEMINI_API_KEY}
+export VYBRA_SPIRE_ID=${VYBRA_SPIRE_ID}
+export VYBRA_SPIRE_ADDRESS=${VYBRA_SPIRE_ADDRESS}
+export VYBRA_SPIRE_KEY=${VYBRA_SPIRE_KEY}
+export VYBRA_SPIRE_VERSION=${VYBRA_SPIRE_VERSION}
 "${BIN_DIR}/run_rpi_ai"
 EOF
 chmod +x "${EXE_PATH}"
