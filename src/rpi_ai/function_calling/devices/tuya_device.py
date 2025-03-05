@@ -3,10 +3,29 @@ from __future__ import annotations
 import tinytuya
 
 from rpi_ai.function_calling.functions_list_base import FunctionsListBase
+from rpi_ai.models.logger import Logger
+
+logger = Logger(__name__)
 
 
 class TuyaDevice(FunctionsListBase):
     DEVICE: tinytuya.Device
+
+    @classmethod
+    def _init_device(cls, dev_id: str, address: str, local_key: str, version: float) -> None:
+        try:
+            cls.DEVICE = tinytuya.Device(
+                dev_id=dev_id,
+                address=address,
+                local_key=local_key,
+                version=version,
+            )
+            if not cls.DEVICE.status():
+                msg = "Failed to fetch device status!"
+                logger.error(msg)
+        except Exception as e:
+            msg = f"Error when initialising device: {e}"
+            logger.exception(msg)
 
     @classmethod
     def _get_value(cls, index: str) -> str | bool | None:

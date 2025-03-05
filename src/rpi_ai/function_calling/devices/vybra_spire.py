@@ -3,12 +3,7 @@ from __future__ import annotations
 import os
 from enum import Enum
 
-import tinytuya
-
 from rpi_ai.function_calling.devices.tuya_device import TuyaDevice
-from rpi_ai.models.logger import Logger
-
-logger = Logger(__name__)
 
 
 class VybraSpireOptions(Enum):
@@ -61,15 +56,12 @@ class VybraSpireOptions(Enum):
 
 
 class VybraSpire(TuyaDevice):
-    try:
-        DEVICE = tinytuya.Device(
-            dev_id=str(os.environ.get("VYBRA_SPIRE_ID")),
-            address=str(os.environ.get("VYBRA_SPIRE_ADDRESS")),
-            local_key=str(os.environ.get("VYBRA_SPIRE_KEY")),
-            version=os.environ.get("VYBRA_SPIRE_VERSION"),
-        )
-    except Exception:
-        logger.exception("Failed to initialise Vybra Spire device.")
+    TuyaDevice._init_device(
+        dev_id=str(os.environ.get("VYBRA_SPIRE_ID")),
+        address=str(os.environ.get("VYBRA_SPIRE_ADDRESS")),
+        local_key=str(os.environ.get("VYBRA_SPIRE_KEY")),
+        version=os.environ.get("VYBRA_SPIRE_VERSION"),
+    )
 
     def __init__(self) -> None:
         super().__init__()
