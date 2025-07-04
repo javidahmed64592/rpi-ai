@@ -2,11 +2,11 @@
 set -eu
 
 if [ -z "${GEMINI_API_KEY:-}" ]; then
-    read -p "(Gemini) Enter Gemini API key: " GEMINI_API_KEY
+    read -p "Enter Gemini API key: " GEMINI_API_KEY
 fi
 
 WD=$(pwd)
-VENV_NAME="venv"
+VENV_NAME=".venv"
 EXE_NAME="rpi-ai"
 CONFIG_FILE="ai_config.json"
 LOG_FILE="rpi_ai.log"
@@ -51,12 +51,12 @@ fi
 
 rm -rf "${CONFIG_DIR}"
 
-echo "Creating environment '${VENV_NAME}'..."
-python -m venv "${VENV_NAME}"
+echo "Creating virtual environment..."
+uv venv ${VENV_NAME}
 
 echo "Installing from wheel..."
-WHEEL_FILE=$(find "${WD}" -name "rpi_ai-*-py3-none-any.whl")
-"${BIN_DIR}/pip" install "${WHEEL_FILE}"
+WHEEL_FILE=$(find "${WD}" -name "${EXE_NAME/-/_}-*-py3-none-any.whl")
+uv pip install "${WHEEL_FILE}"
 rm "${WHEEL_FILE}"
 
 echo "Creating API executable..."
@@ -64,7 +64,7 @@ cat > "${EXE_PATH}" << EOF
 #!/bin/bash
 export RPI_AI_PATH=${WD}
 export GEMINI_API_KEY=${GEMINI_API_KEY}
-"${BIN_DIR}/${EXE_NAME}"
+${BIN_DIR}/${EXE_NAME}
 EOF
 chmod +x "${EXE_PATH}"
 
@@ -161,7 +161,6 @@ EOF
 chmod +x "${UNINSTALL_PATH}"
 
 cat > "${README_PATH}" << EOF
-===================================================================================================
 RPi-AI has been installed successfully.
 The AI executable is located at: '${EXE_PATH}'
 Configure the AI model: '${CONFIG_PATH}'
@@ -172,9 +171,13 @@ To stop the service, run: './service/${STOP_SERVICE_FILE}'
 To view the logs: 'cat logs/${LOG_FILE}'
 
 To uninstall, run: './${UNINSTALL_FILE}'
-===================================================================================================
 EOF
 
+TERMINAL_WIDTH=$(tput cols 2>/dev/null || echo 80)
+SEPARATOR=$(printf '=%.0s' $(seq 1 $TERMINAL_WIDTH))
+
+echo "${SEPARATOR}"
 cat "${README_PATH}"
+echo "${SEPARATOR}"
 
 rm -- "$0"
