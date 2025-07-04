@@ -59,7 +59,7 @@ class TestChatbot:
         assert result == "search results"
 
     def test_extract_blocked_categories(self, mock_chatbot: Chatbot) -> None:
-        mock_response = MagicMock(candidates=[MagicMock(safety_ratings=[MagicMock(blocked=True, category=["test"])])])
+        mock_response = MagicMock(candidates=[MagicMock(safety_ratings=[MagicMock(blocked=True, category="test")])])
         blocked_categories = mock_chatbot._extract_blocked_categories(mock_response)
         assert blocked_categories == ["test"]
 
