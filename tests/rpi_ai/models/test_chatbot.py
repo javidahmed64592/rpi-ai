@@ -136,7 +136,9 @@ class TestChatbot:
     def test_send_message_with_server_error(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
         mock_msg = "Hi model!"
         mock_chat_instance.send_message.side_effect = ServerError(
-            code=503, response=MagicMock(body_segments=[{"error": {"message": "Model overloaded!"}}])
+            code=503,
+            response_json={"error": {"message": "Model overloaded!"}},
+            response=MagicMock(body_segments=[{"error": {"message": "Model overloaded!"}}]),
         )
 
         response = mock_chatbot.send_message(mock_msg)
@@ -199,7 +201,9 @@ class TestChatbot:
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
     ) -> None:
         mock_chat_instance.send_message.side_effect = ServerError(
-            code=503, response=MagicMock(body_segments=[{"error": {"message": "Model overloaded!"}}])
+            code=503,
+            response_json={"error": {"message": "Model overloaded!"}},
+            response=MagicMock(body_segments=[{"error": {"message": "Model overloaded!"}}]),
         )
 
         mock_audio = "Model overloaded! Please try again."

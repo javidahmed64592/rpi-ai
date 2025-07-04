@@ -45,6 +45,9 @@ class MessageList:
         msgs = []
         for content in contents:
             try:
+                if not content.parts or not content.parts[0].text:
+                    continue
+
                 if content.role == "user":
                     msg = Message.user_message(content.parts[0].text.strip(), int(datetime.now().timestamp()))
                 else:
