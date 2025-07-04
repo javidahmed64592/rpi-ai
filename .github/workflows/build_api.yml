@@ -57,7 +57,7 @@ jobs:
           cp -r config release/config
           chmod +x release/install_${PACKAGE_NAME}.sh
 
-          mv release ${PACKAGE_NAME}
+          mv release "${PACKAGE_NAME}"
 
           echo "${PACKAGE_NAME}/"
           ls -l ${PACKAGE_NAME}/
