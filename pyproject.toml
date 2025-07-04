@@ -16,16 +16,17 @@ authors = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
     "flask",
-    "waitress",
     "google-genai",
     "gTTS",
-    "python-dotenv",
-    "pydantic",
     "psutil",
+    "pydantic",
+    "python-dotenv",
+    "waitress",
 ]
 
 [project.optional-dependencies]
@@ -37,11 +38,11 @@ dev = [
     "tomli"
 ]
 
-[project.scripts]
-rpi-ai = "rpi_ai.main:main"
-
 [project.urls]
 repository = "https://github.com/javidahmed64592/rpi-ai"
+
+[project.scripts]
+rpi-ai = "rpi_ai.main:main"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -91,6 +92,7 @@ select = [
     "ASYNC",
     "B",
     "C4",
+    "D",
     "E",
     "EM",
     "F",
@@ -114,6 +116,8 @@ select = [
     "YTT",
 ]
 ignore = [
+    "D203",
+    "D213",
     "E501",
     "E741",
     "G004",
