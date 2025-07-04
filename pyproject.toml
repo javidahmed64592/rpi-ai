@@ -37,7 +37,7 @@ dev = [
 ]
 
 [project.scripts]
-run_rpi_ai = "rpi_ai.main:main"
+rpi-ai = "rpi_ai.main:main"
 
 [project.urls]
 repository = "https://github.com/javidahmed64592/rpi-ai"

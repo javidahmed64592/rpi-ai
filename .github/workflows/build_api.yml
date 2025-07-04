@@ -99,13 +99,18 @@ jobs:
             exit 1
           fi
 
+          if [ -f "$(find . -name 'rpi_ai-*-py3-none-any.whl')" ]; then
+            echo "Wheel file not removed"
+            exit 1
+          fi
+
           if [ ! -d "venv" ]; then
             echo "Virtual environment not found"
             exit 1
           fi
 
           if [ ! -f "rpi-ai" ]; then
-            echo "API executabe not found"
+            echo "API executable not found"
             exit 1
           fi
 

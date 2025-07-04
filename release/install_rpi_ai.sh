@@ -64,7 +64,7 @@ cat > "${EXE_PATH}" << EOF
 #!/bin/bash
 export RPI_AI_PATH=${WD}
 export GEMINI_API_KEY=${GEMINI_API_KEY}
-"${BIN_DIR}/run_rpi_ai"
+"${BIN_DIR}/${EXE_NAME}"
 EOF
 chmod +x "${EXE_PATH}"
 
