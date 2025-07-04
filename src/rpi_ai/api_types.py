@@ -47,11 +47,13 @@ class MessageList:
             try:
                 if not content.parts or not content.parts[0].text:
                     continue
-
-                if content.role == "user":
-                    msg = Message.user_message(content.parts[0].text.strip(), int(datetime.now().timestamp()))
-                else:
-                    msg = Message.model_message(content.parts[0].text.strip(), int(datetime.now().timestamp()))
+                match content.role:
+                    case "user":
+                        msg = Message.user_message(content.parts[0].text.strip(), int(datetime.now().timestamp()))
+                    case "model":
+                        msg = Message.model_message(content.parts[0].text.strip(), int(datetime.now().timestamp()))
+                    case _:
+                        continue
 
                 msgs.append(msg)
             except (AttributeError, IndexError):
