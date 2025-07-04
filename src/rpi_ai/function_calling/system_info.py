@@ -31,13 +31,13 @@ class SystemInfo(FunctionsListBase):
 
     @staticmethod
     def update_and_check_packages() -> dict:
-        """
-        Update the list of installed packages and check for updated packages.
+        """Update the list of installed packages and check for updated packages.
 
         `sudo apt update` and `sudo apt list --upgradable`
 
         Returns:
             dict: The output of the package check command.
+
         """
         update_commands = ["sudo", "apt", "update"]
         check_commands = ["sudo", "apt", "list", "--upgradable"]
@@ -52,13 +52,13 @@ class SystemInfo(FunctionsListBase):
 
     @staticmethod
     def upgrade_packages() -> dict:
-        """
-        Upgrade all packages.
+        """Upgrade all packages.
 
         `sudo apt upgrade -y`
 
         Returns:
             dict: The output of the package upgrade command.
+
         """
         commands = ["sudo", "apt", "upgrade", "-y"]
         try:
@@ -71,13 +71,13 @@ class SystemInfo(FunctionsListBase):
 
     @staticmethod
     def auto_remove_packages() -> dict:
-        """
-        Remove unused packages.
+        """Remove unused packages.
 
         `sudo apt autoremove -y`
 
         Returns:
             dict: The output of the package autoremove command.
+
         """
         commands = ["sudo", "apt", "autoremove", "-y"]
         try:
@@ -90,11 +90,11 @@ class SystemInfo(FunctionsListBase):
 
     @staticmethod
     def get_os_info() -> dict:
-        """
-        Get the operating system information.
+        """Get the operating system information.
 
         Returns:
             dict: A dictionary containing the OS information.
+
         """
         return {
             "system": platform.system(),
@@ -107,45 +107,45 @@ class SystemInfo(FunctionsListBase):
 
     @staticmethod
     def get_hostname() -> str:
-        """
-        Get the system hostname.
+        """Get the system hostname.
 
         Returns:
             str: The system hostname.
+
         """
         return socket.gethostname()
 
     @staticmethod
     def get_uptime() -> str:
-        """
-        Get the system uptime.
+        """Get the system uptime.
 
         Returns:
             str: The system uptime as a string.
+
         """
         boot_time = datetime.fromtimestamp(psutil.boot_time())
         return str(datetime.now() - boot_time)
 
     @staticmethod
     def get_running_processes() -> dict:
-        """
-        Get the running processes.
+        """Get the running processes.
 
         Returns:
             dict: A dictionary of running processes with PID as keys.
+
         """
         return {p.pid: p.info for p in psutil.process_iter(["pid", "name", "username"])}
 
     @staticmethod
     def get_process_name_by_pid(pid: int) -> str:
-        """
-        Get the name of a running process based on its PID.
+        """Get the name of a running process based on its PID.
 
         Args:
             pid (int): The process ID.
 
         Returns:
             str: The name of the process.
+
         """
         pid = int(pid)
         try:
@@ -157,21 +157,21 @@ class SystemInfo(FunctionsListBase):
 
     @staticmethod
     def get_cpu_percent() -> float:
-        """
-        Get the CPU usage percentage.
+        """Get the CPU usage percentage.
 
         Returns:
             float: The CPU usage percentage.
+
         """
         return psutil.cpu_percent(interval=1)
 
     @staticmethod
     def get_memory_usage() -> dict:
-        """
-        Get the memory usage.
+        """Get the memory usage.
 
         Returns:
             dict: A dictionary containing memory usage information.
+
         """
         virtual_memory = psutil.virtual_memory()
         return {
@@ -183,11 +183,11 @@ class SystemInfo(FunctionsListBase):
 
     @staticmethod
     def get_disk_usage() -> dict:
-        """
-        Get the disk usage.
+        """Get the disk usage.
 
         Returns:
             dict: A dictionary containing disk usage information.
+
         """
         disk_usage = psutil.disk_usage("/")
         return {
@@ -199,12 +199,12 @@ class SystemInfo(FunctionsListBase):
 
     @staticmethod
     def get_temperature() -> float | None:
-        """
-        Get the CPU temperature in degrees Celsius.
+        """Get the CPU temperature in degrees Celsius.
 
         Returns:
             float: The CPU temperature in degrees Celsius.
             `None` is returned if the temperature cannot be retrieved.
+
         """
         try:
             return psutil.sensors_temperatures()["cpu_thermal"][0].current

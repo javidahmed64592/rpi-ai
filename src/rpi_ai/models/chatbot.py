@@ -73,14 +73,14 @@ class Chatbot:
         return MessageList(self._history)
 
     def web_search(self, query: str) -> str:
-        """
-        Search the web for the given query.
+        """Search the web for the given query.
 
         Args:
             query (str): The search query.
 
         Returns:
             str: The search results.
+
         """
         response = self._client.models.generate_content(
             contents=query,
