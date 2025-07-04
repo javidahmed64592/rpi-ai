@@ -52,7 +52,7 @@ jobs:
       - name: Prepare release directory
         run: |
           PACKAGE_NAME="rpi_ai"
-          WHEEL_FILE=$(find . -name '${PACKAGE_NAME}-*-py3-none-any.whl')
+          WHEEL_FILE=$(find . -name "${PACKAGE_NAME}-*-py3-none-any.whl")
           mv ${WHEEL_FILE} "release/${WHEEL_FILE}"
           cp -r config release/config
           chmod +x release/install_${PACKAGE_NAME}.sh
