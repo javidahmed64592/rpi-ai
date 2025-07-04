@@ -634,6 +634,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "ruff" },
+    { name = "tomli" },
 ]
 
 [package.metadata]
@@ -648,6 +649,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'" },
     { name = "python-dotenv" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "tomli", marker = "extra == 'dev'" },
     { name = "waitress" },
 ]
 provides-extras = ["dev"]
