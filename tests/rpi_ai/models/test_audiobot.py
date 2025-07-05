@@ -1,3 +1,5 @@
+"""Unit tests for the rpi_ai.models.audiobot module."""
+
 import base64
 from io import BytesIO
 from unittest.mock import MagicMock
@@ -14,6 +16,7 @@ from rpi_ai.models.audiobot import (
 
 
 def test_get_audio_request() -> None:
+    """Test the get_audio_request function."""
     audio_data = b"test_audio_data"
     expected_result = [
         "Respond to the voice message.",
@@ -27,6 +30,7 @@ def test_get_audio_request() -> None:
 
 
 def test_get_audio_bytes_from_text(mock_gtts: MagicMock) -> None:
+    """Test the get_audio_bytes_from_text function."""
     text = "Hello, world!"
     mock_audio_fp = BytesIO()
     mock_audio_fp.write(b"test_audio_bytes")
@@ -51,6 +55,7 @@ def test_get_audio_bytes_from_text(mock_gtts: MagicMock) -> None:
 
 
 def test_preprocess_remove_asterisk() -> None:
+    """Test the preprocess_remove_asterisk function."""
     text = "Hello *world*!"
     expected_result = "Hello world!"
     result = preprocess_remove_asterisk(text)
@@ -58,6 +63,7 @@ def test_preprocess_remove_asterisk() -> None:
 
 
 def test_preprocess_remove_emojis() -> None:
+    """Test the preprocess_remove_emojis function."""
     text = "Hello 🌍!"
     expected_result = "Hello !"
     result = preprocess_remove_emojis(text)
