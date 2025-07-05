@@ -12,8 +12,7 @@ logger = Logger(__name__)
 
 
 class SystemInfo(FunctionsListBase):
-    def __init__(self) -> None:
-        super().__init__()
+    def setup_functions(self) -> None:
         self.functions = [
             SystemInfo.update_and_check_packages,
             SystemInfo.upgrade_packages,
