@@ -4,13 +4,12 @@ import json
 import os
 import secrets
 from pathlib import Path
+import logging
 
 from dotenv import load_dotenv
 from pydantic.dataclasses import dataclass
 
-from rpi_ai.models.logger import Logger
-
-logger = Logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Config:

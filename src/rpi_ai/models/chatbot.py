@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 from datetime import datetime
 from typing import Any, ClassVar
@@ -19,9 +20,8 @@ from pydantic import ValidationError
 from rpi_ai.api_types import Message, MessageList, SpeechResponse
 from rpi_ai.config import ChatbotConfig
 from rpi_ai.models import audiobot
-from rpi_ai.models.logger import Logger
 
-logger = Logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Chatbot:

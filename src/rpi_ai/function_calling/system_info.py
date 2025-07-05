@@ -1,3 +1,4 @@
+import logging
 import platform
 import socket
 import subprocess
@@ -6,9 +7,8 @@ from datetime import datetime
 import psutil
 
 from rpi_ai.function_calling.functions_list_base import FunctionsListBase
-from rpi_ai.models.logger import Logger
 
-logger = Logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class SystemInfo(FunctionsListBase):
