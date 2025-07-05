@@ -1,3 +1,5 @@
+"""Chatbot implementation for the RPi AI application."""
+
 import logging
 from collections.abc import Callable
 from datetime import datetime
@@ -25,6 +27,8 @@ logger = logging.getLogger(__name__)
 
 
 class Chatbot:
+    """Chatbot for handling AI conversations and audio interactions."""
+
     SAFETY_CATEGORIES: ClassVar[list[HarmCategory]] = [
         HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY,
         HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
@@ -40,6 +44,15 @@ class Chatbot:
     CANDIDATE_COUNT: int = 1
 
     def __init__(self, api_key: str, config: ChatbotConfig, functions: list[Callable[..., Any]]) -> None:
+        """Initialize the chatbot with API key, configuration, and functions.
+
+        :param str api_key:
+            Google AI API key
+        :param ChatbotConfig config:
+            Chatbot configuration
+        :param list[Callable[..., Any]] functions:
+            List of available functions
+        """
         self._client = Client(api_key=api_key)
         self._config = config
         self._functions: list[Tool | Callable[..., Any]] = [*functions, self.web_search]
@@ -48,6 +61,11 @@ class Chatbot:
 
     @property
     def _model_config(self) -> GenerateContentConfig:
+        """Get base model configuration.
+
+        :return GenerateContentConfig:
+            Model configuration
+        """
         return GenerateContentConfig(
             system_instruction=self._config.system_instruction,
             max_output_tokens=self._config.max_output_tokens,
@@ -58,29 +76,42 @@ class Chatbot:
 
     @property
     def _chat_config(self) -> GenerateContentConfig:
+        """Get chat configuration with functions.
+
+        :return GenerateContentConfig:
+            Chat configuration
+        """
         _config = self._model_config
         _config.tools = self._functions
         return _config
 
     @property
     def _web_search_config(self) -> GenerateContentConfig:
+        """Get web search configuration.
+
+        :return GenerateContentConfig:
+            Web search configuration
+        """
         _config = self._model_config
         _config.tools = [Tool(google_search=GoogleSearch())]  # type: ignore[arg-type]
         return _config
 
     @property
     def chat_history(self) -> MessageList:
+        """Get chat history as MessageList.
+
+        :return MessageList:
+            Current chat history
+        """
         return MessageList(self._history)
 
     def web_search(self, query: str) -> str:
         """Search the web for the given query.
 
-        Args:
-            query (str): The search query.
-
-        Returns:
-            str: The search results.
-
+        :param str query:
+            The search query
+        :return str:
+            The search results
         """
         response = self._client.models.generate_content(
             contents=query,
@@ -90,6 +121,13 @@ class Chatbot:
         return response.text or ""
 
     def _extract_blocked_categories(self, response: GenerateContentResponse) -> list[str]:
+        """Extract blocked safety categories from response.
+
+        :param GenerateContentResponse response:
+            Response to check for blocked categories
+        :return list[str]:
+            List of blocked category names
+        """
         if not (response.candidates and response.candidates[0].safety_ratings):
             return []
 
@@ -100,6 +138,13 @@ class Chatbot:
         ]
 
     def _handle_blocked_message(self, blocked_categories: list[str]) -> str:
+        """Handle blocked message by generating error response.
+
+        :param list[str] blocked_categories:
+            List of blocked categories
+        :return str:
+            Error message response
+        """
         error_message = f"The previous message was blocked because it violates the following categories: {', '.join(blocked_categories)}."
         response = self._chat.send_message(error_message)
         reply = response.text or "Unable to process blocked message."
@@ -107,12 +152,23 @@ class Chatbot:
         return reply
 
     def get_config(self) -> ChatbotConfig:
+        """Get current chatbot configuration.
+
+        :return ChatbotConfig:
+            Current configuration
+        """
         return self._config
 
     def update_config(self, config: ChatbotConfig) -> None:
+        """Update chatbot configuration.
+
+        :param ChatbotConfig config:
+            New configuration
+        """
         self._config = config
 
     def start_chat(self) -> None:
+        """Start a new chat session."""
         self._history = [Message.new_chat_message(int(datetime.now().timestamp()))]
         self._chat = self._client.chats.create(
             model=self._config.model,
@@ -120,6 +176,13 @@ class Chatbot:
         )
 
     def send_message(self, text: str) -> Message:
+        """Send a text message to the chatbot.
+
+        :param str text:
+            Message text to send
+        :return Message:
+            Chatbot response message
+        """
         try:
             user_message = Message.user_message(text, int(datetime.now().timestamp()))
             self._history.append(user_message)
@@ -145,6 +208,13 @@ class Chatbot:
             return model_message
 
     def send_audio(self, audio_data: bytes) -> SpeechResponse:
+        """Send audio data to the chatbot and get speech response.
+
+        :param bytes audio_data:
+            Audio data to send
+        :return SpeechResponse:
+            Speech response with audio and text
+        """
         try:
             audio_request = audiobot.get_audio_request(audio_data)
             user_message = Message.user_message(audio_request[0], int(datetime.now().timestamp()))

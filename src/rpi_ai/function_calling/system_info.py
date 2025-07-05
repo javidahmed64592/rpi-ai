@@ -1,3 +1,5 @@
+"""System information functions for the RPi AI application."""
+
 import logging
 import platform
 import socket
@@ -12,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 class SystemInfo(FunctionsListBase):
+    """System information functions for monitoring system state."""
+
     def setup_functions(self) -> None:
+        """Set up system information functions."""
         self.functions = [
             SystemInfo.update_and_check_packages,
             SystemInfo.upgrade_packages,
@@ -34,9 +39,8 @@ class SystemInfo(FunctionsListBase):
 
         `sudo apt update` and `sudo apt list --upgradable`
 
-        Returns:
-            dict: The output of the package check command.
-
+        :return dict:
+            The output of the package check command
         """
         update_commands = ["sudo", "apt", "update"]
         check_commands = ["sudo", "apt", "list", "--upgradable"]
@@ -55,9 +59,8 @@ class SystemInfo(FunctionsListBase):
 
         `sudo apt upgrade -y`
 
-        Returns:
-            dict: The output of the package upgrade command.
-
+        :return dict:
+            The output of the package upgrade command
         """
         commands = ["sudo", "apt", "upgrade", "-y"]
         try:
@@ -74,9 +77,8 @@ class SystemInfo(FunctionsListBase):
 
         `sudo apt autoremove -y`
 
-        Returns:
-            dict: The output of the package autoremove command.
-
+        :return dict:
+            The output of the package autoremove command
         """
         commands = ["sudo", "apt", "autoremove", "-y"]
         try:
@@ -91,9 +93,8 @@ class SystemInfo(FunctionsListBase):
     def get_os_info() -> dict:
         """Get the operating system information.
 
-        Returns:
-            dict: A dictionary containing the OS information.
-
+        :return dict:
+            A dictionary containing the OS information
         """
         return {
             "system": platform.system(),
@@ -108,9 +109,8 @@ class SystemInfo(FunctionsListBase):
     def get_hostname() -> str:
         """Get the system hostname.
 
-        Returns:
-            str: The system hostname.
-
+        :return str:
+            The system hostname
         """
         return socket.gethostname()
 
@@ -118,9 +118,8 @@ class SystemInfo(FunctionsListBase):
     def get_uptime() -> str:
         """Get the system uptime.
 
-        Returns:
-            str: The system uptime as a string.
-
+        :return str:
+            The system uptime as a string
         """
         boot_time = datetime.fromtimestamp(psutil.boot_time())
         return str(datetime.now() - boot_time)
@@ -129,9 +128,8 @@ class SystemInfo(FunctionsListBase):
     def get_running_processes() -> dict:
         """Get the running processes.
 
-        Returns:
-            dict: A dictionary of running processes with PID as keys.
-
+        :return dict:
+            A dictionary of running processes with PID as keys
         """
         return {p.pid: p.info for p in psutil.process_iter(["pid", "name", "username"])}
 
@@ -139,12 +137,10 @@ class SystemInfo(FunctionsListBase):
     def get_process_name_by_pid(pid: int) -> str:
         """Get the name of a running process based on its PID.
 
-        Args:
-            pid (int): The process ID.
-
-        Returns:
-            str: The name of the process.
-
+        :param int pid:
+            The process ID
+        :return str:
+            The name of the process
         """
         pid = int(pid)
         try:
@@ -158,9 +154,8 @@ class SystemInfo(FunctionsListBase):
     def get_cpu_percent() -> float:
         """Get the CPU usage percentage.
 
-        Returns:
-            float: The CPU usage percentage.
-
+        :return float:
+            The CPU usage percentage
         """
         return psutil.cpu_percent(interval=1)
 
@@ -168,9 +163,8 @@ class SystemInfo(FunctionsListBase):
     def get_memory_usage() -> dict:
         """Get the memory usage.
 
-        Returns:
-            dict: A dictionary containing memory usage information.
-
+        :return dict:
+            A dictionary containing memory usage information
         """
         virtual_memory = psutil.virtual_memory()
         return {
@@ -184,9 +178,8 @@ class SystemInfo(FunctionsListBase):
     def get_disk_usage() -> dict:
         """Get the disk usage.
 
-        Returns:
-            dict: A dictionary containing disk usage information.
-
+        :return dict:
+            A dictionary containing disk usage information
         """
         disk_usage = psutil.disk_usage("/")
         return {
@@ -200,10 +193,8 @@ class SystemInfo(FunctionsListBase):
     def get_temperature() -> float | None:
         """Get the CPU temperature in degrees Celsius.
 
-        Returns:
-            float: The CPU temperature in degrees Celsius.
-            `None` is returned if the temperature cannot be retrieved.
-
+        :return float | None:
+            The CPU temperature in degrees Celsius or None if unavailable
         """
         try:
             return psutil.sensors_temperatures()["cpu_thermal"][0].current

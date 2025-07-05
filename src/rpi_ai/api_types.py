@@ -1,3 +1,5 @@
+"""API types for the RPi AI application."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -8,12 +10,23 @@ from pydantic.dataclasses import dataclass
 
 @dataclass
 class Message:
+    """Message data type for chat communications."""
+
     message: str
     timestamp: int
     is_user_message: bool = False
 
     @classmethod
     def user_message(cls, message: str, timestamp: int) -> Message:
+        """Create a user message.
+
+        :param str message:
+            Message content
+        :param int timestamp:
+            Message timestamp
+        :return Message:
+            User message instance
+        """
         return cls(
             message=message,
             timestamp=timestamp,
@@ -22,6 +35,15 @@ class Message:
 
     @classmethod
     def model_message(cls, message: str, timestamp: int) -> Message:
+        """Create a model message.
+
+        :param str message:
+            Message content
+        :param int timestamp:
+            Message timestamp
+        :return Message:
+            Model message instance
+        """
         return cls(
             message=message,
             timestamp=timestamp,
@@ -30,6 +52,13 @@ class Message:
 
     @classmethod
     def new_chat_message(cls, timestamp: int) -> Message:
+        """Create a new chat message.
+
+        :param int timestamp:
+            Message timestamp
+        :return Message:
+            New chat message instance
+        """
         return cls(
             message="What's on your mind today?",
             timestamp=timestamp,
@@ -38,10 +67,19 @@ class Message:
 
 @dataclass
 class MessageList:
+    """List of messages for chat communications."""
+
     messages: list[Message]
 
     @classmethod
     def from_contents_list(cls, contents: list[Content]) -> MessageList:
+        """Create MessageList from Content list.
+
+        :param list[Content] contents:
+            List of Content objects
+        :return MessageList:
+            MessageList instance
+        """
         msgs = []
         for content in contents:
             try:
@@ -63,6 +101,11 @@ class MessageList:
 
     @property
     def as_contents_list(self) -> list[Content]:
+        """Convert MessageList to Content list.
+
+        :return list[Content]:
+            List of Content objects
+        """
         return [
             Content(
                 parts=[Part(text=message.message)],
@@ -74,6 +117,8 @@ class MessageList:
 
 @dataclass
 class SpeechResponse:
+    """Speech response data type for audio communications."""
+
     bytes: str
     message: str
     timestamp: int
