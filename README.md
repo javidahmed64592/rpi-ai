@@ -1,6 +1,8 @@
 [![python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=ffd343)](https://docs.python.org/3.12/)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Flutter](https://img.shields.io/badge/Flutter-3.13-02569B.svg?style=flat&logo=flutter&logoColor=white)](https://flutter.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <!-- omit from toc -->
 # Raspberry Pi AI
@@ -10,36 +12,55 @@ Flutter is used to create a cross-platform application to interact with this API
 <!-- omit from toc -->
 ## Table of Contents
 - [Python API](#python-api)
+  - [uv](#uv)
   - [Installing Dependencies](#installing-dependencies)
   - [Configuration](#configuration)
   - [Getting Started](#getting-started)
   - [Endpoints](#endpoints)
-  - [Testing](#testing)
-  - [Linting and Formatting](#linting-and-formatting)
+  - [Testing, Linting, and Type Checking](#testing-linting-and-type-checking)
 - [Installing and Running the API](#installing-and-running-the-api)
 - [Flutter Application](#flutter-application)
 
 ## Python API
 
+### uv
+
+This repository is managed using the `uv` Python project manager: https://docs.astral.sh/uv/
+
+To install `uv`:
+
+```sh
+curl -LsSf https://astral.sh/uv/install.sh | sh                                    # Linux/Mac
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex" # Windows
+```
+
 ### Installing Dependencies
-Install the required dependencies using `pip`:
 
-    pip install -e .
+Install the required dependencies using `uv`:
 
-To install with `dev` dependencies:
+```sh
+uv sync
+```
 
-    pip install -e .[dev]
+To install with development dependencies:
+
+```sh
+uv sync --extra dev
+```
 
 ### Configuration
 Set the following environment variable before running the application:
 
+```sh
     GEMINI_API_KEY=<Gemini API key here>
+```
 
 ### Getting Started
-The Flask application can be started by executing one of the following:
+The Flask application can be started by executing:
 
-    python -m rpi_ai.main
-    run_rpi_ai
+```sh
+    uv run rpi-ai
+```
 
 ### Endpoints
 When the API is started, an authorisation token is generated which is required to authenticate requests.
@@ -112,27 +133,15 @@ and return payload:
 }
 ```
 
-### Testing
-This library uses Pytest for the unit tests.
-These tests are located in the `/tests` directory.
-To run the tests:
+### Testing, Linting, and Type Checking
 
-    python -m pytest tests
-
-### Linting and Formatting
-This library uses `ruff` for linting and formatting.
-
-To check the code for linting errors:
-
-    python -m ruff check .
-
-To format the code:
-
-    python -m ruff format .
+- **Run tests:** `uv run pytest`
+- **Lint code:** `uv run ruff check .`
+- **Format code:** `uv run ruff format .`
+- **Type check:** `uv run mypy .`
 
 ## Installing and Running the API
 To install the API, download the release tarball and extract it.
-Before running the installer, ensure you have set the `GEMINI_API_KEY` environment variable.
 Run the `install_rpi_ai.sh` script:
 
     tar -xzf rpi_ai.tar.gz

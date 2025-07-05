@@ -1,3 +1,5 @@
+"""Unit tests for the rpi_ai.api_types module."""
+
 from datetime import datetime
 
 from google.genai.types import Content, Part
@@ -6,7 +8,10 @@ from rpi_ai.api_types import Message, MessageList, SpeechResponse
 
 
 class TestMessage:
+    """Tests for the Message class."""
+
     def test_user_message(self) -> None:
+        """Test creating a user message."""
         timestamp = int(datetime.now().timestamp())
         message = Message.user_message("test_message", timestamp)
         assert message.message == "test_message"
@@ -14,6 +19,7 @@ class TestMessage:
         assert message.is_user_message
 
     def test_model_message(self) -> None:
+        """Test creating a model message."""
         timestamp = int(datetime.now().timestamp())
         message = Message.model_message("test_message", timestamp)
         assert message.message == "test_message"
@@ -21,6 +27,7 @@ class TestMessage:
         assert not message.is_user_message
 
     def test_new_chat_message(self) -> None:
+        """Test creating a new chat message."""
         timestamp = int(datetime.now().timestamp())
         message = Message.new_chat_message(timestamp)
         assert message.message == "What's on your mind today?"
@@ -29,7 +36,10 @@ class TestMessage:
 
 
 class TestMessageList:
+    """Tests for the MessageList class."""
+
     def test_from_contents_list(self) -> None:
+        """Test creating a MessageList from a list of Content."""
         good_data = [
             Content(parts=[Part(text="user_msg")], role="user"),
             Content(parts=[Part(text="model_msg")], role="model"),
@@ -46,6 +56,7 @@ class TestMessageList:
         assert not message_list.messages[1].is_user_message
 
     def test_history(self) -> None:
+        """Test converting a MessageList to a history list."""
         data = [
             Content(parts=[Part(text="user_msg")], role="user"),
             Content(parts=[Part(text="model_msg")], role="model"),
@@ -60,7 +71,10 @@ class TestMessageList:
 
 
 class TestSpeechResponse:
+    """Tests for the SpeechResponse class."""
+
     def test_from_dict(self) -> None:
+        """Test creating a SpeechResponse from a dictionary."""
         timestamp = int(datetime.now().timestamp())
         data = {"bytes": "audio_data", "timestamp": timestamp, "message": "Hello, world!"}
         response = SpeechResponse(**data)
