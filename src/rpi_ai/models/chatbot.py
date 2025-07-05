@@ -7,7 +7,7 @@ from google.genai.errors import ServerError
 from google.genai.types import (
     GenerateContentConfig,
     GenerateContentResponse,
-    GoogleSearchRetrieval,
+    GoogleSearch,
     HarmBlockThreshold,
     HarmCategory,
     SafetySetting,
@@ -65,7 +65,7 @@ class Chatbot:
     @property
     def _web_search_config(self) -> GenerateContentConfig:
         _config = self._model_config
-        _config.tools = [Tool(google_search_retrieval=GoogleSearchRetrieval())]
+        _config.tools = [Tool(google_search=GoogleSearch())]  # type: ignore[arg-type]
         return _config
 
     @property

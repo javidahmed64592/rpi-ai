@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
 from google.genai.errors import ServerError
-from google.genai.types import GenerateContentConfig, GoogleSearchRetrieval
+from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
 from rpi_ai.config import ChatbotConfig
@@ -38,7 +38,7 @@ class TestChatbot:
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
         assert len(config.tools) == 1
-        assert config.tools[0].google_search_retrieval == GoogleSearchRetrieval()
+        assert config.tools[0].google_search == GoogleSearch()
 
     def test_chat_history(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
         history = mock_chatbot.chat_history
