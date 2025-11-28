@@ -72,7 +72,10 @@ jobs:
           DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
           PACKAGE_NAME="rpi_ai"
           WHEEL_FILE=$(find . -name "${PACKAGE_NAME}-*-py3-none-any.whl")
+
           cd "$DIR_NAME"
+          echo "$DIR_NAME/"
+          tree --dirsfirst -F
 
           files=("${WHEEL_FILE}")
           scripts=("install_rpi_ai.sh")
