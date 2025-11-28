@@ -37,7 +37,6 @@ jobs:
           PACKAGE_VERSION=$(echo "$WHEEL_FILE" | sed -n "s/.*${PACKAGE_NAME}-\(.*\)-py3-none-any\.whl/\1/p")
 
           mv "$WHEEL_FILE" release/
-          mv static release/
           chmod +x release/install_rpi_ai.sh
           mv release ${PACKAGE_NAME}_${PACKAGE_VERSION}
 
