@@ -11,18 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: ".python-version"
-      - name: Install dependencies
-        run: |
-          uv sync --extra dev
+      - uses: ./.github/actions/setup-python-core
       - name: Create wheel
         run: |
           uv build
@@ -36,15 +25,6 @@ jobs:
     needs: build_wheel
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: ".python-version"
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
@@ -74,15 +54,7 @@ jobs:
     needs: create_installer
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: ".python-version"
+      - uses: ./.github/actions/setup-python-core
       - name: Download artifact from create_installer job
         uses: actions/download-artifact@v4
         with:
