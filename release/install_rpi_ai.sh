@@ -63,7 +63,7 @@ if [ -f "${CONFIG_DEST}" ]; then
     fi
 else
     echo "Creating AI configuration file: '${CONFIG_DEST}'"
-    mv "${CONFIG_PATH}" "${CONFIG_DEST}"
+    mv "${SITE_PACKAGES_DIR}/${CONFIG_FILE}" "${CONFIG_DEST}"
 fi
 
 mv "${SITE_PACKAGES_DIR}/${APP_README_FILE}" "${APP_README_PATH}"
@@ -167,7 +167,7 @@ chmod +x "${UNINSTALL_PATH}"
 echo "${SEPARATOR}"
 echo "RPi-AI has been installed successfully."
 echo "Run the application using: './${EXE_NAME}'"
-echo "Configure the application by editing: ${CONFIG_PATH}"
+echo "Configure the application by editing: ${CONFIG_DEST}"
 echo "To create a start-up service for the RPi-AI, run: './service/${CREATE_SERVICE_FILE}'"
 echo "To stop the service, run: './service/${STOP_SERVICE_FILE}'"
 echo "To view the logs: 'cat ${LOG_FILE}'"
