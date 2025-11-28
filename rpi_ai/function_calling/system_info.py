@@ -146,8 +146,7 @@ class SystemInfo(FunctionsListBase):
         """
         pid = int(pid)
         try:
-            process = psutil.Process(pid)
-            return process.name()
+            return str(psutil.Process(pid).name())
         except psutil.NoSuchProcess:
             msg = f"No process found with PID {pid}."
             logger.exception(msg)
@@ -160,7 +159,7 @@ class SystemInfo(FunctionsListBase):
         :return float:
             The CPU usage percentage
         """
-        return psutil.cpu_percent(interval=1)
+        return float(psutil.cpu_percent(interval=1))
 
     @staticmethod
     def get_memory_usage() -> dict:
@@ -200,7 +199,7 @@ class SystemInfo(FunctionsListBase):
             The CPU temperature in degrees Celsius or None if unavailable
         """
         try:
-            return psutil.sensors_temperatures()["cpu_thermal"][0].current
-        except (KeyError, IndexError, AttributeError):
+            return float(psutil.sensors_temperatures()["cpu_thermal"][0].current)
+        except (TypeError, KeyError, IndexError, AttributeError):
             logger.exception("Failed to get CPU temperature.")
             return None
