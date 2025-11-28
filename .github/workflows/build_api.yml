@@ -66,6 +66,8 @@ jobs:
           tar -xzf $TAR_FILE
       - name: Run installer script
         run: |
+          echo "Directory contents before installation:"
+          ls -la
           TAR_FILE=$(find . -name 'rpi_ai_*.tar.gz')
           DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
           cd "$DIR_NAME"
