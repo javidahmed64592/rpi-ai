@@ -2,7 +2,9 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Flutter](https://img.shields.io/badge/Flutter-3.13-02569B.svg?style=flat&logo=flutter&logoColor=white)](https://flutter.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://img.shields.io/github/actions/workflow/status/javidahmed64592/rpi-ai/ci.yml?branch=main&style=flat-square&label=CI&logo=github)](https://github.com/javidahmed64592/rpi-ai/actions)
+[![License](https://img.shields.io/github/license/javidahmed64592/rpi-ai?style=flat-square)](https://github.com/javidahmed64592/rpi-ai/blob/main/LICENSE)
+
 
 <!-- omit from toc -->
 # Raspberry Pi AI
@@ -20,6 +22,7 @@ Flutter is used to create a cross-platform application to interact with this API
   - [Testing, Linting, and Type Checking](#testing-linting-and-type-checking)
 - [Installing and Running the API](#installing-and-running-the-api)
 - [Flutter Application](#flutter-application)
+- [License](#license)
 
 ## Python API
 
@@ -174,3 +177,7 @@ The folder can then safely be deleted.
 A Flutter application is created in the `/ui` directory.
 This provides a GUI for interacting with the API.
 See the `README.md` in the `/ui` directory for more details.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
