@@ -116,7 +116,7 @@ class AIApp:
         """
         logger.info("Starting new chat...")
         response = self.chatbot.chat_history
-        logger.info(f"Loaded chat history: {len(response.messages)} messages")
+        logger.info("Loaded chat history: %s messages", len(response.messages))
         return jsonify(response)
 
     def restart_chat(self) -> Response:
