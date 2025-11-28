@@ -9,7 +9,7 @@ import secrets
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -123,8 +123,7 @@ class Config:
         return token
 
 
-@dataclass
-class ChatbotConfig:
+class ChatbotConfig(BaseModel):
     """Configuration for chatbot settings."""
 
     model: str
