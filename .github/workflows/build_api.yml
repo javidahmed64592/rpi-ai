@@ -127,9 +127,9 @@ jobs:
             exit 1
           fi
 
-          folders=(".venv" "logs")
-          files=("rpi-ai" "${HOME}/.config/rpi_ai/ai_config.json" "service/rpi-ai.service" "uninstall_rpi_ai.sh" "README.txt")
-          scripts=("service/start_service.sh" "service/stop_service.sh")
+          folders=(".venv" "service" "${HOME}/.config/rpi_ai")
+          files=("rpi-ai" "LICENSE" "README.md" "service/rpi-ai.service" "${HOME}/.config/rpi_ai/ai_config.json")
+          scripts=("uninstall_rpi_ai.sh" "service/start_service.sh" "service/stop_service.sh")
 
           for folder in "${folders[@]}"; do
             if [ ! -d "$folder" ]; then
