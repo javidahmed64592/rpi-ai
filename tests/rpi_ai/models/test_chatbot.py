@@ -78,9 +78,10 @@ class TestChatbot:
         """Test handling a blocked message."""
         mock_chat_instance.send_message.return_value = MagicMock(text="Blocked message")
         blocked_categories = ["test"]
+        blocked_categories_str = ", ".join(blocked_categories)
         response = mock_chatbot._handle_blocked_message(blocked_categories)
         mock_chat_instance.send_message.assert_called_with(
-            f"The previous message was blocked because it violates the following categories: {''.join(blocked_categories)}."
+            f"The previous message was blocked because it violates the following categories: {blocked_categories_str}."
         )
         assert response == "Blocked message"
 

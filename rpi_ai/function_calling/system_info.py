@@ -42,13 +42,13 @@ class SystemInfo(FunctionsListBase):
         :return dict:
             The output of the package check command
         """
-        update_commands = ["sudo", "apt", "update"]
-        check_commands = ["sudo", "apt", "list", "--upgradable"]
         try:
-            subprocess.run(update_commands, capture_output=True, text=True, check=True)
-            result = subprocess.run(check_commands, capture_output=True, text=True, check=True)
+            subprocess.run(["/usr/bin/sudo", "/usr/bin/apt", "update"], capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                ["/usr/bin/sudo", "/usr/bin/apt", "list", "--upgradable"], capture_output=True, text=True, check=True
+            )
         except subprocess.CalledProcessError as e:
-            logger.exception(f"Failed to update packages list: {e.stderr}")
+            logger.exception("Failed to update packages list: %s", e.stderr)
             return {"stdout": e.output, "stderr": e.stderr}
         else:
             return {"stdout": result.stdout, "stderr": result.stderr}
@@ -62,11 +62,12 @@ class SystemInfo(FunctionsListBase):
         :return dict:
             The output of the package upgrade command
         """
-        commands = ["sudo", "apt", "upgrade", "-y"]
         try:
-            result = subprocess.run(commands, capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                ["/usr/bin/sudo", "/usr/bin/apt", "upgrade", "-y"], capture_output=True, text=True, check=True
+            )
         except subprocess.CalledProcessError as e:
-            logger.exception(f"Failed to upgrade packages: {e.stderr}")
+            logger.exception("Failed to upgrade packages: %s", e.stderr)
             return {"stdout": e.output, "stderr": e.stderr}
         else:
             return {"stdout": result.stdout, "stderr": result.stderr}
@@ -80,11 +81,12 @@ class SystemInfo(FunctionsListBase):
         :return dict:
             The output of the package autoremove command
         """
-        commands = ["sudo", "apt", "autoremove", "-y"]
         try:
-            result = subprocess.run(commands, capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                ["/usr/bin/sudo", "/usr/bin/apt", "autoremove", "-y"], capture_output=True, text=True, check=True
+            )
         except subprocess.CalledProcessError as e:
-            logger.exception(f"Failed to remove unused packages: {e.stderr}")
+            logger.exception("Failed to remove unused packages: %s", e.stderr)
             return {"stdout": e.output, "stderr": e.stderr}
         else:
             return {"stdout": result.stdout, "stderr": result.stderr}
@@ -147,8 +149,9 @@ class SystemInfo(FunctionsListBase):
             process = psutil.Process(pid)
             return process.name()
         except psutil.NoSuchProcess:
-            logger.exception(f"No process found with PID {pid}.")
-            return f"No process found with PID {pid}."
+            msg = f"No process found with PID {pid}."
+            logger.exception(msg)
+            return msg
 
     @staticmethod
     def get_cpu_percent() -> float:

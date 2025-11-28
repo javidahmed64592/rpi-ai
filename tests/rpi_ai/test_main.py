@@ -10,6 +10,9 @@ from rpi_ai.main import AIApp, main
 SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
 
+TEST_HOST = "0.0.0.0"  # noqa: S104
+TEST_PORT = 8080
+
 
 class TestAIApp:
     """Tests for the AIApp class in the rpi_ai.main module."""
@@ -269,11 +272,11 @@ class TestAIApp:
 
     def test_run_with_waitress(self, mock_ai_app: AIApp, mock_waitress_serve: MagicMock) -> None:
         """Test running the AIApp with Waitress."""
-        mock_ai_app.run(host="0.0.0.0", port=8080)
-        mock_waitress_serve.assert_called_once_with(mock_ai_app._app, host="0.0.0.0", port=8080)
+        mock_ai_app.run(host=TEST_HOST, port=TEST_PORT)
+        mock_waitress_serve.assert_called_once_with(mock_ai_app._app, host=TEST_HOST, port=TEST_PORT)
 
 
 def test_main(mock_ai_app_class: MagicMock) -> None:
     """Test the main function to ensure it runs the AIApp."""
     main()
-    mock_ai_app_class.return_value.run.assert_called_once_with(host="0.0.0.0", port=8080)
+    mock_ai_app_class.return_value.run.assert_called_once_with(host=TEST_HOST, port=TEST_PORT)

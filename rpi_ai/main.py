@@ -212,4 +212,4 @@ class AIApp:
 def main() -> None:
     """Run the main entry point for the application."""
     ai_app = AIApp()
-    ai_app.run(host="0.0.0.0", port=8080)
+    ai_app.run(host="0.0.0.0", port=8080)  # noqa: S104

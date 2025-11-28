@@ -145,8 +145,10 @@ class Chatbot:
         :return str:
             Error message response
         """
-        error_message = f"The previous message was blocked because it violates the following categories: {', '.join(blocked_categories)}."
-        response = self._chat.send_message(error_message)
+        blocked_categories_str = ", ".join(blocked_categories)
+        response = self._chat.send_message(
+            f"The previous message was blocked because it violates the following categories: {blocked_categories_str}."
+        )
         reply = response.text or "Unable to process blocked message."
         self._history.append(Message.model_message(reply, int(datetime.now().timestamp())))
         return reply
