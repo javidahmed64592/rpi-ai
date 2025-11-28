@@ -4,12 +4,14 @@ import logging
 import os
 import signal
 from collections.abc import Callable
+from datetime import datetime
 from types import FrameType
 
 from flask import Flask, Response, jsonify, request
 from waitress import serve
 from werkzeug.datastructures import FileStorage, Headers, ImmutableMultiDict
 
+from rpi_ai.api_types import Message, SpeechResponse
 from rpi_ai.config import ChatbotConfig, Config
 from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models.chatbot import Chatbot
@@ -96,7 +98,7 @@ class AIApp:
         def decorated_function(*args: tuple, **kwargs: dict) -> tuple[Response, int]:
             if not self.authenticate():
                 return jsonify({"error": "Unauthorized"}), 401
-            return f(*args, **kwargs)
+            return f(*args, **kwargs)  # type: ignore[no-any-return]
 
         return decorated_function
 
@@ -145,7 +147,7 @@ class AIApp:
             JSON response with updated chat history
         """
         logger.info("Updating AI config...")
-        config = ChatbotConfig(**get_request_json())
+        config = ChatbotConfig.model_validate(get_request_json())
         self.chatbot.update_config(config)
         config.save(self.config.config_file)
         self.chatbot.start_chat()
@@ -164,8 +166,8 @@ class AIApp:
             response = self.chatbot.send_message(user_message["message"])
             logger.info(response.message)
         else:
-            response = "No message received."
-            logger.error(response)
+            response = Message.model_message("No message received.", int(datetime.now().timestamp()))
+            logger.error(response.message)
         return jsonify(response)
 
     def send_audio(self) -> Response:
@@ -181,8 +183,8 @@ class AIApp:
             response = self.chatbot.send_audio(audio_data)
             logger.info(response.message)
         else:
-            response = "No audio data received."
-            logger.error(response)
+            response = SpeechResponse("", "No audio data received.", int(datetime.now().timestamp()))
+            logger.error(response.message)
         return jsonify(response)
 
     def shutdown_handler(self, signum: int, frame: FrameType | None) -> None:

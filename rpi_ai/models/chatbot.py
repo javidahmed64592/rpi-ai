@@ -93,7 +93,7 @@ class Chatbot:
             Web search configuration
         """
         _config = self._model_config
-        _config.tools = [Tool(google_search=GoogleSearch())]  # type: ignore[arg-type]
+        _config.tools = [Tool(google_search=GoogleSearch())]
         return _config
 
     @property
@@ -187,24 +187,30 @@ class Chatbot:
         """
         try:
             user_message = Message.user_message(text, int(datetime.now().timestamp()))
-            self._history.append(user_message)
 
             response = self._chat.send_message(text)
-            model_message = Message.model_message(response.text, int(datetime.now().timestamp()))
+
+            if not (response_text := response.text):
+                msg = "No response text received from chatbot."
+                logger.error(msg)
+                raise AttributeError(msg)  # noqa: TRY301
+
+            model_message = Message.model_message(response_text, int(datetime.now().timestamp()))
+
+            self._history.append(user_message)
             self._history.append(model_message)
         except (AttributeError, ValidationError) as e:
             msg = f"Failed to send message to chatbot: {e}"
             logger.exception(msg)
 
             if blocked_categories := self._extract_blocked_categories(response):
+                self._history.append(user_message)
                 reply = self._handle_blocked_message(blocked_categories)
             else:
-                self._history.pop()
                 reply = "Failed to send message to chatbot!"
 
             return Message(message=reply, timestamp=int(datetime.now().timestamp()))
         except ServerError:
-            self._history.pop()
             return Message(message="Model overloaded! Please try again.", timestamp=int(datetime.now().timestamp()))
         else:
             return model_message
@@ -219,35 +225,42 @@ class Chatbot:
         """
         try:
             audio_request = audiobot.get_audio_request(audio_data)
-            user_message = Message.user_message(audio_request[0], int(datetime.now().timestamp()))
-            self._history.append(user_message)
+            user_message = Message.user_message(str(audio_request[0]), int(datetime.now().timestamp()))
 
             response = self._chat.send_message(audio_request)
-            model_message = Message.model_message(response.text, int(datetime.now().timestamp()))
-            self._history.append(model_message)
+            if not (response_text := response.text):
+                msg = "No response text received from chatbot."
+                logger.error(msg)
+                raise AttributeError(msg)  # noqa: TRY301
 
-            audio = audiobot.get_audio_bytes_from_text(response.text)
-            return SpeechResponse(bytes=audio, message=response.text, timestamp=int(datetime.now().timestamp()))
+            model_message = Message.model_message(response_text, int(datetime.now().timestamp()))
+
+            audio = audiobot.get_audio_bytes_from_text(response_text)
+            speech_response = SpeechResponse(
+                bytes=audio, message=response_text, timestamp=int(datetime.now().timestamp())
+            )
+
+            self._history.append(user_message)
+            self._history.append(model_message)
         except (AttributeError, ValidationError) as e:
             msg = f"Failed to send audio to chatbot: {e}"
             logger.exception(msg)
 
             if blocked_categories := self._extract_blocked_categories(response):
+                self._history.append(user_message)
                 reply = self._handle_blocked_message(blocked_categories)
             else:
-                self._history.pop()
                 reply = "Failed to send audio to chatbot!"
 
             audio = audiobot.get_audio_bytes_from_text(reply)
             return SpeechResponse(bytes=audio, message=reply, timestamp=int(datetime.now().timestamp()))
         except ServerError:
-            self._history.pop()
             reply = "Model overloaded! Please try again."
             audio = audiobot.get_audio_bytes_from_text(reply)
             return SpeechResponse(bytes=audio, message=reply, timestamp=int(datetime.now().timestamp()))
         except gTTSError as e:
-            self._history.pop()
-            self._history.pop()
             msg = f"A gTTSError occurred: {e}"
             logger.exception(msg)
             return SpeechResponse(bytes="", message=str(e), timestamp=int(datetime.now().timestamp()))
+        else:
+            return speech_response
