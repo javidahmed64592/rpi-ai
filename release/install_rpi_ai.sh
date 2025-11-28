@@ -53,17 +53,18 @@ mkdir -p "${SERVICE_DIR}"
 
 SITE_PACKAGES_DIR=$(find "${FULL_VENV_PATH}/lib" -name "site-packages" -type d | head -1)
 mkdir -p "$(dirname "${CONFIG_DIR}")"
+CONFIG_PATH="${SITE_PACKAGES_DIR}/config/${CONFIG_FILE}"
 
 if [ -f "${CONFIG_DEST}" ]; then
     echo "AI configuration file already exists: '${CONFIG_DEST}'"
     read -p "Overwrite? (y/n): " overwrite
     if [ "${overwrite}" == "y" ]; then
         echo "Overwriting AI configuration file: '${CONFIG_DEST}'"
-        mv "${SITE_PACKAGES_DIR}/${CONFIG_FILE}" "${CONFIG_DEST}"
+        mv "${CONFIG_PATH}" "${CONFIG_DEST}"
     fi
 else
     echo "Creating AI configuration file: '${CONFIG_DEST}'"
-    mv "${SITE_PACKAGES_DIR}/${CONFIG_FILE}" "${CONFIG_DEST}"
+    mv "${CONFIG_PATH}" "${CONFIG_DEST}"
 fi
 
 mv "${SITE_PACKAGES_DIR}/${APP_README_FILE}" "${APP_README_PATH}"
