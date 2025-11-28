@@ -56,6 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: create_installer
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-uv
       - name: Download artifact from create_installer job
         uses: actions/download-artifact@v4
