@@ -136,7 +136,7 @@ class AIApp:
         :return Response:
             JSON response with current configuration
         """
-        return jsonify(self.chatbot.get_config())
+        return jsonify(self.chatbot.get_config().model_dump())
 
     def update_config(self) -> Response:
         """Update chatbot configuration endpoint.

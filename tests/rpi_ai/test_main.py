@@ -73,7 +73,7 @@ class TestAIApp:
         """Test the get_config endpoint."""
         mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         response = mock_client.get("/get-config")
-        mock_jsonify.assert_called_once_with(mock_get_config.return_value)
+        mock_jsonify.assert_called_once_with(mock_get_config.return_value.model_dump())
         assert response.status_code == SUCCESS_CODE
 
     def test_get_config_unauthorized(
