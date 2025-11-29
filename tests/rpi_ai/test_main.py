@@ -4,11 +4,15 @@ from unittest.mock import MagicMock
 
 from flask.testing import FlaskClient
 
+from rpi_ai.api_types import Message, SpeechResponse
 from rpi_ai.config import ChatbotConfig
 from rpi_ai.main import AIApp, main
 
 SUCCESS_CODE = 200
 UNAUTHORIZED_CODE = 401
+
+TEST_HOST = "0.0.0.0"  # noqa: S104
+TEST_PORT = 8080
 
 
 class TestAIApp:
@@ -70,7 +74,7 @@ class TestAIApp:
         """Test the get_config endpoint."""
         mock_request_headers.return_value = {"Authorization": mock_generate_token.return_value}
         response = mock_client.get("/get-config")
-        mock_jsonify.assert_called_once_with(mock_get_config.return_value)
+        mock_jsonify.assert_called_once_with(mock_get_config.return_value.model_dump())
         assert response.status_code == SUCCESS_CODE
 
     def test_get_config_unauthorized(
@@ -108,7 +112,7 @@ class TestAIApp:
         mock_request_json.return_value = new_config
 
         response = mock_client.post("/update-config")
-        mock_update_config.assert_called_once_with(ChatbotConfig(**new_config))
+        mock_update_config.assert_called_once_with(ChatbotConfig.model_validate(new_config))
         mock_save_config.assert_called_once()
         mock_start_chat.assert_called_once()
         mock_jsonify.assert_called_once_with(mock_chat_history.return_value)
@@ -213,7 +217,13 @@ class TestAIApp:
 
         response = mock_client.post("/chat")
         mock_send_message.assert_not_called()
-        mock_jsonify.assert_called_once_with("No message received.")
+        call_args = mock_jsonify.call_args
+        assert call_args is not None
+        arg = call_args[0][0]
+        assert isinstance(arg, Message)
+        assert arg.message == "No message received."
+        assert arg.is_user_message is False
+        assert isinstance(arg.timestamp, int)
         assert response.status_code == SUCCESS_CODE
 
     def test_send_audio(
@@ -264,16 +274,22 @@ class TestAIApp:
 
         response = mock_client.post("/send-audio")
         mock_send_audio.assert_not_called()
-        mock_jsonify.assert_called_once_with("No audio data received.")
+        call_args = mock_jsonify.call_args
+        assert call_args is not None
+        arg = call_args[0][0]
+        assert isinstance(arg, SpeechResponse)
+        assert arg.message == "No audio data received."
+        assert arg.bytes == ""
+        assert isinstance(arg.timestamp, int)
         assert response.status_code == SUCCESS_CODE
 
     def test_run_with_waitress(self, mock_ai_app: AIApp, mock_waitress_serve: MagicMock) -> None:
         """Test running the AIApp with Waitress."""
-        mock_ai_app.run(host="0.0.0.0", port=8080)
-        mock_waitress_serve.assert_called_once_with(mock_ai_app._app, host="0.0.0.0", port=8080)
+        mock_ai_app.run(host=TEST_HOST, port=TEST_PORT)
+        mock_waitress_serve.assert_called_once_with(mock_ai_app._app, host=TEST_HOST, port=TEST_PORT)
 
 
 def test_main(mock_ai_app_class: MagicMock) -> None:
     """Test the main function to ensure it runs the AIApp."""
     main()
-    mock_ai_app_class.return_value.run.assert_called_once_with(host="0.0.0.0", port=8080)
+    mock_ai_app_class.return_value.run.assert_called_once_with(host=TEST_HOST, port=TEST_PORT)

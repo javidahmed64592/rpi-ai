@@ -4,12 +4,14 @@ import logging
 import os
 import signal
 from collections.abc import Callable
+from datetime import datetime
 from types import FrameType
 
 from flask import Flask, Response, jsonify, request
 from waitress import serve
 from werkzeug.datastructures import FileStorage, Headers, ImmutableMultiDict
 
+from rpi_ai.api_types import Message, SpeechResponse
 from rpi_ai.config import ChatbotConfig, Config
 from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models.chatbot import Chatbot
@@ -96,7 +98,7 @@ class AIApp:
         def decorated_function(*args: tuple, **kwargs: dict) -> tuple[Response, int]:
             if not self.authenticate():
                 return jsonify({"error": "Unauthorized"}), 401
-            return f(*args, **kwargs)
+            return f(*args, **kwargs)  # type: ignore[no-any-return]
 
         return decorated_function
 
@@ -116,7 +118,7 @@ class AIApp:
         """
         logger.info("Starting new chat...")
         response = self.chatbot.chat_history
-        logger.info(f"Loaded chat history: {len(response.messages)} messages")
+        logger.info("Loaded chat history: %s messages", len(response.messages))
         return jsonify(response)
 
     def restart_chat(self) -> Response:
@@ -136,7 +138,7 @@ class AIApp:
         :return Response:
             JSON response with current configuration
         """
-        return jsonify(self.chatbot.get_config())
+        return jsonify(self.chatbot.get_config().model_dump())
 
     def update_config(self) -> Response:
         """Update chatbot configuration endpoint.
@@ -145,7 +147,7 @@ class AIApp:
             JSON response with updated chat history
         """
         logger.info("Updating AI config...")
-        config = ChatbotConfig(**get_request_json())
+        config = ChatbotConfig.model_validate(get_request_json())
         self.chatbot.update_config(config)
         config.save(self.config.config_file)
         self.chatbot.start_chat()
@@ -164,8 +166,11 @@ class AIApp:
             response = self.chatbot.send_message(user_message["message"])
             logger.info(response.message)
         else:
-            response = "No message received."
-            logger.error(response)
+            response = Message.model_message(
+                message="No message received.",
+                timestamp=int(datetime.now().timestamp()),
+            )
+            logger.error(response.message)
         return jsonify(response)
 
     def send_audio(self) -> Response:
@@ -181,8 +186,12 @@ class AIApp:
             response = self.chatbot.send_audio(audio_data)
             logger.info(response.message)
         else:
-            response = "No audio data received."
-            logger.error(response)
+            response = SpeechResponse(
+                bytes="",
+                message="No audio data received.",
+                timestamp=int(datetime.now().timestamp()),
+            )
+            logger.error(response.message)
         return jsonify(response)
 
     def shutdown_handler(self, signum: int, frame: FrameType | None) -> None:
@@ -212,4 +221,4 @@ class AIApp:
 def main() -> None:
     """Run the main entry point for the application."""
     ai_app = AIApp()
-    ai_app.run(host="0.0.0.0", port=8080)
+    ai_app.run(host="0.0.0.0", port=8080)  # noqa: S104

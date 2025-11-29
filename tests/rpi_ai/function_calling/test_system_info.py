@@ -120,8 +120,8 @@ def test_update_and_check_packages(mock_subprocess_run: MagicMock) -> None:
     """Test the update_and_check_packages method."""
     mock_subprocess_run.return_value.stderr = ""
     response = SystemInfo.update_and_check_packages()
-    expected_update_commands = ["sudo", "apt", "update"]
-    expected_check_commands = ["sudo", "apt", "list", "--upgradable"]
+    expected_update_commands = ["/usr/bin/sudo", "/usr/bin/apt", "update"]
+    expected_check_commands = ["/usr/bin/sudo", "/usr/bin/apt", "list", "--upgradable"]
     mock_subprocess_run.assert_any_call(expected_update_commands, capture_output=True, text=True, check=True)
     mock_subprocess_run.assert_any_call(expected_check_commands, capture_output=True, text=True, check=True)
     assert response == {
@@ -141,7 +141,7 @@ def test_upgrade_packages(mock_subprocess_run: MagicMock) -> None:
     """Test the upgrade_packages method."""
     mock_subprocess_run.return_value.stderr = ""
     response = SystemInfo.upgrade_packages()
-    expected_commands = ["sudo", "apt", "upgrade", "-y"]
+    expected_commands = ["/usr/bin/sudo", "/usr/bin/apt", "upgrade", "-y"]
     mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
     assert response == {
         "stdout": mock_subprocess_run.return_value.stdout,
@@ -160,7 +160,7 @@ def test_auto_remove_packages(mock_subprocess_run: MagicMock) -> None:
     """Test the auto_remove_packages method."""
     mock_subprocess_run.return_value.stderr = ""
     response = SystemInfo.auto_remove_packages()
-    expected_commands = ["sudo", "apt", "autoremove", "-y"]
+    expected_commands = ["/usr/bin/sudo", "/usr/bin/apt", "autoremove", "-y"]
     mock_subprocess_run.assert_called_once_with(expected_commands, capture_output=True, text=True, check=True)
     assert response == {
         "stdout": mock_subprocess_run.return_value.stdout,

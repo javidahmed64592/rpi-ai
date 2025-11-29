@@ -1,15 +1,13 @@
 [build-system]
-# Minimum requirements for the build system to execute.
-# PEP 508 specifications.
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "rpi-ai"
 version = "1.0.1"
 description = "AI written in Python to control a companion bot hosted on a Raspberry Pi."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = { file = "LICENSE" }
 authors = [
     { name = "Javid Ahmed", email = "javidahmed@icloud.com" }
@@ -35,7 +33,7 @@ dev = [
     "mypy",
     "pytest",
     "pytest-cov",
-    "tomli"
+    "validate-pyproject",
 ]
 
 [project.urls]
@@ -43,6 +41,14 @@ repository = "https://github.com/javidahmed64592/rpi-ai"
 
 [project.scripts]
 rpi-ai = "rpi_ai.main:main"
+
+[tool.hatch.build]
+include = [
+  "config/**",
+  "rpi_ai/**",
+  "LICENSE",
+  "README.md",
+]
 
 [tool.pytest.ini_options]
 addopts = [
@@ -85,6 +91,10 @@ exclude = [
     "venv",
 ]
 
+extend-exclude = [
+    "**/__init__.py",
+]
+
 [tool.ruff.lint]
 select = [
     "A",
@@ -118,16 +128,8 @@ select = [
 ignore = [
     "D203",
     "D213",
-    "E501",
-    "E741",
-    "G004",
-    "ISC001",
-    "N999",
     "PLR0913",
-    "S101",
-    "S104",
-    "S105",
-    "S603",
+    "S101"
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
@@ -142,6 +144,16 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.mypy]
+warn_unused_configs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+pretty = true
 
 [[tool.mypy.overrides]]
 module = [

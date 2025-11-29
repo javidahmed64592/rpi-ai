@@ -11,18 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: ".python-version"
-      - name: Install dependencies
-        run: |
-          uv sync --extra dev
+      - uses: ./.github/actions/setup-python-core
       - name: Create wheel
         run: |
           uv build
@@ -33,19 +22,11 @@ jobs:
           path: dist/rpi_ai-*-py3-none-any.whl
   create_installer:
     runs-on: ubuntu-latest
-    needs: build_wheel
+    needs: [build_wheel]
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: ".python-version"
-      - name: Download artifact from build job
+      - uses: ./.github/actions/setup-python-core
+      - name: Download backend artifact
         uses: actions/download-artifact@v4
         with:
           name: rpi_ai_wheel
@@ -53,51 +34,88 @@ jobs:
         run: |
           PACKAGE_NAME="rpi_ai"
           WHEEL_FILE=$(find . -name "${PACKAGE_NAME}-*-py3-none-any.whl")
-          mv ${WHEEL_FILE} "release/${WHEEL_FILE}"
-          cp -r config release/config
-          chmod +x release/install_${PACKAGE_NAME}.sh
+          PACKAGE_VERSION=$(echo "$WHEEL_FILE" | sed -n "s/.*${PACKAGE_NAME}-\(.*\)-py3-none-any\.whl/\1/p")
 
-          mv release "${PACKAGE_NAME}"
+          mv "$WHEEL_FILE" release/
+          chmod +x release/install_rpi_ai.sh
+          mv release ${PACKAGE_NAME}_${PACKAGE_VERSION}
 
-          echo "${PACKAGE_NAME}/"
-          ls -l ${PACKAGE_NAME}/
+          tree ${PACKAGE_NAME}_${PACKAGE_VERSION} --dirsfirst -F
       - name: Create release tarball
         run: |
-          tar -czf rpi_ai.tar.gz rpi_ai
+          PACKAGE_NAME="rpi_ai"
+          WHEEL_FILE=$(find . -name "${PACKAGE_NAME}-*-py3-none-any.whl")
+          PACKAGE_VERSION=$(echo "$WHEEL_FILE" | sed -n "s/.*${PACKAGE_NAME}-\(.*\)-py3-none-any\.whl/\1/p")
+          tar -czf ${PACKAGE_NAME}_${PACKAGE_VERSION}.tar.gz ${PACKAGE_NAME}_${PACKAGE_VERSION}
       - name: Upload release tarball
         uses: actions/upload-artifact@v4
         with:
           name: rpi_ai_release
-          path: rpi_ai.tar.gz
+          path: rpi_ai_*.tar.gz
   check_installer:
     runs-on: ubuntu-latest
     needs: create_installer
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: ".python-version"
+      - uses: ./.github/actions/setup-uv
       - name: Download artifact from create_installer job
         uses: actions/download-artifact@v4
         with:
           name: rpi_ai_release
       - name: Extract release tarball
         run: |
-          tar -xzf rpi_ai.tar.gz
-      - name: Run installer script
+          TAR_FILE=$(find . -name 'rpi_ai_*.tar.gz')
+          tar -xzf $TAR_FILE
+      - name: Verify pre-installation directory contents
         run: |
-          cd rpi_ai
+          TAR_FILE=$(find . -name 'rpi_ai_*.tar.gz')
+          DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
+          PACKAGE_NAME="rpi_ai"
+
+          cd "$DIR_NAME"
+          echo "$DIR_NAME/"
+          tree --dirsfirst -F
+
+          WHEEL_FILE=$(find . -name "${PACKAGE_NAME}-*-py3-none-any.whl")
+          files=("${WHEEL_FILE}")
+          scripts=("install_rpi_ai.sh")
+
+          for file in "${files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "File $file not found"
+              exit 1
+            fi
+          done
+
+          for script in "${scripts[@]}"; do
+            if [ ! -f "$script" ]; then
+              echo "Script $script not found"
+              exit 1
+            fi
+            if [ ! -x "$script" ]; then
+              echo "Script $script is not executable"
+              exit 1
+            fi
+          done
+      - name: Run installer script
+        env:
+          GEMINI_API_KEY: dummy
+        run: |
+          TAR_FILE=$(find . -name 'rpi_ai_*.tar.gz')
+          DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
+
+          cd "$DIR_NAME"
           export GEMINI_API_KEY="test"
           ./install_rpi_ai.sh
 
-          echo "rpi_ai/"
-          ls -la
+      - name: Verify post-installation directory contents
+        run: |
+          TAR_FILE=$(find . -name 'rpi_ai_*.tar.gz')
+          DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
+
+          cd "$DIR_NAME"
+          echo "$DIR_NAME/"
+          tree --dirsfirst -F
 
           if [ -f "install_rpi_ai.sh" ]; then
             echo "Installer script not removed"
@@ -109,47 +127,31 @@ jobs:
             exit 1
           fi
 
-          if [ ! -d ".venv" ]; then
-            echo "Virtual environment not found"
-            exit 1
-          fi
+          folders=(".venv" "logs" "service" "${HOME}/.config/rpi_ai")
+          files=("rpi-ai" "LICENSE" "README.md" "service/rpi-ai.service" "${HOME}/.config/rpi_ai/ai_config.json")
+          scripts=("uninstall_rpi_ai.sh" "service/start_service.sh" "service/stop_service.sh")
 
-          if [ ! -f "rpi-ai" ]; then
-            echo "API executable not found"
-            exit 1
-          fi
+          for folder in "${folders[@]}"; do
+            if [ ! -d "$folder" ]; then
+              echo "Folder $folder not found"
+              exit 1
+            fi
+          done
 
-          if [ ! -f "${HOME}/.config/rpi_ai/ai_config.json" ]; then
-            echo "Config directory not found"
-            exit 1
-          fi
+          for file in "${files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "File $file not found"
+              exit 1
+            fi
+          done
 
-          if [ ! -d "logs" ]; then
-            echo "Logs directory not found"
-            exit 1
-          fi
-
-          if [ ! -f "service/rpi-ai.service" ]; then
-            echo "Service file not found"
-            exit 1
-          fi
-
-          if [ ! -f "service/start_service.sh" ]; then
-            echo "Service creation file not found"
-            exit 1
-          fi
-
-          if [ ! -f "service/stop_service.sh" ]; then
-            echo "Service stopping file not found"
-            exit 1
-          fi
-
-          if [ ! -f "uninstall_rpi_ai.sh" ]; then
-            echo "Uninstallation file not found"
-            exit 1
-          fi
-
-          if [ ! -f "README.txt" ]; then
-            echo "README file not found"
-            exit 1
-          fi
+          for script in "${scripts[@]}"; do
+            if [ ! -f "$script" ]; then
+              echo "Script $script not found"
+              exit 1
+            fi
+            if [ ! -x "$script" ]; then
+              echo "Script $script is not executable"
+              exit 1
+            fi
+          done

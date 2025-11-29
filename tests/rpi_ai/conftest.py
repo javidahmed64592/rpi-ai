@@ -45,7 +45,7 @@ def config_data() -> dict[str, str | float]:
 @pytest.fixture
 def mock_config(config_data: dict[str, str | float]) -> ChatbotConfig:
     """Fixture to create a mock ChatbotConfig instance."""
-    return ChatbotConfig(**config_data)
+    return ChatbotConfig.model_validate(config_data)
 
 
 @pytest.fixture

@@ -9,7 +9,7 @@ import secrets
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +38,13 @@ class Config:
         self.api_key = str(gemini_api_key)
 
         self.root_dir = Path(str(rpi_ai_path.strip()))
-        logger.debug(f"Root directory: {self.root_dir}")
+        logger.debug("Root directory: %s", self.root_dir)
 
         self.ai_config = ChatbotConfig.load(self.config_file)
         logger.debug("Successfully loaded AI config!")
 
         self.token = self.generate_token()
-        logger.info(f"Token: {self.token}")
+        logger.info("Token: %s", self.token)
 
     @property
     def config_dir(self) -> Path:
@@ -56,7 +56,7 @@ class Config:
         if not (config_dir := Path.home() / ".config" / "rpi_ai").exists():
             config_dir = self.root_dir / "config"
 
-        logger.debug(f"Config directory: {config_dir}")
+        logger.debug("Config directory: %s", config_dir)
         return config_dir
 
     @property
@@ -67,7 +67,7 @@ class Config:
             Configuration file path
         """
         config_file = self.config_dir / "ai_config.json"
-        logger.debug(f"Config file: {config_file}")
+        logger.debug("Config file: %s", config_file)
         return config_file
 
     @property
@@ -123,8 +123,7 @@ class Config:
         return token
 
 
-@dataclass
-class ChatbotConfig:
+class ChatbotConfig(BaseModel):
     """Configuration for chatbot settings."""
 
     model: str
@@ -141,7 +140,7 @@ class ChatbotConfig:
         :return ChatbotConfig:
             Loaded configuration
         """
-        with open(str(path)) as file:
+        with path.open() as file:
             return cls(**json.load(file))
 
     def save(self, path: Path) -> None:
@@ -150,5 +149,5 @@ class ChatbotConfig:
         :param Path path:
             Path to save configuration
         """
-        with open(str(path), "w") as file:
+        with path.open("w") as file:
             json.dump(self.__dict__, file, indent=4)
