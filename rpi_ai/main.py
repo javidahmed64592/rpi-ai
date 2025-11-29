@@ -119,7 +119,7 @@ class AIApp:
         logger.info("Starting new chat...")
         response = self.chatbot.chat_history
         logger.info("Loaded chat history: %s messages", len(response.messages))
-        return jsonify(response)
+        return jsonify(response.model_dump())
 
     def restart_chat(self) -> Response:
         """Restart chat session endpoint.
@@ -130,7 +130,7 @@ class AIApp:
         logger.info("Restarting chat...")
         self.chatbot.start_chat()
         response = self.chatbot.chat_history
-        return jsonify(response)
+        return jsonify(response.model_dump())
 
     def get_config(self) -> Response:
         """Get chatbot configuration endpoint.
@@ -152,7 +152,7 @@ class AIApp:
         config.save(self.config.config_file)
         self.chatbot.start_chat()
         response = self.chatbot.chat_history
-        return jsonify(response)
+        return jsonify(response.model_dump())
 
     def chat(self) -> Response:
         """Chat message endpoint.
@@ -171,7 +171,7 @@ class AIApp:
                 timestamp=int(datetime.now().timestamp()),
             )
             logger.error(response.message)
-        return jsonify(response)
+        return jsonify(response.model_dump())
 
     def send_audio(self) -> Response:
         """Audio message endpoint.
@@ -192,7 +192,7 @@ class AIApp:
                 timestamp=int(datetime.now().timestamp()),
             )
             logger.error(response.message)
-        return jsonify(response)
+        return jsonify(response.model_dump())
 
     def shutdown_handler(self, signum: int, frame: FrameType | None) -> None:
         """Handle shutdown signal.
