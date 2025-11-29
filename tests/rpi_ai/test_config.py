@@ -187,7 +187,7 @@ class TestChatbotConfig:
 
     def test_load(self, mock_read_ai_config: MagicMock, config_data: dict[str, str | float]) -> None:
         """Test loading a ChatbotConfig from a file."""
-        config = ChatbotConfig.load("dummy_path")
+        config = ChatbotConfig.load(Path("dummy_path"))
         mock_read_ai_config.assert_called_once()
         assert config.model == "test-model"
         assert config.max_output_tokens == config_data["max_output_tokens"]
@@ -196,7 +196,7 @@ class TestChatbotConfig:
     def test_save(self, mock_read_ai_config: MagicMock, config_data: dict[str, str | float]) -> None:
         """Test saving a ChatbotConfig to a file."""
         config = ChatbotConfig.model_validate(config_data)
-        config.save("dummy_path")
+        config.save(Path("dummy_path"))
         mock_read_ai_config.assert_called_once_with("w")
         handle = mock_read_ai_config()
         written_data = "".join(call.args[0] for call in handle.write.call_args_list)

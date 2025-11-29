@@ -132,22 +132,22 @@ class ChatbotConfig(BaseModel):
     temperature: float = 1.0
 
     @classmethod
-    def load(cls, path: str) -> ChatbotConfig:
+    def load(cls, path: Path) -> ChatbotConfig:
         """Load chatbot configuration from JSON file.
 
-        :param str path:
+        :param Path path:
             Path to configuration file
         :return ChatbotConfig:
             Loaded configuration
         """
-        with Path(path).open() as file:
+        with path.open() as file:
             return cls(**json.load(file))
 
-    def save(self, path: str) -> None:
+    def save(self, path: Path) -> None:
         """Save chatbot configuration to JSON file.
 
-        :param str path:
+        :param Path path:
             Path to save configuration
         """
-        with Path(path).open("w") as file:
+        with path.open("w") as file:
             json.dump(self.__dict__, file, indent=4)
