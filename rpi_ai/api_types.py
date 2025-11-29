@@ -5,11 +5,10 @@ from __future__ import annotations
 from datetime import datetime
 
 from google.genai.types import Content, Part
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 
 
-@dataclass
-class Message:
+class Message(BaseModel):
     """Message data type for chat communications."""
 
     message: str
@@ -65,8 +64,7 @@ class Message:
         )
 
 
-@dataclass
-class MessageList:
+class MessageList(BaseModel):
     """List of messages for chat communications."""
 
     messages: list[Message]
@@ -97,7 +95,7 @@ class MessageList:
             except (AttributeError, IndexError):
                 pass
 
-        return cls(msgs)
+        return cls(messages=msgs)
 
     @property
     def as_contents_list(self) -> list[Content]:
@@ -115,8 +113,7 @@ class MessageList:
         ]
 
 
-@dataclass
-class SpeechResponse:
+class SpeechResponse(BaseModel):
     """Speech response data type for audio communications."""
 
     bytes: str

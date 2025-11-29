@@ -34,6 +34,7 @@ class TestChatbot:
         assert config.temperature == mock_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
+        assert isinstance(config.tools, list)
         assert len(config.tools) == 1
         assert config.tools[0] in mock_chatbot._functions
 
@@ -45,6 +46,7 @@ class TestChatbot:
         assert config.temperature == mock_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
+        assert isinstance(config.tools, list)
         assert len(config.tools) == 1
         assert config.tools[0].google_search == GoogleSearch()
 

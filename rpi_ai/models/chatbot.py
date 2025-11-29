@@ -103,7 +103,7 @@ class Chatbot:
         :return MessageList:
             Current chat history
         """
-        return MessageList(self._history)
+        return MessageList(messages=self._history)
 
     def web_search(self, query: str) -> str:
         """Search the web for the given query.

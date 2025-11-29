@@ -166,7 +166,10 @@ class AIApp:
             response = self.chatbot.send_message(user_message["message"])
             logger.info(response.message)
         else:
-            response = Message.model_message("No message received.", int(datetime.now().timestamp()))
+            response = Message.model_message(
+                message="No message received.",
+                timestamp=int(datetime.now().timestamp()),
+            )
             logger.error(response.message)
         return jsonify(response)
 
@@ -183,7 +186,11 @@ class AIApp:
             response = self.chatbot.send_audio(audio_data)
             logger.info(response.message)
         else:
-            response = SpeechResponse("", "No audio data received.", int(datetime.now().timestamp()))
+            response = SpeechResponse(
+                bytes="",
+                message="No audio data received.",
+                timestamp=int(datetime.now().timestamp()),
+            )
             logger.error(response.message)
         return jsonify(response)
 

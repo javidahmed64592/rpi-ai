@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 from flask.testing import FlaskClient
 
+from rpi_ai.api_types import Message, SpeechResponse
 from rpi_ai.config import ChatbotConfig
 from rpi_ai.main import AIApp, main
 
@@ -111,7 +112,7 @@ class TestAIApp:
         mock_request_json.return_value = new_config
 
         response = mock_client.post("/update-config")
-        mock_update_config.assert_called_once_with(ChatbotConfig(**new_config))
+        mock_update_config.assert_called_once_with(ChatbotConfig.model_validate(new_config))
         mock_save_config.assert_called_once()
         mock_start_chat.assert_called_once()
         mock_jsonify.assert_called_once_with(mock_chat_history.return_value)
@@ -216,7 +217,13 @@ class TestAIApp:
 
         response = mock_client.post("/chat")
         mock_send_message.assert_not_called()
-        mock_jsonify.assert_called_once_with("No message received.")
+        call_args = mock_jsonify.call_args
+        assert call_args is not None
+        arg = call_args[0][0]
+        assert isinstance(arg, Message)
+        assert arg.message == "No message received."
+        assert arg.is_user_message is False
+        assert isinstance(arg.timestamp, int)
         assert response.status_code == SUCCESS_CODE
 
     def test_send_audio(
@@ -267,7 +274,13 @@ class TestAIApp:
 
         response = mock_client.post("/send-audio")
         mock_send_audio.assert_not_called()
-        mock_jsonify.assert_called_once_with("No audio data received.")
+        call_args = mock_jsonify.call_args
+        assert call_args is not None
+        arg = call_args[0][0]
+        assert isinstance(arg, SpeechResponse)
+        assert arg.message == "No audio data received."
+        assert arg.bytes == ""
+        assert isinstance(arg.timestamp, int)
         assert response.status_code == SUCCESS_CODE
 
     def test_run_with_waitress(self, mock_ai_app: AIApp, mock_waitress_serve: MagicMock) -> None:

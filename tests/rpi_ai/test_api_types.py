@@ -64,8 +64,11 @@ class TestMessageList:
         message_list = MessageList.from_contents_list(data)
         history = message_list.as_contents_list
         assert len(history) == len(data)
+        assert isinstance(history, list)
+        assert isinstance(history[0].parts, list)
         assert history[0].parts[0].text == "user_msg"
         assert history[0].role == "user"
+        assert isinstance(history[1].parts, list)
         assert history[1].parts[0].text == "model_msg"
         assert history[1].role == "model"
 
@@ -77,7 +80,7 @@ class TestSpeechResponse:
         """Test creating a SpeechResponse from a dictionary."""
         timestamp = int(datetime.now().timestamp())
         data = {"bytes": "audio_data", "timestamp": timestamp, "message": "Hello, world!"}
-        response = SpeechResponse(**data)
+        response = SpeechResponse.model_validate(data)
         assert response.message == "Hello, world!"
         assert response.timestamp == timestamp
         assert response.bytes == "audio_data"

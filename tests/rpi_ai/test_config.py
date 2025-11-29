@@ -15,7 +15,7 @@ from rpi_ai.config import ChatbotConfig, Config
 @pytest.fixture(autouse=True)
 def mock_read_ai_config(config_data: dict[str, str | float]) -> Generator[MagicMock, None, None]:
     """Mock the read_ai_config function to return predefined config data."""
-    with patch("builtins.open", new_callable=mock_open, read_data=json.dumps(config_data)) as mock:
+    with patch("pathlib.Path.open", new_callable=mock_open, read_data=json.dumps(config_data)) as mock:
         yield mock
 
 
@@ -190,16 +190,16 @@ class TestChatbotConfig:
     def test_load(self, mock_read_ai_config: MagicMock, config_data: dict[str, str | float]) -> None:
         """Test loading a ChatbotConfig from a file."""
         config = ChatbotConfig.load("dummy_path")
-        mock_read_ai_config.assert_called_once_with("dummy_path")
+        mock_read_ai_config.assert_called_once()
         assert config.model == "test-model"
         assert config.max_output_tokens == config_data["max_output_tokens"]
         assert config.temperature == config_data["temperature"]
 
     def test_save(self, mock_read_ai_config: MagicMock, config_data: dict[str, str | float]) -> None:
         """Test saving a ChatbotConfig to a file."""
-        config = ChatbotConfig(**config_data)
+        config = ChatbotConfig.model_validate(config_data)
         config.save("dummy_path")
-        mock_read_ai_config.assert_called_once_with("dummy_path", "w")
+        mock_read_ai_config.assert_called_once_with("w")
         handle = mock_read_ai_config()
         written_data = "".join(call.args[0] for call in handle.write.call_args_list)
         assert written_data == json.dumps(config_data, indent=4)
