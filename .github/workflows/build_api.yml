@@ -127,7 +127,7 @@ jobs:
             exit 1
           fi
 
-          folders=(".venv" "service" "${HOME}/.config/rpi_ai")
+          folders=(".venv" "logs" "service" "${HOME}/.config/rpi_ai")
           files=("rpi-ai" "LICENSE" "README.md" "service/rpi-ai.service" "${HOME}/.config/rpi_ai/ai_config.json")
           scripts=("uninstall_rpi_ai.sh" "service/start_service.sh" "service/stop_service.sh")
 

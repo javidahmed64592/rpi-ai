@@ -24,12 +24,13 @@ SECURITY_FILE="SECURITY.md"
 LICENSE_FILE="LICENSE"
 
 CONFIG_DIR="${HOME}/.config/rpi_ai"
+LOGS_DIR="${WD}/logs"
 SERVICE_DIR="${WD}/service"
 FULL_VENV_PATH="${WD}/${VENV_NAME}"
 BIN_DIR="${FULL_VENV_PATH}/bin"
 
 EXE_PATH="${WD}/${EXE_NAME}"
-LOG_PATH="${WD}/${LOG_FILE}"
+LOG_PATH="${LOGS_DIR}/${LOG_FILE}"
 SERVICE_PATH="${SERVICE_DIR}/${SERVICE_FILE}"
 CREATE_SERVICE_PATH="${SERVICE_DIR}/${CREATE_SERVICE_FILE}"
 STOP_SERVICE_PATH="${SERVICE_DIR}/${STOP_SERVICE_FILE}"
@@ -49,6 +50,7 @@ rm "${WHEEL_FILE}"
 
 echo ${SEPARATOR}
 echo "Preparing directories..."
+mkdir -p "${LOGS_DIR}"
 mkdir -p "${SERVICE_DIR}"
 
 SITE_PACKAGES_DIR=$(find "${FULL_VENV_PATH}/lib" -name "site-packages" -type d | head -1)
