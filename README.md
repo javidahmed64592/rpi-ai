@@ -2,7 +2,9 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Flutter](https://img.shields.io/badge/Flutter-3.13-02569B.svg?style=flat&logo=flutter&logoColor=white)](https://flutter.dev/)
-[![CI](https://img.shields.io/github/actions/workflow/status/javidahmed64592/rpi-ai/ci.yml?branch=main&style=flat-square&label=CI&logo=github)](https://github.com/javidahmed64592/rpi-ai/actions)
+[![CI API](https://img.shields.io/github/actions/workflow/status/javidahmed64592/rpi-ai/ci_api.yml?branch=main&style=flat-square&label=CI&logo=github)](https://github.com/javidahmed64592/rpi-ai/actions)
+[![CI UI](https://img.shields.io/github/actions/workflow/status/javidahmed64592/rpi-ai/ci_ui.yml?branch=main&style=flat-square&label=CI&logo=github)](https://github.com/javidahmed64592/rpi-ai/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/javidahmed64592/rpi-ai/build_api.yml?branch=main&style=flat-square&label=CI&logo=github)](https://github.com/javidahmed64592/rpi-ai/actions)
 [![License](https://img.shields.io/github/license/javidahmed64592/rpi-ai?style=flat-square)](https://github.com/javidahmed64592/rpi-ai/blob/main/LICENSE)
 
 
