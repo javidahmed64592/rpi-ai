@@ -1,10 +1,10 @@
-"""Unit tests for the rpi_ai.api_types module."""
+"""Unit tests for the rpi_ai.models module."""
 
 from datetime import datetime
 
 from google.genai.types import Content, Part
 
-from rpi_ai.api_types import Message, MessageList, SpeechResponse
+from rpi_ai.models import Message, MessageList, SpeechResponse
 
 
 class TestMessage:

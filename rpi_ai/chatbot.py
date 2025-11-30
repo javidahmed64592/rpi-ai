@@ -20,8 +20,8 @@ from gtts import gTTSError
 from pydantic import ValidationError
 
 from rpi_ai import audiobot
-from rpi_ai.api_types import Message, MessageList, SpeechResponse
 from rpi_ai.config import ChatbotConfig
+from rpi_ai.models import Message, MessageList, SpeechResponse
 
 logger = logging.getLogger(__name__)
 
