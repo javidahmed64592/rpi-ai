@@ -173,20 +173,6 @@ class ChatbotServer(TemplateServer):
                 speech_response=chatbot_speech,
             )
 
-        if form is None:
-            chatbot_speech = ChatbotSpeech(
-                bytes="",
-                message="Error: No form data provided in request body",
-                timestamp=self.chatbot._get_current_timestamp(),
-            )
-            logger.error(chatbot_speech.message)
-            return PostAudioResponse(
-                code=ResponseCode.BAD_REQUEST,
-                message=chatbot_speech.message,
-                timestamp=PostAudioResponse.current_timestamp(),
-                speech_response=chatbot_speech,
-            )
-
         audio_file = form.get("audio")
         if not isinstance(audio_file, bytes) and not hasattr(audio_file, "read"):
             chatbot_speech = ChatbotSpeech(
@@ -203,7 +189,7 @@ class ChatbotServer(TemplateServer):
             )
 
         try:
-            audio_data = await audio_file.read()
+            audio_data = await audio_file.read()  # type: ignore[union-attr]
         except Exception:
             chatbot_speech = ChatbotSpeech(
                 bytes="",

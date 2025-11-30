@@ -45,6 +45,7 @@ class TestChatbotMessage:
             "timestamp": 1234567890,
             "is_user_message": False,
         }
+        assert isinstance(expected_dict["timestamp"], int)
         chatbot_message = ChatbotMessage.new_chat_message(expected_dict["timestamp"])
         assert chatbot_message.model_dump() == expected_dict
 

@@ -161,6 +161,7 @@ module = [
     "google.*",
     "gtts.*",
     "psutil.*",
+    "python_template_server.*",
     "rpi_ai.*",
     "waitress.*",
 ]
