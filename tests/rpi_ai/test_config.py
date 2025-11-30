@@ -96,7 +96,7 @@ class TestConfig:
         """Test config directory when home config does not exist."""
         mock_path_exists.return_value = False
         config = Config()
-        assert config.config_dir == config.root_dir / "config"
+        assert config.config_dir == config.root_dir / "configuration"
         assert config.config_file == config.config_dir / "config.json"
 
     def test_logs_dir(self, mock_generate_token: MagicMock) -> None:
