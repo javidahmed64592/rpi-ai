@@ -127,11 +127,10 @@ class TestChatbot:
         assert mock_chatbot.chat_history.messages[-1].message == response.message
         assert not mock_chatbot.chat_history.messages[-1].is_user_message
 
-    def test_send_message_with_error(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
-        """Test sending a message when an error occurs."""
+    def test_send_message_with_no_response(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
+        """Test sending a message when no response is received from the model."""
         mock_msg = "Hi model!"
-        mock_chat_instance.send_message.return_value = MagicMock(text=None)
-
+        mock_chat_instance.send_message.return_value = MagicMock(text="")
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
         assert response.message == "Failed to send message to chatbot!"
@@ -186,10 +185,10 @@ class TestChatbot:
         assert mock_chatbot.chat_history.messages[-1].message == response.message
         assert not mock_chatbot.chat_history.messages[-1].is_user_message
 
-    def test_send_audio_with_error(
+    def test_send_audio_with_no_response(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
     ) -> None:
-        """Test sending an audio message when an error occurs."""
+        """Test sending an audio message when no response is received from the model."""
         mock_chat_instance.send_message.return_value = MagicMock(parts=MagicMock(text=None))
 
         mock_audio = "Failed to send messages to chatbot!"
