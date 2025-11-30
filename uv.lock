@@ -951,7 +951,7 @@ wheels = [
 [[package]]
 name = "python-template-server"
 version = "0.1.0"
-source = { git = "https://github.com/javidahmed64592/python-template-server.git#9a32ce61a9e1ef7f7f70b29cff85b6e9cca71c6b" }
+source = { git = "https://github.com/javidahmed64592/python-template-server.git#b4f7ce4d93b50e9fad30c4f46448e56f162aa6e5" }
 dependencies = [
     { name = "cryptography" },
     { name = "fastapi" },
