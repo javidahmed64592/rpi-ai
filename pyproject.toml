@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "rpi-ai"
 version = "1.0.1"
-description = "AI written in Python to control a companion bot hosted on a Raspberry Pi."
+description = "A lightweight AI chatbot using Google Gemini."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }

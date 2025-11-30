@@ -2,7 +2,7 @@
 
 import os
 from collections.abc import Generator
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 from prometheus_client import REGISTRY
@@ -32,6 +32,13 @@ def mock_path_home() -> Generator[MagicMock, None, None]:
     """Mock the Path.home() method."""
     with patch("pathlib.Path.home") as mock_home:
         yield mock_home
+
+
+@pytest.fixture(autouse=True)
+def mock_open_file() -> Generator[MagicMock, None, None]:
+    """Mock the Path.open() method."""
+    with patch("pathlib.Path.open", mock_open()) as mock_file:
+        yield mock_file
 
 
 @pytest.fixture(autouse=True)
