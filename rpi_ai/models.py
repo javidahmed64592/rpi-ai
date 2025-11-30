@@ -105,11 +105,7 @@ class ChatbotMessageList(BaseModel):
 
     @property
     def as_contents_list(self) -> list[Content]:
-        """Convert ChatbotMessageList to Content list.
-
-        :return list[Content]:
-            List of Content objects
-        """
+        """Convert ChatbotMessageList to Content list."""
         return [
             Content(
                 parts=[Part(text=message.message)],

@@ -61,11 +61,7 @@ class Chatbot:
 
     @property
     def _model_config(self) -> GenerateContentConfig:
-        """Get base model configuration.
-
-        :return GenerateContentConfig:
-            Model configuration
-        """
+        """Get base model configuration."""
         return GenerateContentConfig(
             system_instruction=self._config.system_instruction,
             max_output_tokens=self._config.max_output_tokens,
@@ -76,33 +72,21 @@ class Chatbot:
 
     @property
     def _chat_config(self) -> GenerateContentConfig:
-        """Get chat configuration with functions.
-
-        :return GenerateContentConfig:
-            Chat configuration
-        """
+        """Get chat configuration with functions."""
         _config = self._model_config
         _config.tools = self._functions
         return _config
 
     @property
     def _web_search_config(self) -> GenerateContentConfig:
-        """Get web search configuration.
-
-        :return GenerateContentConfig:
-            Web search configuration
-        """
+        """Get web search configuration."""
         _config = self._model_config
         _config.tools = [Tool(google_search=GoogleSearch())]
         return _config
 
     @property
     def chat_history(self) -> ChatbotMessageList:
-        """Get chat history as ChatbotMessageList.
-
-        :return ChatbotMessageList:
-            Current chat history
-        """
+        """Get chat history as ChatbotMessageList."""
         return ChatbotMessageList(messages=self._history)
 
     def _get_current_timestamp(self) -> int:

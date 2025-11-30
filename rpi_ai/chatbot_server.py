@@ -68,11 +68,7 @@ class ChatbotServer(TemplateServer):
 
     @property
     def config_dir(self) -> Path:
-        """Get the configuration directory path.
-
-        :return Path:
-            Configuration directory path
-        """
+        """Get the configuration directory path."""
         if not (config_dir := Path.home() / ".config" / "rpi_ai").exists():
             config_dir = CONFIG_DIR
 
