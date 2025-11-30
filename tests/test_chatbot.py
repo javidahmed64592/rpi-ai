@@ -7,7 +7,7 @@ from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
 from rpi_ai.chatbot import Chatbot
-from rpi_ai.config import ChatbotConfig
+from rpi_ai.models import ChatbotConfig
 
 
 class TestChatbot:
@@ -17,33 +17,33 @@ class TestChatbot:
         """Test initialisation of the Chatbot class."""
         mock_genai_client.assert_called_once_with(api_key=mock_env_vars["GEMINI_API_KEY"])
 
-    def test_model_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_model_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the model configuration of the Chatbot."""
         config = mock_chatbot._model_config
-        assert config.system_instruction == mock_config.system_instruction
-        assert config.max_output_tokens == mock_config.max_output_tokens
-        assert config.temperature == mock_config.temperature
+        assert config.system_instruction == mock_chatbot_config.system_instruction
+        assert config.max_output_tokens == mock_chatbot_config.max_output_tokens
+        assert config.temperature == mock_chatbot_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
 
-    def test_chat_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_chat_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the chat configuration of the Chatbot."""
         config = mock_chatbot._chat_config
-        assert config.system_instruction == mock_config.system_instruction
-        assert config.max_output_tokens == mock_config.max_output_tokens
-        assert config.temperature == mock_config.temperature
+        assert config.system_instruction == mock_chatbot_config.system_instruction
+        assert config.max_output_tokens == mock_chatbot_config.max_output_tokens
+        assert config.temperature == mock_chatbot_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
         assert isinstance(config.tools, list)
         assert len(config.tools) == 1
         assert config.tools[0] in mock_chatbot._functions
 
-    def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_web_search_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the web search configuration of the Chatbot."""
         config = mock_chatbot._web_search_config
-        assert config.system_instruction == mock_config.system_instruction
-        assert config.max_output_tokens == mock_config.max_output_tokens
-        assert config.temperature == mock_config.temperature
+        assert config.system_instruction == mock_chatbot_config.system_instruction
+        assert config.max_output_tokens == mock_chatbot_config.max_output_tokens
+        assert config.temperature == mock_chatbot_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
         assert isinstance(config.tools, list)
@@ -87,15 +87,15 @@ class TestChatbot:
         )
         assert response == "Blocked message"
 
-    def test_get_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_get_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test retrieving the configuration of the Chatbot."""
-        assert mock_chatbot.get_config() == mock_config
+        assert mock_chatbot.get_config() == mock_chatbot_config
 
-    def test_update_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_update_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test updating the configuration of the Chatbot."""
-        mock_config.model = "new-model"
-        mock_chatbot.update_config(mock_config)
-        assert mock_chatbot.get_config() == mock_config
+        mock_chatbot_config.model = "new-model"
+        mock_chatbot.update_config(mock_chatbot_config)
+        assert mock_chatbot.get_config() == mock_chatbot_config
 
     def test_start_chat(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
         """Test starting a new chat session."""
