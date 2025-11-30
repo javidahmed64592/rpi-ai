@@ -54,7 +54,7 @@ class Config:
             Configuration directory path
         """
         if not (config_dir := Path.home() / ".config" / "rpi_ai").exists():
-            config_dir = self.root_dir / "config"
+            config_dir = self.root_dir / "configuration"
 
         logger.debug("Config directory: %s", config_dir)
         return config_dir

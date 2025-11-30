@@ -55,7 +55,7 @@ mkdir -p "${SERVICE_DIR}"
 
 SITE_PACKAGES_DIR=$(find "${FULL_VENV_PATH}/lib" -name "site-packages" -type d | head -1)
 mkdir -p "${CONFIG_DIR}"
-CONFIG_PATH="${SITE_PACKAGES_DIR}/config/${CONFIG_FILE}"
+CONFIG_PATH="${SITE_PACKAGES_DIR}/configuration/${CONFIG_FILE}"
 
 if [ -f "${CONFIG_DEST}" ]; then
     echo "AI configuration file already exists: '${CONFIG_DEST}'"
