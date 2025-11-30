@@ -24,6 +24,7 @@ dependencies = [
     "psutil",
     "pydantic",
     "python-dotenv",
+    "python-multipart>=0.0.20",
     "python-template-server",
     "waitress",
 ]
