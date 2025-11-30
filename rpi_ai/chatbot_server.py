@@ -1,5 +1,6 @@
 """RPi AI server application module."""
 
+import json
 import logging
 import os
 from pathlib import Path
@@ -13,9 +14,13 @@ from rpi_ai.chatbot import Chatbot
 from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models import (
     ChatbotConfig,
+    ChatbotMessage,
     ChatbotServerConfig,
+    ChatbotSpeech,
     GetChatHistoryResponse,
     GetConfigResponse,
+    PostAudioResponse,
+    PostMessageResponse,
 )
 
 logger = logging.getLogger(__name__)
@@ -58,6 +63,8 @@ class ChatbotServer(TemplateServer):
         self.add_authenticated_route("/config", self.post_config, None, methods=["POST"])
         self.add_authenticated_route("/chat/history", self.get_chat_history, GetChatHistoryResponse, methods=["GET"])
         self.add_authenticated_route("/chat/restart", self.post_restart_chat, None, methods=["POST"])
+        self.add_authenticated_route("/chat/message", self.post_message_text, PostMessageResponse, methods=["POST"])
+        self.add_authenticated_route("/chat/audio", self.post_message_audio, PostAudioResponse, methods=["POST"])
 
     @property
     def config_dir(self) -> Path:
@@ -108,6 +115,151 @@ class ChatbotServer(TemplateServer):
         """Restart chat session."""
         logger.info("Restarting chatbot session...")
         self.chatbot.start_chat()
+
+    async def post_message_text(self, request: Request) -> PostMessageResponse:
+        """Send a text chat message."""
+        try:
+            logger.info("Receiving user message...")
+            request_json = await request.json()
+        except json.JSONDecodeError:
+            chatbot_message = ChatbotMessage.model_message(
+                message="Error: Invalid JSON in request body",
+                timestamp=self.chatbot._get_current_timestamp(),
+            )
+            logger.exception(chatbot_message.message)
+            return PostMessageResponse(
+                code=ResponseCode.BAD_REQUEST,
+                message=chatbot_message.message,
+                timestamp=PostMessageResponse.current_timestamp(),
+                reply=chatbot_message,
+            )
+
+        user_message = request_json.get("message", "")
+        if not user_message:
+            chatbot_message = ChatbotMessage.model_message(
+                message="Error: No message provided in request body",
+                timestamp=self.chatbot._get_current_timestamp(),
+            )
+            logger.error(chatbot_message.message)
+            return PostMessageResponse(
+                code=ResponseCode.BAD_REQUEST,
+                message=chatbot_message.message,
+                timestamp=PostMessageResponse.current_timestamp(),
+                reply=chatbot_message,
+            )
+
+        logger.info("Message: %s", user_message)
+        reply = self.chatbot.send_message(user_message)
+        if not reply.message:
+            chatbot_message = ChatbotMessage.model_message(
+                message="Error: No reply from chatbot",
+                timestamp=self.chatbot._get_current_timestamp(),
+            )
+            logger.error(chatbot_message.message)
+            return PostMessageResponse(
+                code=ResponseCode.BAD_REQUEST,
+                message=chatbot_message.message,
+                timestamp=PostMessageResponse.current_timestamp(),
+                reply=chatbot_message,
+            )
+
+        logger.info("Reply: %s", reply.message)
+        return PostMessageResponse(
+            code=ResponseCode.OK,
+            message="Message sent successfully",
+            timestamp=PostMessageResponse.current_timestamp(),
+            reply=reply,
+        )
+
+    async def post_message_audio(self, request: Request) -> PostAudioResponse:
+        """Send an audio chat message."""
+        try:
+            logger.info("Receiving audio message...")
+            form = await request.form()
+        except Exception:
+            chatbot_speech = ChatbotSpeech(
+                bytes="",
+                message="Error: Failed to parse form data",
+                timestamp=self.chatbot._get_current_timestamp(),
+            )
+            logger.exception(chatbot_speech.message)
+            return PostAudioResponse(
+                code=ResponseCode.BAD_REQUEST,
+                message=chatbot_speech.message,
+                timestamp=PostAudioResponse.current_timestamp(),
+                speech_response=chatbot_speech,
+            )
+
+        if form is None:
+            chatbot_speech = ChatbotSpeech(
+                bytes="",
+                message="Error: No form data provided in request body",
+                timestamp=self.chatbot._get_current_timestamp(),
+            )
+            logger.error(chatbot_speech.message)
+            return PostAudioResponse(
+                code=ResponseCode.BAD_REQUEST,
+                message=chatbot_speech.message,
+                timestamp=PostAudioResponse.current_timestamp(),
+                speech_response=chatbot_speech,
+            )
+
+        audio_file = form.get("audio")
+        if not isinstance(audio_file, bytes) and not hasattr(audio_file, "read"):
+            chatbot_speech = ChatbotSpeech(
+                bytes="",
+                message="Error: No audio file provided in request body",
+                timestamp=self.chatbot._get_current_timestamp(),
+            )
+            logger.error(chatbot_speech.message)
+            return PostAudioResponse(
+                code=ResponseCode.BAD_REQUEST,
+                message=chatbot_speech.message,
+                timestamp=PostAudioResponse.current_timestamp(),
+                speech_response=chatbot_speech,
+            )
+
+        try:
+            audio_data = await audio_file.read()
+        except Exception:
+            chatbot_speech = ChatbotSpeech(
+                bytes="",
+                message="Error: Failed to read audio file",
+                timestamp=self.chatbot._get_current_timestamp(),
+            )
+            logger.exception(chatbot_speech.message)
+            return PostAudioResponse(
+                code=ResponseCode.BAD_REQUEST,
+                message=chatbot_speech.message,
+                timestamp=PostAudioResponse.current_timestamp(),
+                speech_response=chatbot_speech,
+            )
+
+        logger.info("Received audio data...")
+        reply = self.chatbot.send_audio(audio_data)
+        if not reply.message:
+            chatbot_speech = ChatbotSpeech(
+                bytes="",
+                message="Error: No response from audio processing",
+                timestamp=self.chatbot._get_current_timestamp(),
+            )
+            logger.error(chatbot_speech.message)
+            return PostAudioResponse(
+                code=ResponseCode.BAD_REQUEST,
+                message=chatbot_speech.message,
+                timestamp=PostAudioResponse.current_timestamp(),
+                speech_response=chatbot_speech,
+            )
+
+        logger.info("Audio response: %s", reply.message)
+        return PostAudioResponse(
+            code=ResponseCode.OK,
+            message="Audio processed successfully",
+            timestamp=PostAudioResponse.current_timestamp(),
+            speech_response=reply,
+        )
+
+
 def run() -> None:
     """Serve the FastAPI application using uvicorn.
 
