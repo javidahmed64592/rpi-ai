@@ -8,7 +8,7 @@ import pytest
 from prometheus_client import REGISTRY
 
 from rpi_ai.chatbot import Chatbot
-from rpi_ai.models import ChatbotConfig, ChatbotServerConfig
+from rpi_ai.models import ChatbotConfig, ChatbotMessage, ChatbotMessageList, ChatbotServerConfig, ChatbotSpeech
 
 
 # General fixtures
@@ -44,9 +44,78 @@ def clear_prometheus_registry() -> Generator[None, None, None]:
         REGISTRY.unregister(collector)
 
 
-# Template Server Configuration Models
+# Chatbot Data Models
 @pytest.fixture
-def mock_chatbot_config_dict() -> dict[str, str | float]:
+def mock_chatbot_message_user_dict() -> dict:
+    """Fixture to provide a sample user ChatbotMessage dictionary."""
+    return {
+        "message": "user message",
+        "timestamp": 123,
+        "is_user_message": True,
+    }
+
+
+@pytest.fixture
+def mock_chatbot_message_model_dict() -> dict:
+    """Fixture to provide a sample model ChatbotMessage dictionary."""
+    return {
+        "message": "model message",
+        "timestamp": 124,
+        "is_user_message": False,
+    }
+
+
+@pytest.fixture
+def mock_chatbot_message_list_dict(
+    mock_chatbot_message_user_dict: dict,
+    mock_chatbot_message_model_dict: dict,
+) -> dict:
+    """Fixture to provide a sample ChatbotMessageList dictionary."""
+    return {
+        "messages": [
+            mock_chatbot_message_user_dict,
+            mock_chatbot_message_model_dict,
+        ]
+    }
+
+
+@pytest.fixture
+def mock_chatbot_speech_dict() -> dict:
+    """Fixture to provide a sample ChatbotSpeech dictionary."""
+    return {
+        "bytes": "audio_data",
+        "message": "Hello, world!",
+        "timestamp": 125,
+    }
+
+
+@pytest.fixture
+def mock_chatbot_message_user(mock_chatbot_message_user_dict: dict) -> ChatbotMessage:
+    """Fixture to create a mock user ChatbotMessage instance."""
+    return ChatbotMessage.model_validate(mock_chatbot_message_user_dict)
+
+
+@pytest.fixture
+def mock_chatbot_message_model(mock_chatbot_message_model_dict: dict) -> ChatbotMessage:
+    """Fixture to create a mock model ChatbotMessage instance."""
+    return ChatbotMessage.model_validate(mock_chatbot_message_model_dict)
+
+
+@pytest.fixture
+def mock_chatbot_message_list(mock_chatbot_message_list_dict: dict) -> ChatbotMessageList:
+    """Fixture to create a mock ChatbotMessageList instance."""
+    return ChatbotMessageList.model_validate(mock_chatbot_message_list_dict)
+
+
+@pytest.fixture
+def mock_chatbot_speech(mock_chatbot_speech_dict: dict) -> ChatbotSpeech:
+    """Fixture to create a mock ChatbotSpeech instance."""
+    return ChatbotSpeech.model_validate(mock_chatbot_speech_dict)
+
+
+# Chatbot Server Configuration Models
+@pytest.fixture
+def mock_chatbot_config_dict() -> dict:
     """Fixture to provide a sample configuration dictionary."""
     return {
         "model": "test-model",
@@ -57,7 +126,7 @@ def mock_chatbot_config_dict() -> dict[str, str | float]:
 
 
 @pytest.fixture
-def mock_chatbot_config(mock_chatbot_config_dict: dict[str, str | float]) -> ChatbotConfig:
+def mock_chatbot_config(mock_chatbot_config_dict: dict) -> ChatbotConfig:
     """Fixture to create a mock ChatbotConfig instance."""
     return ChatbotConfig.model_validate(mock_chatbot_config_dict)
 
