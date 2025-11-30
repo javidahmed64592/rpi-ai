@@ -86,7 +86,7 @@ class TestConfig:
         mock_path_exists.return_value = True
         config = Config()
         assert config.config_dir == Path.home() / ".config" / "rpi_ai"
-        assert config.config_file == config.config_dir / "ai_config.json"
+        assert config.config_file == config.config_dir / "config.json"
 
     def test_config_dir_when_home_config_does_not_exist(
         self,
@@ -97,7 +97,7 @@ class TestConfig:
         mock_path_exists.return_value = False
         config = Config()
         assert config.config_dir == config.root_dir / "config"
-        assert config.config_file == config.config_dir / "ai_config.json"
+        assert config.config_file == config.config_dir / "config.json"
 
     def test_logs_dir(self, mock_generate_token: MagicMock) -> None:
         """Test logs directory."""

@@ -18,7 +18,7 @@ CREATE_SERVICE_FILE="start_service.sh"
 STOP_SERVICE_FILE="stop_service.sh"
 UNINSTALL_FILE="uninstall_rpi_ai.sh"
 
-CONFIG_FILE="ai_config.json"
+CONFIG_FILE="config.json"
 APP_README_FILE="README.md"
 SECURITY_FILE="SECURITY.md"
 LICENSE_FILE="LICENSE"

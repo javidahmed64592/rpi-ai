@@ -66,7 +66,7 @@ class Config:
         :return Path:
             Configuration file path
         """
-        config_file = self.config_dir / "ai_config.json"
+        config_file = self.config_dir / "config.json"
         logger.debug("Config file: %s", config_file)
         return config_file
 

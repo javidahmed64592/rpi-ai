@@ -128,7 +128,7 @@ jobs:
           fi
 
           folders=(".venv" "logs" "service" "${HOME}/.config/rpi_ai")
-          files=("rpi-ai" "LICENSE" "README.md" "service/rpi-ai.service" "${HOME}/.config/rpi_ai/ai_config.json")
+          files=("rpi-ai" "LICENSE" "README.md" "service/rpi-ai.service" "${HOME}/.config/rpi_ai/config.json")
           scripts=("uninstall_rpi_ai.sh" "service/start_service.sh" "service/stop_service.sh")
 
           for folder in "${folders[@]}"; do
