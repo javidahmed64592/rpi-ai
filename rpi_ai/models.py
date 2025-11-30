@@ -6,8 +6,26 @@ from datetime import datetime
 
 from google.genai.types import Content, Part
 from pydantic import BaseModel
+from python_template_server.models import TemplateServerConfig
 
 
+# Configuration Models
+class ChatbotConfig(BaseModel):
+    """Chatbot configuration model."""
+
+    model: str
+    system_instruction: str
+    max_output_tokens: int
+    temperature: float
+
+
+class ChatbotServerConfig(TemplateServerConfig):
+    """Chatbot server configuration model."""
+
+    chatbot_config: ChatbotConfig
+
+
+# AI Data Models
 class Message(BaseModel):
     """Message data type for chat communications."""
 
