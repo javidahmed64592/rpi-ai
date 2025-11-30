@@ -8,7 +8,7 @@ class FunctionsListBase(ABC):
     """Abstract base class for function lists."""
 
     def __init__(self) -> None:
-        """Initialize the function list."""
+        """Initialise the function list."""
         self.functions: list[Callable] = []
         self.setup_functions()
 
