@@ -7,6 +7,8 @@ from pathlib import Path
 from python_template_server.constants import CONFIG_DIR, CONFIG_FILE_NAME
 from python_template_server.template_server import TemplateServer
 
+from rpi_ai.chatbot import Chatbot
+from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models import ChatbotServerConfig
 
 logger = logging.getLogger(__name__)
@@ -18,10 +20,11 @@ class ChatbotServer(TemplateServer):
     """AI chatbot server application inheriting from TemplateServer."""
 
     def __init__(self, config: ChatbotServerConfig | None = None) -> None:
-        """Initialize the ChatbotServer by delegating to the template server.
+        """Initialise the ChatbotServer by delegating to the template server.
 
         :param ChatbotServerConfig config: Chatbot server configuration
         """
+        self.config: ChatbotServerConfig
         super().__init__(package_name="rpi-ai", config_filepath=self.config_dir / CONFIG_FILE_NAME, config=config)
 
         if not (gemini_api_key := os.environ.get(API_KEY_ENV_VAR)):
@@ -30,7 +33,8 @@ class ChatbotServer(TemplateServer):
             raise ValueError(msg)
 
         logger.info("Successfully loaded API key!")
-        self.api_key = str(gemini_api_key)
+        self.chatbot = Chatbot(str(gemini_api_key), self.config.chatbot_config, FUNCTIONS)
+        logger.info("Successfully initialised Chatbot!")
 
     def validate_config(self, config_data: dict) -> ChatbotServerConfig:
         """Validate and parse the configuration data into a ChatbotServerConfig.
