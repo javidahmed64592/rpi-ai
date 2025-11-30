@@ -150,3 +150,31 @@ class TestConfigEndpoint:
 
         updated_config = mock_chatbot_server.chatbot.get_config()
         assert updated_config == new_config
+
+
+class TestChatHistoryEndpoint:
+    """Integration tests for the /chat/history endpoint."""
+
+    def test_get_chat_history(self, mock_chatbot_server: ChatbotServer) -> None:
+        """Test the /chat/history endpoint method."""
+        request = MagicMock(spec=Request)
+        response = asyncio.run(mock_chatbot_server.get_chat_history(request))
+
+        assert response.code == ResponseCode.OK
+        assert response.message == "Successfully retrieved chatbot conversation history."
+        assert isinstance(response.timestamp, str)
+        assert response.chat_history == mock_chatbot_server.chatbot.chat_history
+
+    def test_get_chat_history_endpoint(self, mock_chatbot_server: ChatbotServer) -> None:
+        """Test /chat/history endpoint returns 200."""
+        app = mock_chatbot_server.app
+        client = TestClient(app)
+
+        response = client.get("/chat/history")
+        assert response.status_code == ResponseCode.OK
+
+        response_body = response.json()
+        assert response_body["code"] == ResponseCode.OK
+        assert response_body["message"] == "Successfully retrieved chatbot conversation history."
+        assert isinstance(response_body["timestamp"], str)
+        assert response_body["chat_history"] == mock_chatbot_server.chatbot.chat_history.model_dump()
