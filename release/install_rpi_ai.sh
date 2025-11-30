@@ -6,6 +6,7 @@ SEPARATOR=$(printf '=%.0s' $(seq 1 $TERMINAL_WIDTH))
 
 if [ -z "${GEMINI_API_KEY:-}" ]; then
     read -p "Enter Gemini API key: " GEMINI_API_KEY
+    echo "GEMINI_API_KEY=${GEMINI_API_KEY}" > .env
 fi
 
 PACKAGE_NAME="rpi_ai"
@@ -75,8 +76,6 @@ mv "${SITE_PACKAGES_DIR}/${LICENSE_FILE}" "${LICENSE_PATH}"
 echo "Creating API executable..."
 cat > "${EXE_PATH}" << EOF
 #!/bin/bash
-export RPI_AI_PATH=${WD}
-export GEMINI_API_KEY=${GEMINI_API_KEY}
 ${BIN_DIR}/${EXE_NAME}
 EOF
 chmod +x "${EXE_PATH}"
