@@ -178,3 +178,26 @@ class TestChatHistoryEndpoint:
         assert response_body["message"] == "Successfully retrieved chatbot conversation history."
         assert isinstance(response_body["timestamp"], str)
         assert response_body["chat_history"] == mock_chatbot_server.chatbot.chat_history.model_dump()
+
+
+class TestRestartChatEndpoint:
+    """Integration tests for the /chat/restart endpoint."""
+
+    def test_post_restart_chat(self, mock_chatbot_server: ChatbotServer) -> None:
+        """Test the /chat/restart endpoint method."""
+        request = MagicMock(spec=Request)
+        asyncio.run(mock_chatbot_server.post_restart_chat(request))
+
+        # Verify that the chat history is reset
+        assert len(mock_chatbot_server.chatbot.chat_history.messages) == 1
+
+    def test_post_restart_chat_endpoint(self, mock_chatbot_server: ChatbotServer) -> None:
+        """Test /chat/restart endpoint returns 200."""
+        app = mock_chatbot_server.app
+        client = TestClient(app)
+
+        response = client.post("/chat/restart")
+        assert response.status_code == ResponseCode.OK
+
+        # Verify that the chat history is reset
+        assert len(mock_chatbot_server.chatbot.chat_history.messages) == 1
