@@ -14,7 +14,7 @@ class TestChatbot:
     """Tests for the Chatbot class."""
 
     def test_init(self, mock_chatbot: Chatbot, mock_env_vars: MagicMock, mock_genai_client: MagicMock) -> None:
-        """Test initialization of the Chatbot class."""
+        """Test initialisation of the Chatbot class."""
         mock_genai_client.assert_called_once_with(api_key=mock_env_vars["GEMINI_API_KEY"])
 
     def test_model_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
