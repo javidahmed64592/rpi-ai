@@ -20,6 +20,20 @@ def mock_here(tmp_path: str) -> Generator[MagicMock, None, None]:
         yield mock_here
 
 
+@pytest.fixture
+def mock_exists() -> Generator[MagicMock, None, None]:
+    """Mock the Path.exists() method."""
+    with patch("pathlib.Path.exists") as mock_exists:
+        yield mock_exists
+
+
+@pytest.fixture
+def mock_path_home() -> Generator[MagicMock, None, None]:
+    """Mock the Path.home() method."""
+    with patch("pathlib.Path.home") as mock_home:
+        yield mock_home
+
+
 @pytest.fixture(autouse=True)
 def mock_env_vars() -> Generator[None, None, None]:
     """Mock environment variables for testing."""
