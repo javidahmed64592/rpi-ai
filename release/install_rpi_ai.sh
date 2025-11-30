@@ -44,7 +44,7 @@ LICENSE_PATH="${WD}/${LICENSE_FILE}"
 echo "Creating virtual environment..."
 uv venv ${VENV_NAME}
 
-uv pip install --system git+https://github.com/javidahmed64592/rpi-ai.git
+uv pip install git+https://github.com/javidahmed64592/rpi-ai.git
 
 echo ${SEPARATOR}
 echo "Preparing directories..."
