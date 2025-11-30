@@ -14,6 +14,7 @@ from rpi_ai.functions import FUNCTIONS
 from rpi_ai.models import (
     ChatbotConfig,
     ChatbotServerConfig,
+    GetChatHistoryResponse,
     GetConfigResponse,
 )
 
@@ -55,6 +56,8 @@ class ChatbotServer(TemplateServer):
         super().setup_routes()
         self.add_authenticated_route("/config", self.get_config, GetConfigResponse, methods=["GET"])
         self.add_authenticated_route("/config", self.post_config, None, methods=["POST"])
+        self.add_authenticated_route("/chat/history", self.get_chat_history, GetChatHistoryResponse, methods=["GET"])
+        self.add_authenticated_route("/chat/restart", self.post_restart_chat, None, methods=["POST"])
 
     @property
     def config_dir(self) -> Path:
@@ -89,6 +92,22 @@ class ChatbotServer(TemplateServer):
         logger.info("Restarting chatbot with updated configuration...")
         self.chatbot.start_chat()
 
+    async def get_chat_history(self, request: Request) -> GetChatHistoryResponse:
+        """Get current chatbot conversation history."""
+        logger.info("Retrieving chatbot conversation history...")
+        chat_history = self.chatbot.chat_history
+        logger.info("Chat history retrieved with %d messages.", len(chat_history.messages))
+        return GetChatHistoryResponse(
+            code=ResponseCode.OK,
+            message="Successfully retrieved chatbot conversation history.",
+            timestamp=GetChatHistoryResponse.current_timestamp(),
+            chat_history=chat_history,
+        )
+
+    async def post_restart_chat(self, request: Request) -> None:
+        """Restart chat session."""
+        logger.info("Restarting chatbot session...")
+        self.chatbot.start_chat()
 def run() -> None:
     """Serve the FastAPI application using uvicorn.
 
