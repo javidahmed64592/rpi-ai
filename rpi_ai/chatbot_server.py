@@ -150,19 +150,6 @@ class ChatbotServer(TemplateServer):
 
         logger.info("Message: %s", user_message)
         reply = self.chatbot.send_message(user_message)
-        if not reply.message:
-            chatbot_message = ChatbotMessage.model_message(
-                message="Error: No reply from chatbot",
-                timestamp=self.chatbot._get_current_timestamp(),
-            )
-            logger.error(chatbot_message.message)
-            return PostMessageResponse(
-                code=ResponseCode.BAD_REQUEST,
-                message=chatbot_message.message,
-                timestamp=PostMessageResponse.current_timestamp(),
-                reply=chatbot_message,
-            )
-
         logger.info("Reply: %s", reply.message)
         return PostMessageResponse(
             code=ResponseCode.OK,
@@ -237,20 +224,6 @@ class ChatbotServer(TemplateServer):
 
         logger.info("Received audio data...")
         reply = self.chatbot.send_audio(audio_data)
-        if not reply.message:
-            chatbot_speech = ChatbotSpeech(
-                bytes="",
-                message="Error: No response from audio processing",
-                timestamp=self.chatbot._get_current_timestamp(),
-            )
-            logger.error(chatbot_speech.message)
-            return PostAudioResponse(
-                code=ResponseCode.BAD_REQUEST,
-                message=chatbot_speech.message,
-                timestamp=PostAudioResponse.current_timestamp(),
-                speech_response=chatbot_speech,
-            )
-
         logger.info("Audio response: %s", reply.message)
         return PostAudioResponse(
             code=ResponseCode.OK,
@@ -258,16 +231,3 @@ class ChatbotServer(TemplateServer):
             timestamp=PostAudioResponse.current_timestamp(),
             speech_response=reply,
         )
-
-
-def run() -> None:
-    """Serve the FastAPI application using uvicorn.
-
-    :raise SystemExit: If configuration fails to load or SSL certificate files are missing
-    """
-    server = ChatbotServer()
-    server.run()
-
-
-if __name__ == "__main__":
-    run()
