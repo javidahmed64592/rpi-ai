@@ -44,7 +44,7 @@ rpi-ai = "rpi_ai.main:main"
 
 [tool.hatch.build]
 include = [
-  "config/**",
+  "configuration/**",
   "rpi_ai/**",
   "LICENSE",
   "README.md",
