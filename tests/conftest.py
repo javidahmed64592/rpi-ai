@@ -42,7 +42,7 @@ def mock_open_file() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture(autouse=True)
-def mock_env_vars() -> Generator[None, None, None]:
+def mock_env_vars() -> Generator[MagicMock, None, None]:
     """Mock environment variables for testing."""
     env_vars = {
         "GEMINI_API_KEY": "test_api_key",

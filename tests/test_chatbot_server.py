@@ -1,6 +1,7 @@
 """Unit tests for the rpi_ai.chatbot_server module."""
 
 import asyncio
+import json
 from collections.abc import Generator
 from importlib.metadata import PackageMetadata
 from pathlib import Path
@@ -16,7 +17,7 @@ from python_template_server.models import ResponseCode
 
 from rpi_ai.chatbot import Chatbot
 from rpi_ai.chatbot_server import ChatbotServer
-from rpi_ai.models import ChatbotServerConfig
+from rpi_ai.models import ChatbotMessage, ChatbotServerConfig, ChatbotSpeech
 
 
 @pytest.fixture(autouse=True)
@@ -35,7 +36,9 @@ def mock_package_metadata() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_chatbot_server(mock_chatbot_server_config: ChatbotServerConfig) -> Generator[ChatbotServer, None, None]:
+def mock_chatbot_server(
+    mock_chatbot_server_config: ChatbotServerConfig, mock_chatbot: Chatbot
+) -> Generator[ChatbotServer, None, None]:
     """Provide a ChatbotServer instance for testing."""
 
     async def fake_verify_api_key(
@@ -44,7 +47,10 @@ def mock_chatbot_server(mock_chatbot_server_config: ChatbotServerConfig) -> Gene
         """Fake verify API key that accepts the security header and always succeeds in tests."""
         return
 
-    with patch.object(ChatbotServer, "_verify_api_key", new=fake_verify_api_key):
+    with (
+        patch.object(ChatbotServer, "_verify_api_key", new=fake_verify_api_key),
+        patch("rpi_ai.chatbot_server.Chatbot", return_value=mock_chatbot),
+    ):
         chatbot_server = ChatbotServer(mock_chatbot_server_config)
         yield chatbot_server
 
@@ -56,6 +62,14 @@ class TestChatbotServer:
         """Test ChatbotServer initialization."""
         assert isinstance(mock_chatbot_server.config, ChatbotServerConfig)
         assert isinstance(mock_chatbot_server.chatbot, Chatbot)
+
+    def test_init_missing_api_key(
+        self, mock_chatbot_server_config: ChatbotServerConfig, mock_env_vars: MagicMock
+    ) -> None:
+        """Test ChatbotServer initialization raises ValueError when API key is missing."""
+        mock_env_vars["GEMINI_API_KEY"] = ""
+        with pytest.raises(ValueError, match="GEMINI_API_KEY variable not set!"):
+            ChatbotServer(mock_chatbot_server_config)
 
     def test_validate_config(
         self, mock_chatbot_server: ChatbotServer, mock_chatbot_server_config: ChatbotServerConfig
@@ -201,3 +215,131 @@ class TestRestartChatEndpoint:
 
         # Verify that the chat history is reset
         assert len(mock_chatbot_server.chatbot.chat_history.messages) == 1
+
+
+class TestPostMessageEndpoint:
+    """Integration and unit tests for the /chat/message endpoint."""
+
+    def test_post_message_text(self, mock_chatbot_server: ChatbotServer, mock_chat_instance: MagicMock) -> None:
+        """Test the /chat/message method handles valid JSON and returns a model reply."""
+        request = MagicMock(spec=Request)
+        request.json = AsyncMock(return_value={"message": "Hello model!"})
+        mock_chat_instance.send_message.return_value = MagicMock(text="Hi user!")
+        response = asyncio.run(mock_chatbot_server.post_message_text(request))
+
+        assert response.code == ResponseCode.OK
+        assert response.message == "Message sent successfully"
+        assert isinstance(response.timestamp, str)
+        assert isinstance(response.reply, ChatbotMessage)
+
+    def test_post_message_text_invalid_json(self, mock_chatbot_server: ChatbotServer) -> None:
+        """Test the /chat/message method handles invalid JSON."""
+        request = MagicMock(spec=Request)
+        request.json = AsyncMock(side_effect=json.JSONDecodeError("Expecting value", "", 0))
+        response = asyncio.run(mock_chatbot_server.post_message_text(request))
+
+        assert response.code == ResponseCode.BAD_REQUEST
+        assert "Invalid JSON" in response.message
+
+    def test_post_message_text_missing_message(self, mock_chatbot_server: ChatbotServer) -> None:
+        """Test the /chat/message method handles missing message in JSON."""
+        request = MagicMock(spec=Request)
+        request.json = AsyncMock(return_value={})
+        response = asyncio.run(mock_chatbot_server.post_message_text(request))
+
+        assert response.code == ResponseCode.BAD_REQUEST
+        assert "No message provided" in response.message
+
+    def test_post_message_text_endpoint(
+        self, mock_chatbot_server: ChatbotServer, mock_chat_instance: MagicMock
+    ) -> None:
+        """Test /chat/message endpoint returns 200 and includes reply."""
+        app = mock_chatbot_server.app
+        client = TestClient(app)
+
+        mock_chat_instance.send_message.return_value = MagicMock(text="Hi user!")
+        response = client.post("/chat/message", json={"message": "Hello model!"})
+        assert response.status_code == ResponseCode.OK
+
+        response_body = response.json()
+        assert response_body["code"] == ResponseCode.OK
+        assert response_body["message"] == "Message sent successfully"
+        assert isinstance(response_body["timestamp"], str)
+        assert isinstance(response_body["reply"], dict)
+        assert response_body["reply"]["message"] == mock_chatbot_server.chatbot.chat_history.messages[-1].message
+
+
+class TestPostAudioEndpoint:
+    """Integration and unit tests for the /chat/audio endpoint."""
+
+    def test_post_message_audio(
+        self,
+        mock_chatbot_server: ChatbotServer,
+        mock_chat_instance: MagicMock,
+        mock_get_audio_bytes_from_text: MagicMock,
+    ) -> None:
+        """Test the /chat/audio method handles a valid audio file and returns a speech response."""
+        request = MagicMock(spec=Request)
+        file_mock = MagicMock()
+        file_mock.read = AsyncMock(return_value=b"sound-bytes")
+        request.form = AsyncMock(return_value={"audio": file_mock})
+        mock_chat_instance.send_message.return_value = MagicMock(text="Hi user!")
+        mock_get_audio_bytes_from_text.return_value = "test_audio_response"
+        response = asyncio.run(mock_chatbot_server.post_message_audio(request))
+
+        assert response.code == ResponseCode.OK
+        assert response.message == "Audio processed successfully"
+        assert isinstance(response.timestamp, str)
+        assert isinstance(response.speech_response, ChatbotSpeech)
+
+    def test_post_message_audio_invalid_form(self, mock_chatbot_server: ChatbotServer) -> None:
+        """Test the /chat/audio method handles invalid form data."""
+        request = MagicMock(spec=Request)
+        request.form = AsyncMock(side_effect=Exception("form parse failed"))
+        response = asyncio.run(mock_chatbot_server.post_message_audio(request))
+
+        assert response.code == ResponseCode.BAD_REQUEST
+        assert "Failed to parse form data" in response.message
+
+    def test_post_message_audio_no_file(self, mock_chatbot_server: ChatbotServer) -> None:
+        """Test the /chat/audio method handles missing audio file."""
+        request = MagicMock(spec=Request)
+        request.form = AsyncMock(return_value={})
+        response = asyncio.run(mock_chatbot_server.post_message_audio(request))
+
+        assert response.code == ResponseCode.BAD_REQUEST
+        assert "No audio file provided" in response.message
+
+    def test_post_message_audio_read_error(self, mock_chatbot_server: ChatbotServer) -> None:
+        """Test the /chat/audio method handles audio read errors."""
+        request = MagicMock(spec=Request)
+        file_mock = MagicMock()
+        file_mock.read = AsyncMock(side_effect=Exception("read failed"))
+        request.form = AsyncMock(return_value={"audio": file_mock})
+        response = asyncio.run(mock_chatbot_server.post_message_audio(request))
+
+        assert response.code == ResponseCode.BAD_REQUEST
+        assert "Failed to read audio file" in response.message
+
+    def test_post_message_audio_endpoint(
+        self,
+        mock_chatbot_server: ChatbotServer,
+        mock_chat_instance: MagicMock,
+        mock_get_audio_bytes_from_text: MagicMock,
+    ) -> None:
+        """Test /chat/audio endpoint returns 200 when uploading a file."""
+        app = mock_chatbot_server.app
+        client = TestClient(app)
+
+        # Use multipart/form-data with a file field named 'audio'
+        files = {"audio": ("audio.wav", b"sound-bytes", "audio/wav")}
+        mock_chat_instance.send_message.return_value = MagicMock(text="Hi audio!")
+        mock_get_audio_bytes_from_text.return_value = "audio-bytes"
+        response = client.post("/chat/audio", files=files)
+        assert response.status_code == ResponseCode.OK
+
+        response_body = response.json()
+        assert response_body["code"] == ResponseCode.OK
+        assert response_body["message"] == "Audio processed successfully"
+        assert isinstance(response_body["timestamp"], str)
+        assert isinstance(response_body["speech_response"], dict)
