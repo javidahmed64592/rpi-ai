@@ -154,7 +154,7 @@ Run the `install_rpi_ai.sh` script:
     cd rpi_ai
     ./install_rpi_ai.sh
 
-This script will create a virtual environment, install the API from the wheel file, and set up the necessary directories and files.
+This script will create a virtual environment, install the API from the GitHub repository, and set up the necessary directories and files.
 
 To create a start-up service for the API, run the `start_service.sh` script:
 

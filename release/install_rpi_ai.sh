@@ -44,10 +44,7 @@ LICENSE_PATH="${WD}/${LICENSE_FILE}"
 echo "Creating virtual environment..."
 uv venv ${VENV_NAME}
 
-echo "Installing from wheel..."
-WHEEL_FILE=$(find "${WD}" -name "${PACKAGE_NAME}-*-py3-none-any.whl")
-uv pip install "${WHEEL_FILE}"
-rm "${WHEEL_FILE}"
+uv pip install --system git+https://github.com/javidahmed64592/rpi-ai.git
 
 echo ${SEPARATOR}
 echo "Preparing directories..."
