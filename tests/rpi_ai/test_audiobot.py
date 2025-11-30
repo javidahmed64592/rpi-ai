@@ -1,4 +1,4 @@
-"""Unit tests for the rpi_ai.models.audiobot module."""
+"""Unit tests for the rpi_ai.audiobot module."""
 
 import base64
 from io import BytesIO
@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 from google.genai.types import Part
 
-from rpi_ai.models.audiobot import (
+from rpi_ai.audiobot import (
     get_audio_bytes_from_text,
     get_audio_request,
     preprocess_default_list,

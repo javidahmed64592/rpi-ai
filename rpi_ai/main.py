@@ -12,9 +12,9 @@ from waitress import serve
 from werkzeug.datastructures import FileStorage, Headers, ImmutableMultiDict
 
 from rpi_ai.api_types import Message, SpeechResponse
+from rpi_ai.chatbot import Chatbot
 from rpi_ai.config import ChatbotConfig, Config
 from rpi_ai.functions import FUNCTIONS
-from rpi_ai.models.chatbot import Chatbot
 
 logging.basicConfig(
     format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s", datefmt="%d/%m/%Y | %H:%M:%S", level=logging.INFO

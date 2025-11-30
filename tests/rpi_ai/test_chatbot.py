@@ -1,4 +1,4 @@
-"""Unit tests for the rpi_ai.models.chatbot module."""
+"""Unit tests for the rpi_ai.chatbot module."""
 
 from unittest.mock import MagicMock
 
@@ -6,8 +6,8 @@ from google.genai.errors import ServerError
 from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
+from rpi_ai.chatbot import Chatbot
 from rpi_ai.config import ChatbotConfig
-from rpi_ai.models.chatbot import Chatbot
 
 
 class TestChatbot:

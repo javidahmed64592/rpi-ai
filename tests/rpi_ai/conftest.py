@@ -7,9 +7,9 @@ from unittest.mock import MagicMock, PropertyMock, patch
 import pytest
 from flask.testing import FlaskClient
 
+from rpi_ai.chatbot import Chatbot
 from rpi_ai.config import ChatbotConfig
 from rpi_ai.main import AIApp
-from rpi_ai.models.chatbot import Chatbot
 
 
 # Config fixtures
@@ -66,8 +66,8 @@ def mock_save_config() -> Generator[MagicMock, None, None]:
 # Chatbot fixtures
 @pytest.fixture
 def mock_genai_client() -> Generator[MagicMock, None, None]:
-    """Mock the Client class from the rpi_ai.models.chatbot module."""
-    with patch("rpi_ai.models.chatbot.Client") as mock:
+    """Mock the Client class from the rpi_ai.chatbot module."""
+    with patch("rpi_ai.chatbot.Client") as mock:
         yield mock
 
 
@@ -133,15 +133,15 @@ def mock_send_audio() -> Generator[MagicMock, None, None]:
 # Audiobot fixtures
 @pytest.fixture
 def mock_gtts() -> Generator[MagicMock, None, None]:
-    """Mock the gTTS class from the rpi_ai.models.audiobot module."""
-    with patch("rpi_ai.models.audiobot.gTTS") as mock:
+    """Mock the gTTS class from the rpi_ai.audiobot module."""
+    with patch("rpi_ai.audiobot.gTTS") as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_get_audio_bytes_from_text() -> Generator[MagicMock, None, None]:
-    """Mock the get_audio_bytes_from_text function in the rpi_ai.models.audiobot module."""
-    with patch("rpi_ai.models.audiobot.get_audio_bytes_from_text") as mock:
+    """Mock the get_audio_bytes_from_text function in the rpi_ai.audiobot module."""
+    with patch("rpi_ai.audiobot.get_audio_bytes_from_text") as mock:
         yield mock
 
 
