@@ -175,7 +175,7 @@ ${BIN_DIR}/generate-certificate --config="${CONFIG_DEST}"
 echo "${SEPARATOR}"
 echo "RPi-AI has been installed successfully."
 echo
-echo "Generate a new API key by running: 'uv run generate-api-key'"
+echo "Generate a new API key by running: 'uv run generate-new-token'"
 echo "Run the application using: './${EXE_NAME}'"
 echo
 echo "Configure the application by editing: ${CONFIG_DEST}"
