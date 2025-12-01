@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from google.genai.types import Content, Part
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from python_template_server.models import BaseResponse, TemplateServerConfig
 
 
@@ -127,10 +127,13 @@ class ChatbotSpeech(BaseModel):
 class ChatbotConfig(BaseModel):
     """Chatbot configuration model."""
 
-    model: str
-    system_instruction: str
-    max_output_tokens: int
-    temperature: float
+    model: str = Field(default="gemini-2.0-flash", description="LLM to use for chatbot")
+    system_instruction: str = Field(
+        default="You are a friendly AI assistant. You are designed to help the user with daily tasks.",
+        description="System instruction for the chatbot",
+    )
+    max_output_tokens: int = Field(default=1000, description="Maximum number of output tokens")
+    temperature: float = Field(default=1.0, description="Sampling temperature for response generation")
 
 
 class ChatbotServerConfig(TemplateServerConfig):
