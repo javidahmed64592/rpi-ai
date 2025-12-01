@@ -78,6 +78,7 @@ mv "${SITE_PACKAGES_DIR}/.here" ".here"
 echo "Creating API executable..."
 cat > "${EXE_PATH}" << EOF
 #!/bin/bash
+cd "${WD}"
 ${BIN_DIR}/${EXE_NAME}
 EOF
 chmod +x "${EXE_PATH}"
