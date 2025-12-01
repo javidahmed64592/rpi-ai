@@ -158,7 +158,7 @@ class TestPostAudioResponse:
             "code": ResponseCode.OK,
             "message": "Audio processed successfully",
             "timestamp": "2023-01-01T00:00:00Z",
-            "speech_response": mock_chatbot_speech.model_dump(),
+            "reply": mock_chatbot_speech.model_dump(),
         }
         post_audio_response = PostAudioResponse.model_validate(expected_dict)
         assert post_audio_response.model_dump() == expected_dict

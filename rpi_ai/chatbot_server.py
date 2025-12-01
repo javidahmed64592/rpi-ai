@@ -170,7 +170,7 @@ class ChatbotServer(TemplateServer):
                 code=ResponseCode.BAD_REQUEST,
                 message=chatbot_speech.message,
                 timestamp=PostAudioResponse.current_timestamp(),
-                speech_response=chatbot_speech,
+                reply=chatbot_speech,
             )
 
         audio_file = form.get("audio")
@@ -185,7 +185,7 @@ class ChatbotServer(TemplateServer):
                 code=ResponseCode.BAD_REQUEST,
                 message=chatbot_speech.message,
                 timestamp=PostAudioResponse.current_timestamp(),
-                speech_response=chatbot_speech,
+                reply=chatbot_speech,
             )
 
         try:
@@ -201,7 +201,7 @@ class ChatbotServer(TemplateServer):
                 code=ResponseCode.BAD_REQUEST,
                 message=chatbot_speech.message,
                 timestamp=PostAudioResponse.current_timestamp(),
-                speech_response=chatbot_speech,
+                reply=chatbot_speech,
             )
 
         logger.info("Received audio data...")
@@ -211,5 +211,5 @@ class ChatbotServer(TemplateServer):
             code=ResponseCode.OK,
             message="Audio processed successfully",
             timestamp=PostAudioResponse.current_timestamp(),
-            speech_response=reply,
+            reply=reply,
         )

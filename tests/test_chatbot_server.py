@@ -290,7 +290,7 @@ class TestPostAudioEndpoint:
         assert response.code == ResponseCode.OK
         assert response.message == "Audio processed successfully"
         assert isinstance(response.timestamp, str)
-        assert isinstance(response.speech_response, ChatbotSpeech)
+        assert isinstance(response.reply, ChatbotSpeech)
 
     def test_post_message_audio_invalid_form(self, mock_chatbot_server: ChatbotServer) -> None:
         """Test the /chat/audio method handles invalid form data."""
@@ -342,4 +342,4 @@ class TestPostAudioEndpoint:
         assert response_body["code"] == ResponseCode.OK
         assert response_body["message"] == "Audio processed successfully"
         assert isinstance(response_body["timestamp"], str)
-        assert isinstance(response_body["speech_response"], dict)
+        assert isinstance(response_body["reply"], dict)

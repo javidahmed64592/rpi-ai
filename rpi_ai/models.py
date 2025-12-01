@@ -161,4 +161,4 @@ class PostMessageResponse(BaseResponse):
 class PostAudioResponse(BaseResponse):
     """Post audio response model."""
 
-    speech_response: ChatbotSpeech
+    reply: ChatbotSpeech
