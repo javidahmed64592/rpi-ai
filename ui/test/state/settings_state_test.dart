@@ -19,8 +19,8 @@ void main() {
       expect(settingsState.temperature, 1.0);
     });
 
-    test('updateConfig updates all values', () {
-      settingsState.updateConfig({
+    test('postConfig updates all values', () {
+      settingsState.postConfig({
         'model': 'newModel',
         'systemInstruction': 'newSystemInstruction',
         'maxOutputTokens': 2000,

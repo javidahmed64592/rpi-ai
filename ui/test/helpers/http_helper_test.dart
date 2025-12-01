@@ -27,7 +27,7 @@ void main() {
   });
 
   testWidgets(
-      'checkApiConnection sets activePage to login if the http call completes with an error',
+      'checkApiHealth sets activePage to login if the http call completes with an error',
       (WidgetTester tester) async {
     final httpHelper = HttpHelper(client: client);
     final appState = AppState();
@@ -41,7 +41,7 @@ void main() {
         value: appState,
         child: Builder(
           builder: (context) {
-            Future.microtask(() => httpHelper.checkApiConnection(uri));
+            Future.microtask(() => httpHelper.checkApiHealth(uri));
             return Container();
           },
         ),
@@ -54,7 +54,7 @@ void main() {
   });
 
   test(
-      'checkApiConnection returns true if the http call completes successfully',
+      'checkApiHealth returns true if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -62,11 +62,11 @@ void main() {
     when(client.get(Uri.parse('$uri/health'), headers: anyNamed('headers')))
         .thenAnswer((_) async => http.Response('OK', 200));
 
-    expect(await httpHelper.checkApiConnection(uri), true);
+    expect(await httpHelper.checkApiHealth(uri), true);
   });
 
   test(
-      'checkApiConnection returns false if the http call completes with an error',
+      'checkApiHealth returns false if the http call completes with an error',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -74,11 +74,11 @@ void main() {
     when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
         .thenAnswer((_) async => http.Response('Not Found', 404));
 
-    expect(await httpHelper.checkApiConnection(uri), false);
+    expect(await httpHelper.checkApiHealth(uri), false);
   });
 
   test(
-      'getLoginResponse returns a list of messages if the http call completes successfully',
+      'getChatHistory returns a list of messages if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -106,7 +106,7 @@ void main() {
         }),
         200));
 
-    final messages = await httpHelper.getLoginResponse(uri, authToken);
+    final messages = await httpHelper.getChatHistory(uri, authToken);
     expect(messages.length, 2);
     expect(messages[0], {
       'text': 'Welcome',
@@ -121,7 +121,7 @@ void main() {
   });
 
   test(
-      'getLoginResponse throws an exception if the http call completes with an error',
+      'getChatHistory throws an exception if the http call completes with an error',
       () {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -132,7 +132,7 @@ void main() {
       headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
-    expect(httpHelper.getLoginResponse(uri, authToken), throwsException);
+    expect(httpHelper.getChatHistory(uri, authToken), throwsException);
   });
 
   test('getConfig returns config if the http call completes successfully',
@@ -178,7 +178,7 @@ void main() {
   });
 
   test(
-      'updateConfig returns a list of messages if the http call completes successfully',
+      'postConfig returns a list of messages if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -216,7 +216,7 @@ void main() {
         }),
         200));
 
-    final messages = await httpHelper.updateConfig(uri, authToken, config);
+    final messages = await httpHelper.postConfig(uri, authToken, config);
     expect(messages[0], {
       'text': 'Config updated successfully',
       'timestamp': isA<DateTime>(),
@@ -225,7 +225,7 @@ void main() {
   });
 
   test(
-      'updateConfig throws an exception if the http call completes with an error',
+      'postConfig throws an exception if the http call completes with an error',
       () {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -246,7 +246,7 @@ void main() {
       body: jsonEncode(config),
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
-    expect(httpHelper.updateConfig(uri, authToken, config), throwsException);
+    expect(httpHelper.postConfig(uri, authToken, config), throwsException);
   });
 
   test(
@@ -304,7 +304,7 @@ void main() {
     expect(httpHelper.postRestartChat(uri, authToken), throwsException);
   });
 
-  test('chat returns a message if the http call completes successfully',
+  test('postMessageText returns a message if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -328,14 +328,14 @@ void main() {
         }),
         200));
 
-    expect(await httpHelper.chat(uri, authToken, message), {
+    expect(await httpHelper.postMessageText(uri, authToken, message), {
       'text': 'Hi',
       'timestamp': isA<DateTime>(),
       'isUserMessage': false,
     });
   });
 
-  test('chat returns empty dict if the http call completes with an error',
+  test('postMessageText returns empty dict if the http call completes with an error',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -351,10 +351,10 @@ void main() {
       body: jsonEncode({'message': message}),
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
-    expect(await httpHelper.chat(uri, authToken, message), {});
+    expect(await httpHelper.postMessageText(uri, authToken, message), {});
   });
 
-  test('sendAudio returns empty dict if the http call completes with an error',
+  test('postMessageAudio returns empty dict if the http call completes with an error',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -368,6 +368,6 @@ void main() {
           Stream.fromIterable([response.bodyBytes]), response.statusCode);
     });
 
-    expect(await httpHelper.sendAudio(uri, authToken, audioData), {});
+    expect(await httpHelper.postMessageAudio(uri, authToken, audioData), {});
   });
 }

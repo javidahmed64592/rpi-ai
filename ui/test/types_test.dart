@@ -66,7 +66,7 @@ void main() {
     final mockMessageState = MockMessageState();
 
     test('sendMessage calls correct methods', () async {
-      when(mockHttpHelper.chat(any, any, any))
+      when(mockHttpHelper.postMessageText(any, any, any))
           .thenAnswer((_) async => {'response': 'chat'});
 
       var chatResponse = await MessageType.text

@@ -75,7 +75,7 @@ enum MessageType {
       String token, String userMessage) async {
     switch (this) {
       case MessageType.text:
-        return await httpHelper.chat(url, token, userMessage);
+        return await httpHelper.postMessageText(url, token, userMessage);
     }
   }
 

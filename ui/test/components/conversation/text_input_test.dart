@@ -57,7 +57,7 @@ void main() {
       (WidgetTester tester) async {
     when(mockAppState.fullUrl).thenReturn('http://example.com');
     when(mockAppState.authToken).thenReturn('token');
-    when(mockHttpHelper.chat(any, any, any)).thenAnswer((_) async => {
+    when(mockHttpHelper.postMessageText(any, any, any)).thenAnswer((_) async => {
           'text': 'response',
           'timestamp': DateTime.now(),
           'isUserMessage': false,
@@ -69,7 +69,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.send));
     await tester.pump();
 
-    verify(mockHttpHelper.chat('http://example.com', 'token', 'Hello'))
+    verify(mockHttpHelper.postMessageText('http://example.com', 'token', 'Hello'))
         .called(1);
   });
 
@@ -77,7 +77,7 @@ void main() {
       (WidgetTester tester) async {
     when(mockAppState.fullUrl).thenReturn('http://example.com');
     when(mockAppState.authToken).thenReturn('token');
-    when(mockHttpHelper.chat(any, any, any)).thenAnswer((_) async => {});
+    when(mockHttpHelper.postMessageText(any, any, any)).thenAnswer((_) async => {});
 
     await tester.pumpWidget(createTextInput());
 
@@ -95,7 +95,7 @@ void main() {
     final ScrollController scrollController = ScrollController();
     when(mockAppState.fullUrl).thenReturn('http://example.com');
     when(mockAppState.authToken).thenReturn('token');
-    when(mockHttpHelper.chat(any, any, any)).thenAnswer((_) async => {
+    when(mockHttpHelper.postMessageText(any, any, any)).thenAnswer((_) async => {
           'text': 'response',
           'timestamp': DateTime.now(),
           'isUserMessage': false,

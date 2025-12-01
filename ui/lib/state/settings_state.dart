@@ -12,7 +12,7 @@ class SettingsState extends ChangeNotifier {
   int get maxOutputTokens => _maxOutputTokens;
   double get temperature => _temperature;
 
-  void updateConfig(Map<String, dynamic> config) {
+  void postConfig(Map<String, dynamic> config) {
     _model = config['model'];
     _systemInstruction = config['systemInstruction'];
     _maxOutputTokens = config['maxOutputTokens'];

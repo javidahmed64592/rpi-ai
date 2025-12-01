@@ -38,7 +38,7 @@ class HttpHelper {
     return response;
   }
 
-  Future<bool> checkApiConnection(String url) async {
+  Future<bool> checkApiHealth(String url) async {
     try {
       final response = await getResponseFromUri('$url/health', {});
       if (response.statusCode == 200) {
@@ -51,7 +51,7 @@ class HttpHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getLoginResponse(
+  Future<List<Map<String, dynamic>>> getChatHistory(
       String url, String authToken) async {
     final headers = <String, String>{
       'X-API-Key': authToken,
@@ -98,7 +98,7 @@ class HttpHelper {
         'Getting config failed: (${response.statusCode}) ${response.body}');
   }
 
-  Future<List<Map<String, dynamic>>> updateConfig(
+  Future<List<Map<String, dynamic>>> postConfig(
       String url, String authToken, Map<String, dynamic> config) async {
     final headers = <String, String>{
       'X-API-Key': authToken,
@@ -110,7 +110,7 @@ class HttpHelper {
 
     if (response.statusCode == 200) {
       // POST /config returns None, so fetch chat history to get updated messages
-      return await getLoginResponse(url, authToken);
+      return await getChatHistory(url, authToken);
     }
 
     // Raise exception if response status code is not 200
@@ -127,7 +127,7 @@ class HttpHelper {
 
     if (response.statusCode == 200) {
       // POST /chat/restart returns None, so fetch chat history to get updated messages
-      return await getLoginResponse(url, authToken);
+      return await getChatHistory(url, authToken);
     }
 
     // Raise exception if response status code is not 200
@@ -135,7 +135,7 @@ class HttpHelper {
         'Restarting chat failed: (${response.statusCode}) ${response.body}');
   }
 
-  Future<Map<String, dynamic>> chat(
+  Future<Map<String, dynamic>> postMessageText(
       String url, String authToken, String message) async {
     final headers = <String, String>{
       'X-API-Key': authToken,
@@ -172,7 +172,7 @@ class HttpHelper {
     }
   }
 
-  Future<Map<String, dynamic>> sendAudio(
+  Future<Map<String, dynamic>> postMessageAudio(
       String url, String authToken, Uint8List audioBytes) async {
     final headers = <String, String>{
       'X-API-Key': authToken,

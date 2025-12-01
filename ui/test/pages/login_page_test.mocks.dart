@@ -132,22 +132,22 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<_i2.Response>);
 
   @override
-  _i4.Future<bool> checkApiConnection(String? url) => (super.noSuchMethod(
+  _i4.Future<bool> checkApiHealth(String? url) => (super.noSuchMethod(
         Invocation.method(
-          #checkApiConnection,
+          #checkApiHealth,
           [url],
         ),
         returnValue: _i4.Future<bool>.value(false),
       ) as _i4.Future<bool>);
 
   @override
-  _i4.Future<List<Map<String, dynamic>>> getLoginResponse(
+  _i4.Future<List<Map<String, dynamic>>> getChatHistory(
     String? url,
     String? authToken,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #getLoginResponse,
+          #getChatHistory,
           [
             url,
             authToken,
@@ -175,14 +175,14 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<Map<String, dynamic>>);
 
   @override
-  _i4.Future<List<Map<String, dynamic>>> updateConfig(
+  _i4.Future<List<Map<String, dynamic>>> postConfig(
     String? url,
     String? authToken,
     Map<String, dynamic>? config,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #updateConfig,
+          #postConfig,
           [
             url,
             authToken,
@@ -211,14 +211,14 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i4.Future<Map<String, dynamic>> chat(
+  _i4.Future<Map<String, dynamic>> postMessageText(
     String? url,
     String? authToken,
     String? message,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #chat,
+          #postMessageText,
           [
             url,
             authToken,
@@ -230,14 +230,14 @@ class MockHttpHelper extends _i1.Mock implements _i3.HttpHelper {
       ) as _i4.Future<Map<String, dynamic>>);
 
   @override
-  _i4.Future<Map<String, dynamic>> sendAudio(
+  _i4.Future<Map<String, dynamic>> postMessageAudio(
     String? url,
     String? authToken,
     _i5.Uint8List? audioBytes,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #sendAudio,
+          #postMessageAudio,
           [
             url,
             authToken,

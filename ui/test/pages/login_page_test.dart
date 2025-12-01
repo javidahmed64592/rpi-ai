@@ -82,7 +82,7 @@ void main() {
 
   testWidgets('Connect button triggers login process',
       (WidgetTester tester) async {
-    when(mockHttpHelper.getLoginResponse(any, any)).thenAnswer((_) async => [
+    when(mockHttpHelper.getChatHistory(any, any)).thenAnswer((_) async => [
           {'text': 'Hello', 'is_user_message': false},
           {'text': 'Welcome', 'is_user_message': true}
         ]);
