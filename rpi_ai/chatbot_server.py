@@ -38,6 +38,7 @@ class ChatbotServer(TemplateServer):
         """
         self.config: ChatbotServerConfig
         super().__init__(package_name="rpi-ai", config_filepath=self.config_dir / CONFIG_FILE_NAME, config=config)
+        self.config.save_to_file(self.config_filepath)
 
         if not (gemini_api_key := os.environ.get(API_KEY_ENV_VAR)):
             msg = f"{API_KEY_ENV_VAR} variable not set!"
