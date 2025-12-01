@@ -73,6 +73,7 @@ fi
 
 mv "${SITE_PACKAGES_DIR}/${APP_README_FILE}" "${APP_README_PATH}"
 mv "${SITE_PACKAGES_DIR}/${LICENSE_FILE}" "${LICENSE_PATH}"
+mv "${SITE_PACKAGES_DIR}/.here" ".here"
 
 echo "Creating API executable..."
 cat > "${EXE_PATH}" << EOF
@@ -168,9 +169,12 @@ EOF
 chmod +x "${UNINSTALL_PATH}"
 
 echo "${SEPARATOR}"
+echo "Generating self-signed SSL certificate..."
+${BIN_DIR}/generate-certificate --config="${CONFIG_DEST}"
+
+echo "${SEPARATOR}"
 echo "RPi-AI has been installed successfully."
 echo
-echo "Generate the self-signed SSL certificates by running: 'uv run generate-certificate"
 echo "Generate a new API key by running: 'uv run generate-api-key'"
 echo "Run the application using: './${EXE_NAME}'"
 echo
