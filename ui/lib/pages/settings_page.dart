@@ -132,9 +132,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
           try {
             httpHelper
-                .updateConfig(appState.fullUrl, appState.authToken, config)
+                .postConfig(appState.fullUrl, appState.authToken, config)
                 .then((messages) {
-              settingsState.updateConfig({
+              settingsState.postConfig({
                 'model': config['model'],
                 'systemInstruction': config['system_instruction'],
                 'maxOutputTokens': config['max_output_tokens'],

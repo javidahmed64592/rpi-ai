@@ -15,7 +15,7 @@ void main() {
 
     test('initial values are correct', () {
       expect(appState.ip, '127.0.0.1');
-      expect(appState.port, 5000);
+      expect(appState.port, 443);
       expect(appState.authToken, '');
       expect(appState.activePage, PageType.login);
       expect(appState.connected, false);
@@ -74,10 +74,10 @@ void main() {
     });
 
     test('getFullUrl returns the correct URL', () {
-      expect(appState.fullUrl, 'http://127.0.0.1:5000');
+      expect(appState.fullUrl, 'https://127.0.0.1:443');
       appState.setIp('192.168.1.1');
       appState.setPort(8080);
-      expect(appState.fullUrl, 'http://192.168.1.1:8080');
+      expect(appState.fullUrl, 'https://192.168.1.1:8080');
     });
 
     test('setIsBusy', () {

@@ -81,7 +81,7 @@ class _SpeechPageState extends State<SpeechPage> {
       }
 
       final Uint8List audioBytes = await File(path).readAsBytes();
-      final response = await httpHelper.sendAudio(
+      final response = await httpHelper.postMessageAudio(
           appState.fullUrl, appState.authToken, audioBytes);
 
       if (response['bytes'] != null) {

@@ -6,6 +6,7 @@ SEPARATOR=$(printf '=%.0s' $(seq 1 $TERMINAL_WIDTH))
 
 if [ -z "${GEMINI_API_KEY:-}" ]; then
     read -p "Enter Gemini API key: " GEMINI_API_KEY
+    echo "GEMINI_API_KEY=${GEMINI_API_KEY}" > .env
 fi
 
 PACKAGE_NAME="rpi_ai"
@@ -18,7 +19,7 @@ CREATE_SERVICE_FILE="start_service.sh"
 STOP_SERVICE_FILE="stop_service.sh"
 UNINSTALL_FILE="uninstall_rpi_ai.sh"
 
-CONFIG_FILE="ai_config.json"
+CONFIG_FILE="config.json"
 APP_README_FILE="README.md"
 SECURITY_FILE="SECURITY.md"
 LICENSE_FILE="LICENSE"
@@ -43,6 +44,7 @@ LICENSE_PATH="${WD}/${LICENSE_FILE}"
 echo "Creating virtual environment..."
 uv venv ${VENV_NAME}
 
+echo ${SEPARATOR}
 echo "Installing from wheel..."
 WHEEL_FILE=$(find "${WD}" -name "${PACKAGE_NAME}-*-py3-none-any.whl")
 uv pip install "${WHEEL_FILE}"
@@ -55,7 +57,7 @@ mkdir -p "${SERVICE_DIR}"
 
 SITE_PACKAGES_DIR=$(find "${FULL_VENV_PATH}/lib" -name "site-packages" -type d | head -1)
 mkdir -p "${CONFIG_DIR}"
-CONFIG_PATH="${SITE_PACKAGES_DIR}/config/${CONFIG_FILE}"
+CONFIG_PATH="${SITE_PACKAGES_DIR}/configuration/${CONFIG_FILE}"
 
 if [ -f "${CONFIG_DEST}" ]; then
     echo "AI configuration file already exists: '${CONFIG_DEST}'"
@@ -75,8 +77,6 @@ mv "${SITE_PACKAGES_DIR}/${LICENSE_FILE}" "${LICENSE_PATH}"
 echo "Creating API executable..."
 cat > "${EXE_PATH}" << EOF
 #!/bin/bash
-export RPI_AI_PATH=${WD}
-export GEMINI_API_KEY=${GEMINI_API_KEY}
 ${BIN_DIR}/${EXE_NAME}
 EOF
 chmod +x "${EXE_PATH}"
@@ -169,7 +169,11 @@ chmod +x "${UNINSTALL_PATH}"
 
 echo "${SEPARATOR}"
 echo "RPi-AI has been installed successfully."
+echo
+echo "Generate the self-signed SSL certificates by running: 'uv run generate-certificate"
+echo "Generate a new API key by running: 'uv run generate-api-key'"
 echo "Run the application using: './${EXE_NAME}'"
+echo
 echo "Configure the application by editing: ${CONFIG_DEST}"
 echo "To create a start-up service for the RPi-AI, run: './service/${CREATE_SERVICE_FILE}'"
 echo "To stop the service, run: './service/${STOP_SERVICE_FILE}'"

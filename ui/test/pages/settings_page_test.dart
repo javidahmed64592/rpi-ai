@@ -63,7 +63,7 @@ void main() {
 
   testWidgets('Update button triggers config update',
       (WidgetTester tester) async {
-    when(mockHttpHelper.updateConfig(any, any, any)).thenAnswer((_) async => [
+    when(mockHttpHelper.postConfig(any, any, any)).thenAnswer((_) async => [
           {'text': 'Config updated successfully', 'isUserMessage': false},
         ]);
     await tester.pumpWidget(createSettingsPage());
@@ -134,7 +134,7 @@ void main() {
 
   testWidgets('Displays error message on failed config update',
       (WidgetTester tester) async {
-    when(mockHttpHelper.updateConfig(any, any, any))
+    when(mockHttpHelper.postConfig(any, any, any))
         .thenThrow(Exception('Failed to update config'));
 
     await tester.pumpWidget(createSettingsPage());

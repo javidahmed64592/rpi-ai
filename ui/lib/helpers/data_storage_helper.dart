@@ -5,7 +5,7 @@ class DataStorageHelper {
   static Future<Map<String, dynamic>> loadAppState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ip = prefs.getString('ip') ?? '127.0.0.1';
-    int port = prefs.getInt('port') ?? 5000;
+    int port = prefs.getInt('port') ?? 443;
     String authToken = prefs.getString('authToken') ?? '';
     return {'ip': ip, 'port': port, 'authToken': authToken};
   }

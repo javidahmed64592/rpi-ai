@@ -27,7 +27,7 @@ void main() {
   });
 
   testWidgets(
-      'checkApiConnection sets activePage to login if the http call completes with an error',
+      'checkApiHealth sets activePage to login if the http call completes with an error',
       (WidgetTester tester) async {
     final httpHelper = HttpHelper(client: client);
     final appState = AppState();
@@ -41,7 +41,7 @@ void main() {
         value: appState,
         child: Builder(
           builder: (context) {
-            Future.microtask(() => httpHelper.checkApiConnection(uri));
+            Future.microtask(() => httpHelper.checkApiHealth(uri));
             return Container();
           },
         ),
@@ -54,19 +54,19 @@ void main() {
   });
 
   test(
-      'checkApiConnection returns true if the http call completes successfully',
+      'checkApiHealth returns true if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
 
-    when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
+    when(client.get(Uri.parse('$uri/health'), headers: anyNamed('headers')))
         .thenAnswer((_) async => http.Response('OK', 200));
 
-    expect(await httpHelper.checkApiConnection(uri), true);
+    expect(await httpHelper.checkApiHealth(uri), true);
   });
 
   test(
-      'checkApiConnection returns false if the http call completes with an error',
+      'checkApiHealth returns false if the http call completes with an error',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -74,37 +74,39 @@ void main() {
     when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
         .thenAnswer((_) async => http.Response('Not Found', 404));
 
-    expect(await httpHelper.checkApiConnection(uri), false);
+    expect(await httpHelper.checkApiHealth(uri), false);
   });
 
   test(
-      'getLoginResponse returns a list of messages if the http call completes successfully',
+      'getChatHistory returns a list of messages if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
     const authToken = 'testToken';
 
     when(client.get(
-      Uri.parse('$uri/login'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/chat/history'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'messages': [
-            {
-              'message': 'Welcome',
-              'timestamp': 1678886400,
-              'is_user_message': true,
-            },
-            {
-              'message': 'Hello',
-              'timestamp': 1678886460,
-              'is_user_message': false,
-            }
-          ]
+          'chat_history': {
+            'messages': [
+              {
+                'message': 'Welcome',
+                'timestamp': 1678886400,
+                'is_user_message': true,
+              },
+              {
+                'message': 'Hello',
+                'timestamp': 1678886460,
+                'is_user_message': false,
+              }
+            ]
+          }
         }),
         200));
 
-    final messages = await httpHelper.getLoginResponse(uri, authToken);
+    final messages = await httpHelper.getChatHistory(uri, authToken);
     expect(messages.length, 2);
     expect(messages[0], {
       'text': 'Welcome',
@@ -119,18 +121,18 @@ void main() {
   });
 
   test(
-      'getLoginResponse throws an exception if the http call completes with an error',
+      'getChatHistory throws an exception if the http call completes with an error',
       () {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
     const authToken = 'testToken';
 
     when(client.get(
-      Uri.parse('$uri/login'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/chat/history'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
-    expect(httpHelper.getLoginResponse(uri, authToken), throwsException);
+    expect(httpHelper.getChatHistory(uri, authToken), throwsException);
   });
 
   test('getConfig returns config if the http call completes successfully',
@@ -140,14 +142,16 @@ void main() {
     const authToken = 'testToken';
 
     when(client.get(
-      Uri.parse('$uri/get-config'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/config'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'model': 'testModel',
-          'system_instruction': 'testInstruction',
-          'max_output_tokens': 100,
-          'temperature': 0.7,
+          'config': {
+            'model': 'testModel',
+            'system_instruction': 'testInstruction',
+            'max_output_tokens': 100,
+            'temperature': 0.7,
+          }
         }),
         200));
 
@@ -166,15 +170,15 @@ void main() {
     const authToken = 'testToken';
 
     when(client.get(
-      Uri.parse('$uri/get-config'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/config'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
     expect(httpHelper.getConfig(uri, authToken), throwsException);
   });
 
   test(
-      'updateConfig returns a list of messages if the http call completes successfully',
+      'postConfig returns a list of messages if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -187,25 +191,32 @@ void main() {
     };
 
     when(client.post(
-      Uri.parse('$uri/update-config'),
+      Uri.parse('$uri/config'),
       headers: {
-        'Authorization': authToken,
+        'X-API-Key': authToken,
         'Content-Type': 'application/json',
       },
       body: jsonEncode(config),
+    )).thenAnswer((_) async => http.Response('', 200));
+
+    when(client.get(
+      Uri.parse('$uri/chat/history'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'messages': [
-            {
-              'message': 'Config updated successfully',
-              'timestamp': 1678886400,
-              'is_user_message': false
-            },
-          ]
+          'chat_history': {
+            'messages': [
+              {
+                'message': 'Config updated successfully',
+                'timestamp': 1678886400,
+                'is_user_message': false
+              },
+            ]
+          }
         }),
         200));
 
-    final messages = await httpHelper.updateConfig(uri, authToken, config);
+    final messages = await httpHelper.postConfig(uri, authToken, config);
     expect(messages[0], {
       'text': 'Config updated successfully',
       'timestamp': isA<DateTime>(),
@@ -214,7 +225,7 @@ void main() {
   });
 
   test(
-      'updateConfig throws an exception if the http call completes with an error',
+      'postConfig throws an exception if the http call completes with an error',
       () {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -227,15 +238,15 @@ void main() {
     };
 
     when(client.post(
-      Uri.parse('$uri/update-config'),
+      Uri.parse('$uri/config'),
       headers: {
-        'Authorization': authToken,
+        'X-API-Key': authToken,
         'Content-Type': 'application/json',
       },
       body: jsonEncode(config),
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
-    expect(httpHelper.updateConfig(uri, authToken, config), throwsException);
+    expect(httpHelper.postConfig(uri, authToken, config), throwsException);
   });
 
   test(
@@ -246,18 +257,25 @@ void main() {
     const authToken = 'testToken';
 
     when(client.post(
-      Uri.parse('$uri/restart-chat'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/chat/restart'),
+      headers: {'X-API-Key': authToken},
       body: '',
+    )).thenAnswer((_) async => http.Response('', 200));
+
+    when(client.get(
+      Uri.parse('$uri/chat/history'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'messages': [
-            {
-              'message': 'Chat restarted',
-              'timestamp': 1678886400,
-              'is_user_message': false,
-            },
-          ]
+          'chat_history': {
+            'messages': [
+              {
+                'message': 'Chat restarted',
+                'timestamp': 1678886400,
+                'is_user_message': false,
+              },
+            ]
+          }
         }),
         200));
 
@@ -278,15 +296,15 @@ void main() {
     const authToken = 'testToken';
 
     when(client.post(
-      Uri.parse('$uri/restart-chat'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/chat/restart'),
+      headers: {'X-API-Key': authToken},
       body: '',
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
     expect(httpHelper.postRestartChat(uri, authToken), throwsException);
   });
 
-  test('chat returns a message if the http call completes successfully',
+  test('postMessageText returns a message if the http call completes successfully',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -294,28 +312,30 @@ void main() {
     const authToken = 'testToken';
 
     when(client.post(
-      Uri.parse('$uri/chat'),
+      Uri.parse('$uri/chat/message'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': authToken,
+        'X-API-Key': authToken,
       },
       body: jsonEncode({'message': message}),
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'message': 'Hi',
-          'timestamp': 1678886400,
-          'is_user_message': false,
+          'reply': {
+            'message': 'Hi',
+            'timestamp': 1678886400,
+            'is_user_message': false,
+          }
         }),
         200));
 
-    expect(await httpHelper.chat(uri, authToken, message), {
+    expect(await httpHelper.postMessageText(uri, authToken, message), {
       'text': 'Hi',
       'timestamp': isA<DateTime>(),
       'isUserMessage': false,
     });
   });
 
-  test('chat returns empty dict if the http call completes with an error',
+  test('postMessageText returns empty dict if the http call completes with an error',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -323,18 +343,18 @@ void main() {
     const authToken = 'testToken';
 
     when(client.post(
-      Uri.parse('$uri/chat'),
+      Uri.parse('$uri/chat/message'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': authToken,
+        'X-API-Key': authToken,
       },
       body: jsonEncode({'message': message}),
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
-    expect(await httpHelper.chat(uri, authToken, message), {});
+    expect(await httpHelper.postMessageText(uri, authToken, message), {});
   });
 
-  test('sendAudio returns empty dict if the http call completes with an error',
+  test('postMessageAudio returns empty dict if the http call completes with an error',
       () async {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
@@ -348,6 +368,6 @@ void main() {
           Stream.fromIterable([response.bodyBytes]), response.statusCode);
     });
 
-    expect(await httpHelper.sendAudio(uri, authToken, audioData), {});
+    expect(await httpHelper.postMessageAudio(uri, authToken, audioData), {});
   });
 }

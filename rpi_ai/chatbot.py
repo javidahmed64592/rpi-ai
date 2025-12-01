@@ -18,10 +18,10 @@ from google.genai.types import (
 )
 from gtts import gTTSError
 from pydantic import ValidationError
+from python_template_server.models import BaseResponse
 
-from rpi_ai.api_types import Message, MessageList, SpeechResponse
-from rpi_ai.config import ChatbotConfig
-from rpi_ai.models import audiobot
+from rpi_ai import audiobot
+from rpi_ai.models import ChatbotConfig, ChatbotMessage, ChatbotMessageList, ChatbotSpeech
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class Chatbot:
     CANDIDATE_COUNT: int = 1
 
     def __init__(self, api_key: str, config: ChatbotConfig, functions: list[Callable[..., Any]]) -> None:
-        """Initialize the chatbot with API key, configuration, and functions.
+        """Initialise the chatbot with API key, configuration, and functions.
 
         :param str api_key:
             Google AI API key
@@ -56,16 +56,12 @@ class Chatbot:
         self._client = Client(api_key=api_key)
         self._config = config
         self._functions: list[Tool | Callable[..., Any]] = [*functions, self.web_search]
-        self._history: list[Message] = []
+        self._history: list[ChatbotMessage] = []
         self.start_chat()
 
     @property
     def _model_config(self) -> GenerateContentConfig:
-        """Get base model configuration.
-
-        :return GenerateContentConfig:
-            Model configuration
-        """
+        """Get base model configuration."""
         return GenerateContentConfig(
             system_instruction=self._config.system_instruction,
             max_output_tokens=self._config.max_output_tokens,
@@ -76,34 +72,31 @@ class Chatbot:
 
     @property
     def _chat_config(self) -> GenerateContentConfig:
-        """Get chat configuration with functions.
-
-        :return GenerateContentConfig:
-            Chat configuration
-        """
+        """Get chat configuration with functions."""
         _config = self._model_config
         _config.tools = self._functions
         return _config
 
     @property
     def _web_search_config(self) -> GenerateContentConfig:
-        """Get web search configuration.
-
-        :return GenerateContentConfig:
-            Web search configuration
-        """
+        """Get web search configuration."""
         _config = self._model_config
         _config.tools = [Tool(google_search=GoogleSearch())]
         return _config
 
     @property
-    def chat_history(self) -> MessageList:
-        """Get chat history as MessageList.
+    def chat_history(self) -> ChatbotMessageList:
+        """Get chat history as ChatbotMessageList."""
+        return ChatbotMessageList(messages=self._history)
 
-        :return MessageList:
-            Current chat history
+    def _get_current_timestamp(self) -> int:
+        """Get the current timestamp.
+
+        :return int:
+            Current timestamp
         """
-        return MessageList(messages=self._history)
+        timestamp_str = BaseResponse.current_timestamp()
+        return int(datetime.fromisoformat(timestamp_str.replace("Z", "+00:00")).timestamp())
 
     def web_search(self, query: str) -> str:
         """Search the web for the given query.
@@ -113,12 +106,12 @@ class Chatbot:
         :return str:
             The search results
         """
-        response = self._client.models.generate_content(
+        reply = self._client.models.generate_content(
             contents=query,
             model=self._config.model,
             config=self._web_search_config,
         )
-        return response.text or ""
+        return reply.text or ""
 
     def _extract_blocked_categories(self, response: GenerateContentResponse) -> list[str]:
         """Extract blocked safety categories from response.
@@ -150,7 +143,7 @@ class Chatbot:
             f"The previous message was blocked because it violates the following categories: {blocked_categories_str}."
         )
         reply = response.text or "Unable to process blocked message."
-        self._history.append(Message.model_message(reply, int(datetime.now().timestamp())))
+        self._history.append(ChatbotMessage.model_message(reply, self._get_current_timestamp()))
         return reply
 
     def get_config(self) -> ChatbotConfig:
@@ -171,22 +164,22 @@ class Chatbot:
 
     def start_chat(self) -> None:
         """Start a new chat session."""
-        self._history = [Message.new_chat_message(int(datetime.now().timestamp()))]
+        self._history = [ChatbotMessage.new_chat_message(self._get_current_timestamp())]
         self._chat = self._client.chats.create(
             model=self._config.model,
             config=self._chat_config,
         )
 
-    def send_message(self, text: str) -> Message:
+    def send_message(self, text: str) -> ChatbotMessage:
         """Send a text message to the chatbot.
 
         :param str text:
-            Message text to send
-        :return Message:
+            ChatbotMessage text to send
+        :return ChatbotMessage:
             Chatbot response message
         """
         try:
-            user_message = Message.user_message(text, int(datetime.now().timestamp()))
+            user_message = ChatbotMessage.user_message(text, self._get_current_timestamp())
 
             response = self._chat.send_message(text)
 
@@ -195,7 +188,7 @@ class Chatbot:
                 logger.error(msg)
                 raise AttributeError(msg)  # noqa: TRY301
 
-            model_message = Message.model_message(response_text, int(datetime.now().timestamp()))
+            model_message = ChatbotMessage.model_message(response_text, self._get_current_timestamp())
 
             self._history.append(user_message)
             self._history.append(model_message)
@@ -209,23 +202,26 @@ class Chatbot:
             else:
                 reply = "Failed to send message to chatbot!"
 
-            return Message(message=reply, timestamp=int(datetime.now().timestamp()))
+            return ChatbotMessage(message=reply, timestamp=self._get_current_timestamp())
         except ServerError:
-            return Message(message="Model overloaded! Please try again.", timestamp=int(datetime.now().timestamp()))
+            logger.exception("Model overloaded.")
+            return ChatbotMessage(
+                message="Model overloaded! Please try again.", timestamp=self._get_current_timestamp()
+            )
         else:
             return model_message
 
-    def send_audio(self, audio_data: bytes) -> SpeechResponse:
+    def send_audio(self, audio_data: bytes) -> ChatbotSpeech:
         """Send audio data to the chatbot and get speech response.
 
         :param bytes audio_data:
             Audio data to send
-        :return SpeechResponse:
+        :return ChatbotSpeech:
             Speech response with audio and text
         """
         try:
             audio_request = audiobot.get_audio_request(audio_data)
-            user_message = Message.user_message(str(audio_request[0]), int(datetime.now().timestamp()))
+            user_message = ChatbotMessage.user_message(str(audio_request[0]), self._get_current_timestamp())
 
             response = self._chat.send_message(audio_request)
             if not (response_text := response.text):
@@ -233,12 +229,10 @@ class Chatbot:
                 logger.error(msg)
                 raise AttributeError(msg)  # noqa: TRY301
 
-            model_message = Message.model_message(response_text, int(datetime.now().timestamp()))
+            model_message = ChatbotMessage.model_message(response_text, self._get_current_timestamp())
 
             audio = audiobot.get_audio_bytes_from_text(response_text)
-            speech_response = SpeechResponse(
-                bytes=audio, message=response_text, timestamp=int(datetime.now().timestamp())
-            )
+            speech_response = ChatbotSpeech(bytes=audio, message=response_text, timestamp=self._get_current_timestamp())
 
             self._history.append(user_message)
             self._history.append(model_message)
@@ -253,14 +247,15 @@ class Chatbot:
                 reply = "Failed to send audio to chatbot!"
 
             audio = audiobot.get_audio_bytes_from_text(reply)
-            return SpeechResponse(bytes=audio, message=reply, timestamp=int(datetime.now().timestamp()))
+            return ChatbotSpeech(bytes=audio, message=reply, timestamp=self._get_current_timestamp())
         except ServerError:
             reply = "Model overloaded! Please try again."
             audio = audiobot.get_audio_bytes_from_text(reply)
-            return SpeechResponse(bytes=audio, message=reply, timestamp=int(datetime.now().timestamp()))
+            logger.exception("Model overloaded.")
+            return ChatbotSpeech(bytes=audio, message=reply, timestamp=self._get_current_timestamp())
         except gTTSError as e:
             msg = f"A gTTSError occurred: {e}"
             logger.exception(msg)
-            return SpeechResponse(bytes="", message=str(e), timestamp=int(datetime.now().timestamp()))
+            return ChatbotSpeech(bytes="", message=str(e), timestamp=self._get_current_timestamp())
         else:
             return speech_response

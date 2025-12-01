@@ -108,12 +108,12 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: () async {
           try {
             final List<Map<String, dynamic>> messages = await httpHelper
-                .getLoginResponse(appState.fullUrl, appState.authToken);
+                .getChatHistory(appState.fullUrl, appState.authToken);
             final Map<String, dynamic> config = await httpHelper.getConfig(
                 appState.fullUrl, appState.authToken);
 
             if (messages.isNotEmpty) {
-              settingsState.updateConfig(config);
+              settingsState.postConfig(config);
               appState.setConnected(true);
               messageState.initialiseChat(messages);
               appState.setPageText();

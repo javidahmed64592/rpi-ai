@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "rpi-ai"
 version = "1.0.1"
-description = "AI written in Python to control a companion bot hosted on a Raspberry Pi."
+description = "A lightweight AI chatbot using Google Gemini."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
@@ -24,6 +24,8 @@ dependencies = [
     "psutil",
     "pydantic",
     "python-dotenv",
+    "python-multipart>=0.0.20",
+    "python-template-server @ git+https://github.com/javidahmed64592/python-template-server.git",
     "waitress",
 ]
 
@@ -40,11 +42,14 @@ dev = [
 repository = "https://github.com/javidahmed64592/rpi-ai"
 
 [project.scripts]
-rpi-ai = "rpi_ai.main:main"
+rpi-ai = "rpi_ai.main:run"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.hatch.build]
 include = [
-  "config/**",
+  "configuration/**",
   "rpi_ai/**",
   "LICENSE",
   "README.md",
@@ -160,6 +165,7 @@ module = [
     "google.*",
     "gtts.*",
     "psutil.*",
+    "python_template_server.*",
     "rpi_ai.*",
     "waitress.*",
 ]

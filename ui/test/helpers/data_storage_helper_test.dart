@@ -36,7 +36,7 @@ void main() {
 
     Map<String, dynamic> appState = await DataStorageHelper.loadAppState();
     expect(appState['ip'], '127.0.0.1');
-    expect(appState['port'], 5000);
+    expect(appState['port'], 443);
     expect(appState['authToken'], '');
   });
 }

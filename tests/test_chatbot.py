@@ -1,4 +1,4 @@
-"""Unit tests for the rpi_ai.models.chatbot module."""
+"""Unit tests for the rpi_ai.chatbot module."""
 
 from unittest.mock import MagicMock
 
@@ -6,44 +6,44 @@ from google.genai.errors import ServerError
 from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
 
-from rpi_ai.config import ChatbotConfig
-from rpi_ai.models.chatbot import Chatbot
+from rpi_ai.chatbot import Chatbot
+from rpi_ai.models import ChatbotConfig
 
 
 class TestChatbot:
     """Tests for the Chatbot class."""
 
     def test_init(self, mock_chatbot: Chatbot, mock_env_vars: MagicMock, mock_genai_client: MagicMock) -> None:
-        """Test initialization of the Chatbot class."""
+        """Test initialisation of the Chatbot class."""
         mock_genai_client.assert_called_once_with(api_key=mock_env_vars["GEMINI_API_KEY"])
 
-    def test_model_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_model_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the model configuration of the Chatbot."""
         config = mock_chatbot._model_config
-        assert config.system_instruction == mock_config.system_instruction
-        assert config.max_output_tokens == mock_config.max_output_tokens
-        assert config.temperature == mock_config.temperature
+        assert config.system_instruction == mock_chatbot_config.system_instruction
+        assert config.max_output_tokens == mock_chatbot_config.max_output_tokens
+        assert config.temperature == mock_chatbot_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
 
-    def test_chat_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_chat_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the chat configuration of the Chatbot."""
         config = mock_chatbot._chat_config
-        assert config.system_instruction == mock_config.system_instruction
-        assert config.max_output_tokens == mock_config.max_output_tokens
-        assert config.temperature == mock_config.temperature
+        assert config.system_instruction == mock_chatbot_config.system_instruction
+        assert config.max_output_tokens == mock_chatbot_config.max_output_tokens
+        assert config.temperature == mock_chatbot_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
         assert isinstance(config.tools, list)
         assert len(config.tools) == 1
         assert config.tools[0] in mock_chatbot._functions
 
-    def test_web_search_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_web_search_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the web search configuration of the Chatbot."""
         config = mock_chatbot._web_search_config
-        assert config.system_instruction == mock_config.system_instruction
-        assert config.max_output_tokens == mock_config.max_output_tokens
-        assert config.temperature == mock_config.temperature
+        assert config.system_instruction == mock_chatbot_config.system_instruction
+        assert config.max_output_tokens == mock_chatbot_config.max_output_tokens
+        assert config.temperature == mock_chatbot_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
         assert isinstance(config.tools, list)
@@ -87,15 +87,15 @@ class TestChatbot:
         )
         assert response == "Blocked message"
 
-    def test_get_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_get_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test retrieving the configuration of the Chatbot."""
-        assert mock_chatbot.get_config() == mock_config
+        assert mock_chatbot.get_config() == mock_chatbot_config
 
-    def test_update_config(self, mock_chatbot: Chatbot, mock_config: ChatbotConfig) -> None:
+    def test_update_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test updating the configuration of the Chatbot."""
-        mock_config.model = "new-model"
-        mock_chatbot.update_config(mock_config)
-        assert mock_chatbot.get_config() == mock_config
+        mock_chatbot_config.model = "new-model"
+        mock_chatbot.update_config(mock_chatbot_config)
+        assert mock_chatbot.get_config() == mock_chatbot_config
 
     def test_start_chat(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
         """Test starting a new chat session."""
@@ -127,11 +127,10 @@ class TestChatbot:
         assert mock_chatbot.chat_history.messages[-1].message == response.message
         assert not mock_chatbot.chat_history.messages[-1].is_user_message
 
-    def test_send_message_with_error(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
-        """Test sending a message when an error occurs."""
+    def test_send_message_with_no_response(self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock) -> None:
+        """Test sending a message when no response is received from the model."""
         mock_msg = "Hi model!"
-        mock_chat_instance.send_message.return_value = MagicMock(text=None)
-
+        mock_chat_instance.send_message.return_value = MagicMock(text="")
         response = mock_chatbot.send_message(mock_msg)
         mock_chat_instance.send_message.assert_called_once_with(mock_msg)
         assert response.message == "Failed to send message to chatbot!"
@@ -186,10 +185,10 @@ class TestChatbot:
         assert mock_chatbot.chat_history.messages[-1].message == response.message
         assert not mock_chatbot.chat_history.messages[-1].is_user_message
 
-    def test_send_audio_with_error(
+    def test_send_audio_with_no_response(
         self, mock_chatbot: Chatbot, mock_chat_instance: MagicMock, mock_get_audio_bytes_from_text: MagicMock
     ) -> None:
-        """Test sending an audio message when an error occurs."""
+        """Test sending an audio message when no response is received from the model."""
         mock_chat_instance.send_message.return_value = MagicMock(parts=MagicMock(text=None))
 
         mock_audio = "Failed to send messages to chatbot!"
