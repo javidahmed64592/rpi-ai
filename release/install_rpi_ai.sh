@@ -44,9 +44,11 @@ LICENSE_PATH="${WD}/${LICENSE_FILE}"
 echo "Creating virtual environment..."
 uv venv ${VENV_NAME}
 
+echo ${SEPARATOR}
 echo "Installing template server..."
 uv pip install git+https://github.com/javidahmed64592/python-template-server.git
 
+echo ${SEPARATOR}
 echo "Installing from wheel..."
 WHEEL_FILE=$(find "${WD}" -name "${PACKAGE_NAME}-*-py3-none-any.whl")
 uv pip install "${WHEEL_FILE}"
