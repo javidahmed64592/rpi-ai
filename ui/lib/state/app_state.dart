@@ -6,7 +6,7 @@ import 'package:ui/types.dart';
 
 class AppState extends ChangeNotifier {
   String _ip = '127.0.0.1';
-  int _port = 5000;
+  int _port = 443;
   String _authToken = '';
   PageType _activePage = PageType.login;
   bool _connected = false;
@@ -14,7 +14,7 @@ class AppState extends ChangeNotifier {
 
   String get ip => _ip;
   int get port => _port;
-  String get fullUrl => 'http://$_ip:$_port';
+  String get fullUrl => 'https://$_ip:$_port';
   String get authToken => _authToken;
   PageType get activePage => _activePage;
   bool get connected => _connected;

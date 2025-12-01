@@ -59,7 +59,7 @@ void main() {
     final httpHelper = HttpHelper(client: client);
     const uri = 'http://example.com';
 
-    when(client.get(Uri.parse('$uri/'), headers: anyNamed('headers')))
+    when(client.get(Uri.parse('$uri/health'), headers: anyNamed('headers')))
         .thenAnswer((_) async => http.Response('OK', 200));
 
     expect(await httpHelper.checkApiConnection(uri), true);
@@ -85,22 +85,24 @@ void main() {
     const authToken = 'testToken';
 
     when(client.get(
-      Uri.parse('$uri/login'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/chat/history'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'messages': [
-            {
-              'message': 'Welcome',
-              'timestamp': 1678886400,
-              'is_user_message': true,
-            },
-            {
-              'message': 'Hello',
-              'timestamp': 1678886460,
-              'is_user_message': false,
-            }
-          ]
+          'chat_history': {
+            'messages': [
+              {
+                'message': 'Welcome',
+                'timestamp': 1678886400,
+                'is_user_message': true,
+              },
+              {
+                'message': 'Hello',
+                'timestamp': 1678886460,
+                'is_user_message': false,
+              }
+            ]
+          }
         }),
         200));
 
@@ -126,8 +128,8 @@ void main() {
     const authToken = 'testToken';
 
     when(client.get(
-      Uri.parse('$uri/login'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/chat/history'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
     expect(httpHelper.getLoginResponse(uri, authToken), throwsException);
@@ -140,14 +142,16 @@ void main() {
     const authToken = 'testToken';
 
     when(client.get(
-      Uri.parse('$uri/get-config'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/config'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'model': 'testModel',
-          'system_instruction': 'testInstruction',
-          'max_output_tokens': 100,
-          'temperature': 0.7,
+          'config': {
+            'model': 'testModel',
+            'system_instruction': 'testInstruction',
+            'max_output_tokens': 100,
+            'temperature': 0.7,
+          }
         }),
         200));
 
@@ -166,8 +170,8 @@ void main() {
     const authToken = 'testToken';
 
     when(client.get(
-      Uri.parse('$uri/get-config'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/config'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
     expect(httpHelper.getConfig(uri, authToken), throwsException);
@@ -187,21 +191,28 @@ void main() {
     };
 
     when(client.post(
-      Uri.parse('$uri/update-config'),
+      Uri.parse('$uri/config'),
       headers: {
-        'Authorization': authToken,
+        'X-API-Key': authToken,
         'Content-Type': 'application/json',
       },
       body: jsonEncode(config),
+    )).thenAnswer((_) async => http.Response('', 200));
+
+    when(client.get(
+      Uri.parse('$uri/chat/history'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'messages': [
-            {
-              'message': 'Config updated successfully',
-              'timestamp': 1678886400,
-              'is_user_message': false
-            },
-          ]
+          'chat_history': {
+            'messages': [
+              {
+                'message': 'Config updated successfully',
+                'timestamp': 1678886400,
+                'is_user_message': false
+              },
+            ]
+          }
         }),
         200));
 
@@ -227,9 +238,9 @@ void main() {
     };
 
     when(client.post(
-      Uri.parse('$uri/update-config'),
+      Uri.parse('$uri/config'),
       headers: {
-        'Authorization': authToken,
+        'X-API-Key': authToken,
         'Content-Type': 'application/json',
       },
       body: jsonEncode(config),
@@ -246,18 +257,25 @@ void main() {
     const authToken = 'testToken';
 
     when(client.post(
-      Uri.parse('$uri/restart-chat'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/chat/restart'),
+      headers: {'X-API-Key': authToken},
       body: '',
+    )).thenAnswer((_) async => http.Response('', 200));
+
+    when(client.get(
+      Uri.parse('$uri/chat/history'),
+      headers: {'X-API-Key': authToken},
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'messages': [
-            {
-              'message': 'Chat restarted',
-              'timestamp': 1678886400,
-              'is_user_message': false,
-            },
-          ]
+          'chat_history': {
+            'messages': [
+              {
+                'message': 'Chat restarted',
+                'timestamp': 1678886400,
+                'is_user_message': false,
+              },
+            ]
+          }
         }),
         200));
 
@@ -278,8 +296,8 @@ void main() {
     const authToken = 'testToken';
 
     when(client.post(
-      Uri.parse('$uri/restart-chat'),
-      headers: {'Authorization': authToken},
+      Uri.parse('$uri/chat/restart'),
+      headers: {'X-API-Key': authToken},
       body: '',
     )).thenAnswer((_) async => http.Response('Not Found', 404));
 
@@ -294,17 +312,19 @@ void main() {
     const authToken = 'testToken';
 
     when(client.post(
-      Uri.parse('$uri/chat'),
+      Uri.parse('$uri/chat/message'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': authToken,
+        'X-API-Key': authToken,
       },
       body: jsonEncode({'message': message}),
     )).thenAnswer((_) async => http.Response(
         jsonEncode({
-          'message': 'Hi',
-          'timestamp': 1678886400,
-          'is_user_message': false,
+          'reply': {
+            'message': 'Hi',
+            'timestamp': 1678886400,
+            'is_user_message': false,
+          }
         }),
         200));
 
@@ -323,10 +343,10 @@ void main() {
     const authToken = 'testToken';
 
     when(client.post(
-      Uri.parse('$uri/chat'),
+      Uri.parse('$uri/chat/message'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': authToken,
+        'X-API-Key': authToken,
       },
       body: jsonEncode({'message': message}),
     )).thenAnswer((_) async => http.Response('Not Found', 404));

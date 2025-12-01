@@ -1,9 +1,11 @@
 // Dart imports:
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 // Package imports:
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:logging/logging.dart';
 
@@ -11,7 +13,14 @@ class HttpHelper {
   final http.Client client;
   final Logger _logger = Logger('HttpHelper');
 
-  HttpHelper({http.Client? client}) : client = client ?? http.Client();
+  HttpHelper({http.Client? client}) : client = client ?? _createClient();
+
+  static http.Client _createClient() {
+    final ioClient = HttpClient()
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+    return IOClient(ioClient);
+  }
 
   Future<http.Response> getResponseFromUri(
       String uri, Map<String, String>? headers) async {
@@ -31,7 +40,7 @@ class HttpHelper {
 
   Future<bool> checkApiConnection(String url) async {
     try {
-      final response = await getResponseFromUri('$url/', {});
+      final response = await getResponseFromUri('$url/health', {});
       if (response.statusCode == 200) {
         return true;
       }
@@ -47,11 +56,12 @@ class HttpHelper {
     final headers = <String, String>{
       'X-API-Key': authToken,
     };
-    final response = await getResponseFromUri('$url/login', headers);
+    final response = await getResponseFromUri('$url/chat/history', headers);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
-      final List<dynamic> messages = body['messages'];
+      final Map<String, dynamic> chatHistory = body['chat_history'];
+      final List<dynamic> messages = chatHistory['messages'];
       return messages.map((message) {
         return {
           'text': message['message'].toString().trim(),
@@ -70,15 +80,16 @@ class HttpHelper {
     final headers = <String, String>{
       'X-API-Key': authToken,
     };
-    final response = await getResponseFromUri('$url/get-config', headers);
+    final response = await getResponseFromUri('$url/config', headers);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
+      final Map<String, dynamic> config = body['config'];
       return {
-        'model': body['model'].toString().trim(),
-        'systemInstruction': body['system_instruction'].toString().trim(),
-        'maxOutputTokens': body['max_output_tokens'],
-        'temperature': body['temperature'],
+        'model': config['model'].toString().trim(),
+        'systemInstruction': config['system_instruction'].toString().trim(),
+        'maxOutputTokens': config['max_output_tokens'],
+        'temperature': config['temperature'],
       };
     }
 
@@ -95,19 +106,11 @@ class HttpHelper {
     };
     final body = jsonEncode(config);
     final response =
-        await postResponseToUri('$url/update-config', headers, body);
+        await postResponseToUri('$url/config', headers, body);
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> body = jsonDecode(response.body);
-      final List<dynamic> messages = body['messages'];
-      return messages.map((message) {
-        return {
-          'text': message['message'].toString().trim(),
-          'timestamp': DateTime.fromMillisecondsSinceEpoch(
-              (message['timestamp'] * 1000).toInt()),
-          'isUserMessage': message['is_user_message'],
-        };
-      }).toList();
+      // POST /config returns None, so fetch chat history to get updated messages
+      return await getLoginResponse(url, authToken);
     }
 
     // Raise exception if response status code is not 200
@@ -120,19 +123,11 @@ class HttpHelper {
     final headers = <String, String>{
       'X-API-Key': authToken,
     };
-    final response = await postResponseToUri('$url/restart-chat', headers, '');
+    final response = await postResponseToUri('$url/chat/restart', headers, '');
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> body = jsonDecode(response.body);
-      final List<dynamic> messages = body['messages'];
-      return messages.map((message) {
-        return {
-          'text': message['message'].toString().trim(),
-          'timestamp': DateTime.fromMillisecondsSinceEpoch(
-              (message['timestamp'] * 1000).toInt()),
-          'isUserMessage': message['is_user_message'],
-        };
-      }).toList();
+      // POST /chat/restart returns None, so fetch chat history to get updated messages
+      return await getLoginResponse(url, authToken);
     }
 
     // Raise exception if response status code is not 200
@@ -152,18 +147,19 @@ class HttpHelper {
 
     try {
       final response = await client.post(
-        Uri.parse('$url/chat'),
+        Uri.parse('$url/chat/message'),
         headers: headers,
         body: body,
       );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> body = jsonDecode(response.body);
+        final Map<String, dynamic> reply = body['reply'];
         return {
-          'text': body['message'].toString().trim(),
+          'text': reply['message'].toString().trim(),
           'timestamp': DateTime.fromMillisecondsSinceEpoch(
-              (body['timestamp'] * 1000).toInt()),
-          'isUserMessage': body['is_user_message'],
+              (reply['timestamp'] * 1000).toInt()),
+          'isUserMessage': reply['is_user_message'],
         };
       }
 
@@ -185,7 +181,7 @@ class HttpHelper {
     String mimeType = 'audio/ogg';
 
     try {
-      var request = http.MultipartRequest('POST', Uri.parse('$url/send-audio'));
+      var request = http.MultipartRequest('POST', Uri.parse('$url/chat/audio'));
       request.headers.addAll(headers);
 
       final contentType = MediaType.parse(mimeType);
@@ -202,11 +198,12 @@ class HttpHelper {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> body = jsonDecode(response.body);
+        final Map<String, dynamic> reply = body['reply'];
         return {
-          'text': body['message'].toString().trim(),
+          'text': reply['message'].toString().trim(),
           'timestamp': DateTime.fromMillisecondsSinceEpoch(
-              (body['timestamp'] * 1000).toInt()),
-          'bytes': body['bytes'],
+              (reply['timestamp'] * 1000).toInt()),
+          'bytes': reply['bytes'],
         };
       }
 

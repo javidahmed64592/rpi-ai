@@ -49,7 +49,7 @@ class _MainPageState extends State<MainPage> {
     final notificationState =
         Provider.of<NotificationState>(context, listen: false);
 
-    httpHelper.checkApiConnection('${appState.fullUrl}/').then((alive) {
+    httpHelper.checkApiConnection(appState.fullUrl).then((alive) {
       if (appState.activePage == PageType.login) {
         return;
       }
