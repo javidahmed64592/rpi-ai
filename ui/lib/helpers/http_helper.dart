@@ -45,7 +45,7 @@ class HttpHelper {
   Future<List<Map<String, dynamic>>> getLoginResponse(
       String url, String authToken) async {
     final headers = <String, String>{
-      'Authorization': authToken,
+      'X-API-Key': authToken,
     };
     final response = await getResponseFromUri('$url/login', headers);
 
@@ -68,7 +68,7 @@ class HttpHelper {
 
   Future<Map<String, dynamic>> getConfig(String url, String authToken) async {
     final headers = <String, String>{
-      'Authorization': authToken,
+      'X-API-Key': authToken,
     };
     final response = await getResponseFromUri('$url/get-config', headers);
 
@@ -90,7 +90,7 @@ class HttpHelper {
   Future<List<Map<String, dynamic>>> updateConfig(
       String url, String authToken, Map<String, dynamic> config) async {
     final headers = <String, String>{
-      'Authorization': authToken,
+      'X-API-Key': authToken,
       'Content-Type': 'application/json',
     };
     final body = jsonEncode(config);
@@ -118,7 +118,7 @@ class HttpHelper {
   Future<List<Map<String, dynamic>>> postRestartChat(
       String url, String authToken) async {
     final headers = <String, String>{
-      'Authorization': authToken,
+      'X-API-Key': authToken,
     };
     final response = await postResponseToUri('$url/restart-chat', headers, '');
 
@@ -143,7 +143,7 @@ class HttpHelper {
   Future<Map<String, dynamic>> chat(
       String url, String authToken, String message) async {
     final headers = <String, String>{
-      'Authorization': authToken,
+      'X-API-Key': authToken,
       'Content-Type': 'application/json',
     };
     final body = jsonEncode(<String, String>{
@@ -179,7 +179,7 @@ class HttpHelper {
   Future<Map<String, dynamic>> sendAudio(
       String url, String authToken, Uint8List audioBytes) async {
     final headers = <String, String>{
-      'Authorization': authToken,
+      'X-API-Key': authToken,
     };
 
     String mimeType = 'audio/ogg';
