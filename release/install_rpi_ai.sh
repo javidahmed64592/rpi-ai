@@ -173,7 +173,11 @@ chmod +x "${UNINSTALL_PATH}"
 
 echo "${SEPARATOR}"
 echo "RPi-AI has been installed successfully."
+echo
+echo "Generate the self-signed SSL certificates by running: 'uv run generate-certificate"
+echo "Generate a new API key by running: 'uv run generate-api-key'"
 echo "Run the application using: './${EXE_NAME}'"
+echo
 echo "Configure the application by editing: ${CONFIG_DEST}"
 echo "To create a start-up service for the RPi-AI, run: './service/${CREATE_SERVICE_FILE}'"
 echo "To stop the service, run: './service/${STOP_SERVICE_FILE}'"
