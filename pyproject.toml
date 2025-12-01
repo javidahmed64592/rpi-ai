@@ -25,7 +25,7 @@ dependencies = [
     "pydantic",
     "python-dotenv",
     "python-multipart>=0.0.20",
-    "python-template-server",
+    "python-template-server @ git+https://github.com/javidahmed64592/python-template-server.git",
     "waitress",
 ]
 
@@ -167,6 +167,3 @@ module = [
     "waitress.*",
 ]
 ignore_missing_imports = true
-
-[tool.uv.sources]
-python-template-server = { git = "https://github.com/javidahmed64592/python-template-server.git" }
