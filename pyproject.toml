@@ -51,6 +51,7 @@ allow-direct-references = true
 include = [
   "configuration/**",
   "rpi_ai/**",
+  ".here",
   "LICENSE",
   "README.md",
 ]
