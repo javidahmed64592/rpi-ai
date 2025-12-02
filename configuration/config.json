@@ -18,6 +18,12 @@
     "ssl_certfile": "cert.pem",
     "days_valid": 365
   },
+  "json_response": {
+    "ensure_ascii": false,
+    "allow_nan": false,
+    "indent": null,
+    "media_type": "application/json; charset=utf-8"
+  },
   "chatbot_config": {
     "model": "gemini-2.0-flash",
     "system_instruction": "You are a friendly AI assistant. You are designed to help the user with daily tasks.",
