@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 from fastapi import Request
+from pydantic import ValidationError
 from python_template_server.constants import CONFIG_DIR, CONFIG_FILE_NAME
 from python_template_server.models import ResponseCode
 from python_template_server.template_server import TemplateServer
@@ -55,7 +56,11 @@ class ChatbotServer(TemplateServer):
         :param dict config_data: Raw configuration data
         :return ChatbotServerConfig: Validated chatbot server configuration
         """
-        return ChatbotServerConfig.model_validate(config_data)  # type: ignore[no-any-return]
+        try:
+            return ChatbotServerConfig.model_validate(config_data)  # type: ignore[no-any-return]
+        except ValidationError:
+            logger.warning("Invalid configuration data, loading default configuration.")
+            return ChatbotServerConfig.model_validate({})  # type: ignore[no-any-return]
 
     def setup_routes(self) -> None:
         """Set up API routes."""

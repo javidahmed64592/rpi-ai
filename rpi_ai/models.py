@@ -139,7 +139,7 @@ class ChatbotConfig(BaseModel):
 class ChatbotServerConfig(TemplateServerConfig):
     """Chatbot server configuration model."""
 
-    chatbot_config: ChatbotConfig
+    chatbot_config: ChatbotConfig = Field(default_factory=ChatbotConfig, description="Configuration for the AI chatbot")
 
 
 # Chatbot Server Response Models

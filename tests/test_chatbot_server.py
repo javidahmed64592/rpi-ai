@@ -79,6 +79,15 @@ class TestChatbotServer:
         validated_config = mock_chatbot_server.validate_config(config_dict)
         assert validated_config == mock_chatbot_server_config
 
+    def test_validate_config_invalid_returns_default(
+        self, mock_chatbot_server: ChatbotServer, mock_chatbot_server_config: ChatbotServerConfig
+    ) -> None:
+        """Test invalid configuration returns default configuration."""
+        mock_chatbot_server_config.chatbot_config = None  # type: ignore[assignment]
+        config_dict = mock_chatbot_server_config.model_dump()
+        validated_config = mock_chatbot_server.validate_config(config_dict)
+        assert validated_config == ChatbotServerConfig.model_validate({})
+
     def test_config_dir_home(
         self, mock_chatbot_server: ChatbotServer, mock_exists: MagicMock, mock_path_home: MagicMock
     ) -> None:
