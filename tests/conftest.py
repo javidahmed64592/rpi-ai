@@ -8,7 +8,14 @@ import pytest
 from prometheus_client import REGISTRY
 
 from rpi_ai.chatbot import Chatbot
-from rpi_ai.models import ChatbotConfig, ChatbotMessage, ChatbotMessageList, ChatbotServerConfig, ChatbotSpeech
+from rpi_ai.models import (
+    ChatbotConfig,
+    ChatbotMessage,
+    ChatbotMessageList,
+    ChatbotServerConfig,
+    ChatbotSpeech,
+    EmbeddingConfig,
+)
 
 
 # General fixtures
@@ -147,17 +154,34 @@ def mock_chatbot_config_dict() -> dict:
 
 
 @pytest.fixture
+def mock_embedding_config_dict() -> dict:
+    """Fixture to provide a sample embedding configuration dictionary."""
+    return {
+        "model": "gemini-embedding-001",
+        "memory_filepath": "chat_memory.json",
+        "top_k": 5,
+    }
+
+
+@pytest.fixture
 def mock_chatbot_config(mock_chatbot_config_dict: dict) -> ChatbotConfig:
     """Fixture to create a mock ChatbotConfig instance."""
     return ChatbotConfig.model_validate(mock_chatbot_config_dict)
 
 
 @pytest.fixture
+def mock_embedding_config(mock_embedding_config_dict: dict) -> EmbeddingConfig:
+    """Fixture to create a mock EmbeddingConfig instance."""
+    return EmbeddingConfig.model_validate(mock_embedding_config_dict)
+
+
+@pytest.fixture
 def mock_chatbot_server_config(
     mock_chatbot_config: ChatbotConfig,
+    mock_embedding_config: EmbeddingConfig,
 ) -> ChatbotServerConfig:
     """Fixture to create a mock ChatbotServerConfig instance."""
-    return ChatbotServerConfig(chatbot_config=mock_chatbot_config)
+    return ChatbotServerConfig(chatbot_config=mock_chatbot_config, embedding_config=mock_embedding_config)
 
 
 # Chatbot fixtures

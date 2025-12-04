@@ -136,10 +136,21 @@ class ChatbotConfig(BaseModel):
     temperature: float = Field(default=1.0, description="Sampling temperature for response generation")
 
 
+class EmbeddingConfig(BaseModel):
+    """Embedding configuration model."""
+
+    model: str = Field(default="gemini-embedding-001", description="Embedding model to use")
+    memory_filepath: str = Field(default="chat_memory.json", description="Filepath to store chat memory embeddings")
+    top_k: int = Field(default=5, description="Number of top similar memories to retrieve")
+
+
 class ChatbotServerConfig(TemplateServerConfig):
     """Chatbot server configuration model."""
 
     chatbot_config: ChatbotConfig = Field(default_factory=ChatbotConfig, description="Configuration for the AI chatbot")
+    embedding_config: EmbeddingConfig = Field(
+        default_factory=EmbeddingConfig, description="Configuration for the embedding model"
+    )
 
 
 # Chatbot Server Response Models

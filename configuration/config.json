@@ -29,5 +29,10 @@
     "system_instruction": "You are a friendly AI assistant. You are designed to help the user with daily tasks.",
     "max_output_tokens": 1000,
     "temperature": 1.0
+  },
+  "embedding_config": {
+    "model": "gemini-embedding-001",
+    "memory_filepath": "chat_memory.json",
+    "top_k": 5
   }
 }

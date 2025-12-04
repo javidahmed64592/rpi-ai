@@ -9,6 +9,7 @@ from rpi_ai.models import (
     ChatbotMessageList,
     ChatbotServerConfig,
     ChatbotSpeech,
+    EmbeddingConfig,
     GetChatHistoryResponse,
     GetConfigResponse,
     PostAudioResponse,
@@ -91,6 +92,14 @@ class TestChatbotConfig:
     def test_model_dump(self, mock_chatbot_config_dict: dict, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the model_dump method."""
         assert mock_chatbot_config.model_dump() == mock_chatbot_config_dict
+
+
+class TestEmbeddingConfig:
+    """Unit tests for the TestEmbeddingConfig class."""
+
+    def test_model_dump(self, mock_embedding_config_dict: dict, mock_embedding_config: EmbeddingConfig) -> None:
+        """Test the model_dump method."""
+        assert mock_embedding_config.model_dump() == mock_embedding_config_dict
 
 
 class TestChatbotServerConfig:
