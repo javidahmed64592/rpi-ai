@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
+from pathlib import Path
 
+import numpy as np
 from google.genai.types import Content, Part
 from pydantic import BaseModel, Field
 from python_template_server.models import BaseResponse, TemplateServerConfig
@@ -121,6 +124,71 @@ class ChatbotSpeech(BaseModel):
     bytes: str
     message: str
     timestamp: int
+
+
+# Memory Models
+class ChatMemoryEntry(BaseModel):
+    """Chat memory entry data type."""
+
+    text: str
+    vector: list[float]
+
+
+class ChatMemoryList(BaseModel):
+    """List of chat memory entries."""
+
+    entries: list[ChatMemoryEntry]
+
+    def add_entry(self, entry: ChatMemoryEntry) -> None:
+        """Add a chat memory entry to the list.
+
+        :param ChatMemoryEntry entry:
+            Chat memory entry to add
+        """
+        self.entries.append(entry)
+
+    def clear_entries(self) -> None:
+        """Clear all chat memory entries."""
+        self.entries.clear()
+
+    def retrieve_memories(self, query_vector: list[float], top_k: int = 5) -> list[ChatMemoryEntry]:
+        """Retrieve top-k similar chat memory entries based on cosine similarity.
+
+        :param list[float] query_vector:
+            Query vector for similarity comparison
+        :param int top_k:
+            Number of top similar entries to retrieve
+        :return list[ChatMemoryEntry]:
+            List of top-k similar chat memory entries
+        """
+        sims = [
+            np.dot(query_vector, m.vector) / (np.linalg.norm(query_vector) * np.linalg.norm(m.vector))
+            for m in self.entries
+        ]
+        return [self.entries[i].text for i in np.argsort(sims)[-top_k:][::-1]]
+
+    def save_to_file(self, filepath: Path) -> None:
+        """Save chat memory entries to a JSON file.
+
+        :param Path filepath:
+            Filepath to save the chat memory entries
+        """
+        with filepath.open("w") as f:
+            json.dump(self.model_dump(), f, indent=2)
+
+    @classmethod
+    def load_from_file(cls, filepath: Path) -> ChatMemoryList:
+        """Load chat memory entries from a JSON file.
+
+        :param Path filepath:
+            Filepath to load the chat memory entries from
+        """
+        try:
+            with filepath.open() as f:
+                data = json.load(f)
+            return cls.model_validate(data)
+        except FileNotFoundError:
+            return cls(entries=[])
 
 
 # Chatbot Server Configuration Models

@@ -14,6 +14,8 @@ from rpi_ai.models import (
     ChatbotMessageList,
     ChatbotServerConfig,
     ChatbotSpeech,
+    ChatMemoryEntry,
+    ChatMemoryList,
     EmbeddingConfig,
 )
 
@@ -25,6 +27,20 @@ def mock_here(tmp_path: str) -> Generator[MagicMock, None, None]:
     with patch("pyhere.here") as mock_here:
         mock_here.return_value = tmp_path
         yield mock_here
+
+
+@pytest.fixture
+def mock_json_dump() -> Generator[MagicMock, None, None]:
+    """Mock the json.dump() method."""
+    with patch("json.dump") as mock_dump:
+        yield mock_dump
+
+
+@pytest.fixture
+def mock_json_load() -> Generator[MagicMock, None, None]:
+    """Mock the json.load() method."""
+    with patch("json.load") as mock_load:
+        yield mock_load
 
 
 @pytest.fixture
@@ -139,6 +155,28 @@ def mock_chatbot_message_list(mock_chatbot_message_list_dict: dict) -> ChatbotMe
 def mock_chatbot_speech(mock_chatbot_speech_dict: dict) -> ChatbotSpeech:
     """Fixture to create a mock ChatbotSpeech instance."""
     return ChatbotSpeech.model_validate(mock_chatbot_speech_dict)
+
+
+# Memory Models
+@pytest.fixture
+def mock_chat_memory_entry_dict() -> dict:
+    """Fixture to provide a sample ChatMemoryEntry dictionary."""
+    return {
+        "text": "Test memory entry",
+        "vector": [0.1, 0.2, 0.3],
+    }
+
+
+@pytest.fixture
+def mock_chat_memory_entry(mock_chat_memory_entry_dict: dict) -> ChatMemoryEntry:
+    """Fixture to create a mock ChatMemoryEntry instance."""
+    return ChatMemoryEntry.model_validate(mock_chat_memory_entry_dict)
+
+
+@pytest.fixture
+def mock_chat_memory_list(mock_chat_memory_entry: ChatMemoryEntry) -> ChatMemoryList:
+    """Fixture to create a mock ChatMemoryList instance."""
+    return ChatMemoryList(entries=[mock_chat_memory_entry])
 
 
 # Chatbot Server Configuration Models
