@@ -139,17 +139,19 @@ class ChatMemoryList(BaseModel):
 
     entries: list[ChatMemoryEntry]
 
-    def add_entry(self, text: str, vector: list[float]) -> None:
+    def add_entry(self, text: str, vector: list[float], max_memories: int) -> None:
         """Add a chat memory entry to the list.
 
-        :param ChatMemoryEntry entry:
+        :param str text:
             Chat memory entry to add
+        :param list[float] vector:
+            Vector representation of the chat memory entry
+        :param int max_memories:
+            Maximum number of chat memories to store
         """
         self.entries.append(ChatMemoryEntry(text=text, vector=vector))
-
-    def clear_entries(self) -> None:
-        """Clear all chat memory entries."""
-        self.entries.clear()
+        if len(self.entries) > max_memories:
+            self.entries.pop(0)
 
     def retrieve_memories(self, query_vector: list[float], top_k: int) -> list[str]:
         """Retrieve top-k similar chat memory entries based on cosine similarity.
@@ -166,6 +168,10 @@ class ChatMemoryList(BaseModel):
             for m in self.entries
         ]
         return [self.entries[i].text for i in np.argsort(sims)[-top_k:][::-1]]
+
+    def clear_entries(self) -> None:
+        """Clear all chat memory entries."""
+        self.entries.clear()
 
     def save_to_file(self, filepath: Path) -> None:
         """Save chat memory entries to a JSON file.
@@ -228,6 +234,7 @@ class EmbeddingConfig(BaseModel):
 
     model: str = Field(default="gemini-embedding-001", description="Embedding model to use")
     memory_filepath: str = Field(default="chat_memory.json", description="Filepath to store chat memory embeddings")
+    max_memories: int = Field(default=1000, description="Maximum number of chat memories to store")
     top_k: int = Field(default=5, description="Number of top similar memories to retrieve")
 
 

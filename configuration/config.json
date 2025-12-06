@@ -33,6 +33,7 @@
   "embedding_config": {
     "model": "gemini-embedding-001",
     "memory_filepath": "chat_memory.json",
+    "max_memories": 1000,
     "top_k": 5
   }
 }

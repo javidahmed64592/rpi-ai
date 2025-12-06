@@ -198,6 +198,7 @@ def mock_embedding_config_dict() -> dict:
     return {
         "model": "gemini-embedding-001",
         "memory_filepath": "chat_memory.json",
+        "max_memories": 5,
         "top_k": 3,
     }
 

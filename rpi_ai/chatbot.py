@@ -158,7 +158,7 @@ class Chatbot:
             Memory text to store
         """
         vector = self._embed_text(text, task_type="SEMANTIC_SIMILARITY")
-        self._memory.add_entry(text=text, vector=vector.tolist())
+        self._memory.add_entry(text=text, vector=vector.tolist(), max_memories=self._embedding_config.max_memories)
         self._memory.save_to_file(self._config_dir / self._embedding_config.memory_filepath)
         logger.info("Stored new memory (%d entries): %s", len(self._memory.entries), text)
 
