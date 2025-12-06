@@ -2,6 +2,7 @@
 
 from unittest.mock import MagicMock
 
+import pytest
 from google.genai.errors import ServerError
 from google.genai.types import GenerateContentConfig, GoogleSearch
 from gtts import gTTSError
@@ -74,6 +75,14 @@ class TestChatbot:
         result = mock_chatbot._embed_text("test text", task_type="SEMANTIC_SIMILARITY")
         mock_genai_client.return_value.models.embed_content.assert_called_once()
         assert result.tolist() == mock_vector
+
+    def test_embed_text_no_embeddings(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
+        """Test embedding text when no embeddings are returned."""
+        mock_embedding_response = MagicMock(embeddings=[])
+        mock_genai_client.return_value.models.embed_content.return_value = mock_embedding_response
+
+        with pytest.raises(AttributeError, match=r"No embeddings returned from embedding model."):
+            mock_chatbot._embed_text("test text", task_type="SEMANTIC_SIMILARITY")
 
     def test_create_memory(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
         """Test creating a new memory entry."""

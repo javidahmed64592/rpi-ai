@@ -149,6 +149,10 @@ class Chatbot:
             contents=text,
             config=EmbedContentConfig(task_type=task_type),
         )
+        if not embedding_response.embeddings:
+            msg = "No embeddings returned from embedding model."
+            logger.error(msg)
+            raise AttributeError(msg)
         return np.array(embedding_response.embeddings[0].values)
 
     def create_memory(self, text: str) -> None:
