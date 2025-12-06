@@ -155,16 +155,19 @@ class Chatbot:
             raise AttributeError(msg)
         return np.array(embedding_response.embeddings[0].values)
 
-    def create_memory(self, text: str) -> None:
+    def create_memory(self, text: str) -> str:
         """Create a persistent chat memory.
 
         :param str text:
             Memory text to store
+        :return str:
+            Confirmation message
         """
         vector = self._embed_text(text, task_type="SEMANTIC_SIMILARITY")
         self._memory.add_entry(text=text, vector=vector.tolist(), max_memories=self._embedding_config.max_memories)
         self._memory.save_to_file(self._config_dir / self._embedding_config.memory_filepath)
         logger.info("Stored new memory (%d entries): %s", len(self._memory.entries), text)
+        return f"Memory stored successfully: {text}"
 
     def retrieve_memories(self, query: str) -> list[str]:
         """Retrieve relevant memories based on the query.
