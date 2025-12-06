@@ -109,8 +109,10 @@ class TestChatMemoryList:
     def test_add_entry(self, mock_chat_memory_list: ChatMemoryList) -> None:
         """Test adding an entry to the ChatMemoryList."""
         new_entry = ChatMemoryEntry(text="Another memory entry", vector=[0.4, 0.5, 0.6])
-        mock_chat_memory_list.add_entry(new_entry)
-        assert new_entry in mock_chat_memory_list.entries
+        mock_chat_memory_list.add_entry(text=new_entry.text, vector=new_entry.vector)
+        latest_entry = mock_chat_memory_list.entries[-1]
+        assert latest_entry.text == new_entry.text
+        assert latest_entry.vector == new_entry.vector
 
     def test_clear_entries(self, mock_chat_memory_list: ChatMemoryList) -> None:
         """Test clearing entries from the ChatMemoryList."""
@@ -123,7 +125,7 @@ class TestChatMemoryList:
         new_entry.text = "Modified memory entry"
         new_entry.vector = [component + 0.01 for component in new_entry.vector]
 
-        mock_chat_memory_list.add_entry(new_entry)
+        mock_chat_memory_list.add_entry(text=new_entry.text, vector=new_entry.vector)
         top_memories = mock_chat_memory_list.retrieve_memories(new_entry.vector, top_k=1)
         assert top_memories == [new_entry.text]
 

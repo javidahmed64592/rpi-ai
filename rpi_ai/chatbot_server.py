@@ -47,7 +47,13 @@ class ChatbotServer(TemplateServer):
             raise ValueError(msg)
 
         logger.info("Successfully loaded API key!")
-        self.chatbot = Chatbot(str(gemini_api_key), self.config.chatbot_config, FUNCTIONS)
+        self.chatbot = Chatbot(
+            api_key=str(gemini_api_key),
+            config_dir=self.config_dir,
+            config=self.config.chatbot_config,
+            embedding_config=self.config.embedding_config,
+            functions=FUNCTIONS,
+        )
         logger.info("Successfully initialised Chatbot!")
 
     def validate_config(self, config_data: dict) -> ChatbotServerConfig:

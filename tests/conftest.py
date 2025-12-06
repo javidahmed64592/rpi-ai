@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import Generator
+from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
@@ -197,7 +198,7 @@ def mock_embedding_config_dict() -> dict:
     return {
         "model": "gemini-embedding-001",
         "memory_filepath": "chat_memory.json",
-        "top_k": 5,
+        "top_k": 3,
     }
 
 
@@ -242,10 +243,21 @@ def mock_chat_instance(mock_genai_client: MagicMock) -> MagicMock:
 
 @pytest.fixture
 def mock_chatbot(
-    mock_env_vars: MagicMock, mock_chatbot_config: ChatbotConfig, mock_chat_instance: MagicMock
+    mock_env_vars: MagicMock,
+    mock_chatbot_config: ChatbotConfig,
+    mock_embedding_config: EmbeddingConfig,
+    mock_chat_memory_list: ChatMemoryList,
+    mock_chat_instance: MagicMock,
 ) -> Chatbot:
     """Fixture to create a mock Chatbot instance."""
-    return Chatbot(mock_env_vars["GEMINI_API_KEY"], mock_chatbot_config, [])
+    return Chatbot(
+        api_key=mock_env_vars["GEMINI_API_KEY"],
+        config_dir=Path("/mock/config/dir"),
+        config=mock_chatbot_config,
+        embedding_config=mock_embedding_config,
+        functions=[],
+        memories=mock_chat_memory_list,
+    )
 
 
 # Audiobot fixtures

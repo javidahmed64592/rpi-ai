@@ -20,7 +20,10 @@ class TestChatbot:
     def test_model_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the model configuration of the Chatbot."""
         config = mock_chatbot._model_config
-        assert config.system_instruction == mock_chatbot_config.system_instruction
+        assert (
+            config.system_instruction
+            == f"{mock_chatbot_config.system_instruction}\n{ChatbotConfig.get_memory_guidelines()}"
+        )
         assert config.max_output_tokens == mock_chatbot_config.max_output_tokens
         assert config.temperature == mock_chatbot_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
@@ -29,19 +32,25 @@ class TestChatbot:
     def test_chat_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the chat configuration of the Chatbot."""
         config = mock_chatbot._chat_config
-        assert config.system_instruction == mock_chatbot_config.system_instruction
+        assert (
+            config.system_instruction
+            == f"{mock_chatbot_config.system_instruction}\n{ChatbotConfig.get_memory_guidelines()}"
+        )
         assert config.max_output_tokens == mock_chatbot_config.max_output_tokens
         assert config.temperature == mock_chatbot_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
         assert config.candidate_count == mock_chatbot.CANDIDATE_COUNT
         assert isinstance(config.tools, list)
-        assert len(config.tools) == 1
+        assert len(config.tools) > 0
         assert config.tools[0] in mock_chatbot._functions
 
     def test_web_search_config(self, mock_chatbot: Chatbot, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the web search configuration of the Chatbot."""
         config = mock_chatbot._web_search_config
-        assert config.system_instruction == mock_chatbot_config.system_instruction
+        assert (
+            config.system_instruction
+            == f"{mock_chatbot_config.system_instruction}\n{ChatbotConfig.get_memory_guidelines()}"
+        )
         assert config.max_output_tokens == mock_chatbot_config.max_output_tokens
         assert config.temperature == mock_chatbot_config.temperature
         assert config.safety_settings == mock_chatbot.SAFETY_SETTINGS
@@ -55,6 +64,61 @@ class TestChatbot:
         history = mock_chatbot.chat_history
         assert len(history.messages) == 1
         assert history.messages[0].message == "What's on your mind today?"
+
+    def test_embed_text(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
+        """Test embedding text with the default task type."""
+        mock_vector = [0.1, 0.2, 0.3]
+        mock_embedding_response = MagicMock(embeddings=[MagicMock(values=mock_vector)])
+        mock_genai_client.return_value.models.embed_content.return_value = mock_embedding_response
+
+        result = mock_chatbot._embed_text("test text", task_type="SEMANTIC_SIMILARITY")
+        mock_genai_client.return_value.models.embed_content.assert_called_once()
+        assert result.tolist() == mock_vector
+
+    def test_create_memory(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
+        """Test creating a new memory entry."""
+        mock_vector = [0.1, 0.2, 0.3]
+        mock_embedding_response = MagicMock(embeddings=[MagicMock(values=mock_vector)])
+        mock_genai_client.return_value.models.embed_content.return_value = mock_embedding_response
+
+        initial_count = len(mock_chatbot._memory.entries)
+        memory_text = "New memory"
+
+        mock_chatbot.create_memory(memory_text)
+
+        assert len(mock_chatbot._memory.entries) == initial_count + 1
+        assert mock_chatbot._memory.entries[-1].text == memory_text
+        assert mock_chatbot._memory.entries[-1].vector == mock_vector
+        mock_genai_client.return_value.models.embed_content.assert_called_once()
+
+    def test_retrieve_memories(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
+        """Test retrieving relevant memories based on a query."""
+        mock_vector = [0.1, 0.2, 0.3]
+        mock_embedding_response = MagicMock(embeddings=[MagicMock(values=mock_vector)])
+        mock_genai_client.return_value.models.embed_content.return_value = mock_embedding_response
+
+        query = "What music do I like?"
+        memories = mock_chatbot.retrieve_memories(query)
+
+        assert isinstance(memories, list)
+        assert all(isinstance(memory, str) for memory in memories)
+        mock_genai_client.return_value.models.embed_content.assert_called_once()
+
+    def test_retrieve_memories_returns_top_k(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
+        """Test that retrieve_memories returns at most top_k results."""
+        # Add multiple memory entries with non-zero vectors
+        for i in range(5):
+            mock_chatbot._memory.entries.append(
+                MagicMock(text=f"Memory {i}", vector=[0.1 * (i + 1), 0.2 * (i + 1), 0.3 * (i + 1)])
+            )
+
+        mock_embedding_response = MagicMock(embeddings=[MagicMock(values=[0.5, 0.5, 0.5])])
+        mock_genai_client.return_value.models.embed_content.return_value = mock_embedding_response
+
+        memories = mock_chatbot.retrieve_memories("test query")
+
+        assert len(memories) <= mock_chatbot._embedding_config.top_k
+        mock_genai_client.return_value.models.embed_content.assert_called_once()
 
     def test_web_search(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
         """Test the web search functionality of the Chatbot."""
@@ -102,7 +166,7 @@ class TestChatbot:
         mock_genai_client.return_value.chats.create.assert_called_once_with(
             model=mock_chatbot._config.model,
             config=GenerateContentConfig(
-                system_instruction=mock_chatbot._config.system_instruction,
+                system_instruction=f"{mock_chatbot._config.system_instruction}\n{ChatbotConfig.get_memory_guidelines()}",
                 max_output_tokens=mock_chatbot._config.max_output_tokens,
                 temperature=mock_chatbot._config.temperature,
                 safety_settings=Chatbot.SAFETY_SETTINGS,

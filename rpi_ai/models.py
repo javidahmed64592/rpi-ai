@@ -139,13 +139,13 @@ class ChatMemoryList(BaseModel):
 
     entries: list[ChatMemoryEntry]
 
-    def add_entry(self, entry: ChatMemoryEntry) -> None:
+    def add_entry(self, text: str, vector: list[float]) -> None:
         """Add a chat memory entry to the list.
 
         :param ChatMemoryEntry entry:
             Chat memory entry to add
         """
-        self.entries.append(entry)
+        self.entries.append(ChatMemoryEntry(text=text, vector=vector))
 
     def clear_entries(self) -> None:
         """Clear all chat memory entries."""
