@@ -3,11 +3,14 @@
 import logging
 from collections.abc import Callable
 from datetime import datetime
+from pathlib import Path
 from typing import Any, ClassVar
 
+import numpy as np
 from google.genai import Client
 from google.genai.errors import ServerError
 from google.genai.types import (
+    EmbedContentConfig,
     GenerateContentConfig,
     GenerateContentResponse,
     GoogleSearch,
@@ -21,7 +24,14 @@ from pydantic import ValidationError
 from python_template_server.models import BaseResponse
 
 from rpi_ai import audiobot
-from rpi_ai.models import ChatbotConfig, ChatbotMessage, ChatbotMessageList, ChatbotSpeech
+from rpi_ai.models import (
+    ChatbotConfig,
+    ChatbotMessage,
+    ChatbotMessageList,
+    ChatbotSpeech,
+    ChatMemoryList,
+    EmbeddingConfig,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,27 +53,53 @@ class Chatbot:
 
     CANDIDATE_COUNT: int = 1
 
-    def __init__(self, api_key: str, config: ChatbotConfig, functions: list[Callable[..., Any]]) -> None:
+    def __init__(
+        self,
+        api_key: str,
+        config_dir: Path,
+        config: ChatbotConfig,
+        embedding_config: EmbeddingConfig,
+        functions: list[Callable[..., Any]],
+        memories: ChatMemoryList | None = None,
+    ) -> None:
         """Initialise the chatbot with API key, configuration, and functions.
 
         :param str api_key:
             Google AI API key
         :param ChatbotConfig config:
             Chatbot configuration
+        :param EmbeddingConfig embedding_config:
+            Embedding configuration
         :param list[Callable[..., Any]] functions:
             List of available functions
+        :param ChatMemoryList | None memories:
+            Optional pre-loaded chat memories
         """
         self._client = Client(api_key=api_key)
+        self._config_dir = config_dir
         self._config = config
-        self._functions: list[Tool | Callable[..., Any]] = [*functions, self.web_search]
+        self._embedding_config = embedding_config
+        self._functions: list[Tool | Callable[..., Any]] = [
+            *functions,
+            self.create_memory,
+            self.retrieve_memories,
+            self.clear_memories,
+            self.web_search,
+        ]
+
         self._history: list[ChatbotMessage] = []
+
+        self._memory = memories or ChatMemoryList.load_from_file(
+            self._config_dir / self._embedding_config.memory_filepath
+        )
+        logger.info("Loaded %d memory entries.", len(self._memory.entries))
         self.start_chat()
 
     @property
     def _model_config(self) -> GenerateContentConfig:
         """Get base model configuration."""
         return GenerateContentConfig(
-            system_instruction=self._config.system_instruction,
+            system_instruction=f"{self._config.system_instruction}\n{ChatbotConfig.get_memory_guidelines()}",
             max_output_tokens=self._config.max_output_tokens,
             temperature=self._config.temperature,
             safety_settings=self.SAFETY_SETTINGS,
@@ -98,6 +134,57 @@ class Chatbot:
         timestamp_str = BaseResponse.current_timestamp()
         return int(datetime.fromisoformat(timestamp_str.replace("Z", "+00:00")).timestamp())
 
+    def _embed_text(self, text: str, task_type: str) -> np.ndarray:
+        """Generate embedding for the given text.
+
+        :param str text:
+            Text to embed
+        :param str task_type:
+            Task type for embedding optimization
+        :return np.ndarray:
+            Embedding vector
+        """
+        embedding_response = self._client.models.embed_content(
+            model=self._embedding_config.model,
+            contents=text,
+            config=EmbedContentConfig(task_type=task_type),
+        )
+        if not embedding_response.embeddings:
+            msg = "No embeddings returned from embedding model."
+            logger.error(msg)
+            raise AttributeError(msg)
+        return np.array(embedding_response.embeddings[0].values)
+
+    def create_memory(self, text: str) -> None:
+        """Create a persistent chat memory.
+
+        :param str text:
+            Memory text to store
+        """
+        vector = self._embed_text(text, task_type="SEMANTIC_SIMILARITY")
+        self._memory.add_entry(text=text, vector=vector.tolist(), max_memories=self._embedding_config.max_memories)
+        self._memory.save_to_file(self._config_dir / self._embedding_config.memory_filepath)
+        logger.info("Stored new memory (%d entries): %s", len(self._memory.entries), text)
+
+    def retrieve_memories(self, query: str) -> list[str]:
+        """Retrieve relevant memories based on the query.
+
+        :param str query:
+            Query text to find relevant memories
+        :return list[str]:
+            List of relevant memory texts
+        """
+        query_vector = self._embed_text(query, task_type="SEMANTIC_SIMILARITY")
+        memories = self._memory.retrieve_memories(query_vector.tolist(), top_k=self._embedding_config.top_k)
+        logger.info("Retrieved %d relevant memories for query: %s", len(memories), query)
+        return memories
+
+    def clear_memories(self) -> None:
+        """Clear all stored chat memories."""
+        self._memory.clear_entries()
+        self._memory.save_to_file(self._config_dir / self._embedding_config.memory_filepath)
+        logger.info("Cleared all chat memories.")
+
     def web_search(self, query: str) -> str:
         """Search the web for the given query.
 
@@ -106,6 +193,7 @@ class Chatbot:
         :return str:
             The search results
         """
+        logger.info("Performing web search for query: %s", query)
         reply = self._client.models.generate_content(
             contents=query,
             model=self._config.model,

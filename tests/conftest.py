@@ -2,13 +2,23 @@
 
 import os
 from collections.abc import Generator
+from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 from prometheus_client import REGISTRY
 
 from rpi_ai.chatbot import Chatbot
-from rpi_ai.models import ChatbotConfig, ChatbotMessage, ChatbotMessageList, ChatbotServerConfig, ChatbotSpeech
+from rpi_ai.models import (
+    ChatbotConfig,
+    ChatbotMessage,
+    ChatbotMessageList,
+    ChatbotServerConfig,
+    ChatbotSpeech,
+    ChatMemoryEntry,
+    ChatMemoryList,
+    EmbeddingConfig,
+)
 
 
 # General fixtures
@@ -18,6 +28,20 @@ def mock_here(tmp_path: str) -> Generator[MagicMock, None, None]:
     with patch("pyhere.here") as mock_here:
         mock_here.return_value = tmp_path
         yield mock_here
+
+
+@pytest.fixture
+def mock_json_dump() -> Generator[MagicMock, None, None]:
+    """Mock the json.dump() method."""
+    with patch("json.dump") as mock_dump:
+        yield mock_dump
+
+
+@pytest.fixture
+def mock_json_load() -> Generator[MagicMock, None, None]:
+    """Mock the json.load() method."""
+    with patch("json.load") as mock_load:
+        yield mock_load
 
 
 @pytest.fixture
@@ -134,6 +158,28 @@ def mock_chatbot_speech(mock_chatbot_speech_dict: dict) -> ChatbotSpeech:
     return ChatbotSpeech.model_validate(mock_chatbot_speech_dict)
 
 
+# Memory Models
+@pytest.fixture
+def mock_chat_memory_entry_dict() -> dict:
+    """Fixture to provide a sample ChatMemoryEntry dictionary."""
+    return {
+        "text": "Test memory entry",
+        "vector": [0.1, 0.2, 0.3],
+    }
+
+
+@pytest.fixture
+def mock_chat_memory_entry(mock_chat_memory_entry_dict: dict) -> ChatMemoryEntry:
+    """Fixture to create a mock ChatMemoryEntry instance."""
+    return ChatMemoryEntry.model_validate(mock_chat_memory_entry_dict)
+
+
+@pytest.fixture
+def mock_chat_memory_list(mock_chat_memory_entry: ChatMemoryEntry) -> ChatMemoryList:
+    """Fixture to create a mock ChatMemoryList instance."""
+    return ChatMemoryList(entries=[mock_chat_memory_entry])
+
+
 # Chatbot Server Configuration Models
 @pytest.fixture
 def mock_chatbot_config_dict() -> dict:
@@ -147,17 +193,35 @@ def mock_chatbot_config_dict() -> dict:
 
 
 @pytest.fixture
+def mock_embedding_config_dict() -> dict:
+    """Fixture to provide a sample embedding configuration dictionary."""
+    return {
+        "model": "gemini-embedding-001",
+        "memory_filepath": "chat_memory.json",
+        "max_memories": 5,
+        "top_k": 3,
+    }
+
+
+@pytest.fixture
 def mock_chatbot_config(mock_chatbot_config_dict: dict) -> ChatbotConfig:
     """Fixture to create a mock ChatbotConfig instance."""
     return ChatbotConfig.model_validate(mock_chatbot_config_dict)
 
 
 @pytest.fixture
+def mock_embedding_config(mock_embedding_config_dict: dict) -> EmbeddingConfig:
+    """Fixture to create a mock EmbeddingConfig instance."""
+    return EmbeddingConfig.model_validate(mock_embedding_config_dict)
+
+
+@pytest.fixture
 def mock_chatbot_server_config(
     mock_chatbot_config: ChatbotConfig,
+    mock_embedding_config: EmbeddingConfig,
 ) -> ChatbotServerConfig:
     """Fixture to create a mock ChatbotServerConfig instance."""
-    return ChatbotServerConfig(chatbot_config=mock_chatbot_config)
+    return ChatbotServerConfig(chatbot_config=mock_chatbot_config, embedding_config=mock_embedding_config)
 
 
 # Chatbot fixtures
@@ -180,10 +244,21 @@ def mock_chat_instance(mock_genai_client: MagicMock) -> MagicMock:
 
 @pytest.fixture
 def mock_chatbot(
-    mock_env_vars: MagicMock, mock_chatbot_config: ChatbotConfig, mock_chat_instance: MagicMock
+    mock_env_vars: MagicMock,
+    mock_chatbot_config: ChatbotConfig,
+    mock_embedding_config: EmbeddingConfig,
+    mock_chat_memory_list: ChatMemoryList,
+    mock_chat_instance: MagicMock,
 ) -> Chatbot:
     """Fixture to create a mock Chatbot instance."""
-    return Chatbot(mock_env_vars["GEMINI_API_KEY"], mock_chatbot_config, [])
+    return Chatbot(
+        api_key=mock_env_vars["GEMINI_API_KEY"],
+        config_dir=Path("/mock/config/dir"),
+        config=mock_chatbot_config,
+        embedding_config=mock_embedding_config,
+        functions=[],
+        memories=mock_chat_memory_list,
+    )
 
 
 # Audiobot fixtures

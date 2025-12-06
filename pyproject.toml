@@ -21,6 +21,7 @@ dependencies = [
     "flask",
     "google-genai",
     "gTTS",
+    "numpy>=2.3.5",
     "psutil",
     "pydantic",
     "python-dotenv",

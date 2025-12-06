@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
+from pathlib import Path
 
+import numpy as np
 from google.genai.types import Content, Part
 from pydantic import BaseModel, Field
 from python_template_server.models import BaseResponse, TemplateServerConfig
@@ -123,23 +126,125 @@ class ChatbotSpeech(BaseModel):
     timestamp: int
 
 
+# Memory Models
+class ChatMemoryEntry(BaseModel):
+    """Chat memory entry data type."""
+
+    text: str
+    vector: list[float]
+
+
+class ChatMemoryList(BaseModel):
+    """List of chat memory entries."""
+
+    entries: list[ChatMemoryEntry]
+
+    def add_entry(self, text: str, vector: list[float], max_memories: int) -> None:
+        """Add a chat memory entry to the list.
+
+        :param str text:
+            Chat memory entry to add
+        :param list[float] vector:
+            Vector representation of the chat memory entry
+        :param int max_memories:
+            Maximum number of chat memories to store
+        """
+        self.entries.append(ChatMemoryEntry(text=text, vector=vector))
+        if len(self.entries) > max_memories:
+            self.entries.pop(0)
+
+    def retrieve_memories(self, query_vector: list[float], top_k: int) -> list[str]:
+        """Retrieve top-k similar chat memory entries based on cosine similarity.
+
+        :param list[float] query_vector:
+            Query vector for similarity comparison
+        :param int top_k:
+            Number of top similar entries to retrieve
+        :return list[str]:
+            List of text from top-k similar chat memory entries
+        """
+        sims = [
+            np.dot(query_vector, m.vector) / (np.linalg.norm(query_vector) * np.linalg.norm(m.vector))
+            for m in self.entries
+        ]
+        return [self.entries[i].text for i in np.argsort(sims)[-top_k:][::-1]]
+
+    def clear_entries(self) -> None:
+        """Clear all chat memory entries."""
+        self.entries.clear()
+
+    def save_to_file(self, filepath: Path) -> None:
+        """Save chat memory entries to a JSON file.
+
+        :param Path filepath:
+            Filepath to save the chat memory entries
+        """
+        with filepath.open("w") as f:
+            json.dump(self.model_dump(), f, indent=2)
+
+    @classmethod
+    def load_from_file(cls, filepath: Path) -> ChatMemoryList:
+        """Load chat memory entries from a JSON file.
+
+        :param Path filepath:
+            Filepath to load the chat memory entries from
+        """
+        try:
+            with filepath.open() as f:
+                data = json.load(f)
+            return cls.model_validate(data)
+        except FileNotFoundError:
+            return cls(entries=[])
+
+
 # Chatbot Server Configuration Models
 class ChatbotConfig(BaseModel):
     """Chatbot configuration model."""
 
     model: str = Field(default="gemini-2.0-flash", description="LLM to use for chatbot")
     system_instruction: str = Field(
-        default="You are a friendly AI assistant. You are designed to help the user with daily tasks.",
+        default=(
+            "You are a friendly AI assistant designed to help the user with daily tasks. "
+            "You have a persistent memory system that allows you to remember facts about the user across conversations."
+        ),
         description="System instruction for the chatbot",
     )
     max_output_tokens: int = Field(default=1000, description="Maximum number of output tokens")
     temperature: float = Field(default=1.0, description="Sampling temperature for response generation")
 
+    @staticmethod
+    def get_memory_guidelines() -> str:
+        """Get memory guidelines for the chatbot system instruction."""
+        return (
+            "MEMORY GUIDELINES:\n"
+            "- When the user shares personal information (preferences, likes, dislikes, facts about "
+            "their life, goals, etc.), call the `create_memory` function to store it for future reference.\n"
+            "- At the start of each conversation or when context about the user would be helpful, "
+            "call the `retrieve_memories` function with relevant keywords from the user's message "
+            "to recall what you know.\n"
+            "- Use retrieved memories naturally in your responses to provide personalized, context-aware assistance.\n"
+            "- Examples of facts to remember: favorite music/movies, dietary preferences, hobbies, work information, "
+            "family details, goals, past conversations, scheduled events.\n\n"
+            "Be proactive in using your memory to create a personalized experience for the user."
+        )
+
+
+class EmbeddingConfig(BaseModel):
+    """Embedding configuration model."""
+
+    model: str = Field(default="gemini-embedding-001", description="Embedding model to use")
+    memory_filepath: str = Field(default="chat_memory.json", description="Filepath to store chat memory embeddings")
+    max_memories: int = Field(default=1000, description="Maximum number of chat memories to store")
+    top_k: int = Field(default=5, description="Number of top similar memories to retrieve")
+
 
 class ChatbotServerConfig(TemplateServerConfig):
     """Chatbot server configuration model."""
 
-    chatbot_config: ChatbotConfig
+    chatbot_config: ChatbotConfig = Field(default_factory=ChatbotConfig, description="Configuration for the AI chatbot")
+    embedding_config: EmbeddingConfig = Field(
+        default_factory=EmbeddingConfig, description="Configuration for the embedding model"
+    )
 
 
 # Chatbot Server Response Models

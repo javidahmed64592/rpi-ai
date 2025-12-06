@@ -1,5 +1,8 @@
 """Unit tests for the rpi_ai.models module."""
 
+from pathlib import Path
+from unittest.mock import MagicMock
+
 from google.genai.types import Content, Part
 from python_template_server.models import ResponseCode
 
@@ -9,6 +12,9 @@ from rpi_ai.models import (
     ChatbotMessageList,
     ChatbotServerConfig,
     ChatbotSpeech,
+    ChatMemoryEntry,
+    ChatMemoryList,
+    EmbeddingConfig,
     GetChatHistoryResponse,
     GetConfigResponse,
     PostAudioResponse,
@@ -84,6 +90,97 @@ class TestChatbotSpeech:
         assert mock_chatbot_speech.model_dump() == mock_chatbot_speech_dict
 
 
+# Memory Models
+class TestChatMemoryEntry:
+    """Tests for the ChatMemoryEntry class."""
+
+    def test_model_dump(self, mock_chat_memory_entry_dict: dict, mock_chat_memory_entry: ChatMemoryEntry) -> None:
+        """Test the model_dump method."""
+        assert mock_chat_memory_entry.model_dump() == mock_chat_memory_entry_dict
+
+
+class TestChatMemoryList:
+    """Tests for the ChatMemoryList class."""
+
+    def test_model_dump(self, mock_chat_memory_list: ChatMemoryList, mock_chat_memory_entry: ChatMemoryEntry) -> None:
+        """Test the model_dump method."""
+        assert mock_chat_memory_list.model_dump() == {"entries": [mock_chat_memory_entry.model_dump()]}
+
+    def test_add_entry(self, mock_chat_memory_list: ChatMemoryList, mock_embedding_config: EmbeddingConfig) -> None:
+        """Test adding an entry to the ChatMemoryList."""
+        new_entry = ChatMemoryEntry(text="Another memory entry", vector=[0.4, 0.5, 0.6])
+        mock_chat_memory_list.add_entry(
+            text=new_entry.text, vector=new_entry.vector, max_memories=mock_embedding_config.max_memories
+        )
+        latest_entry = mock_chat_memory_list.entries[-1]
+        assert latest_entry.text == new_entry.text
+        assert latest_entry.vector == new_entry.vector
+
+    def test_add_entry_exceeds_max(
+        self, mock_chat_memory_list: ChatMemoryList, mock_embedding_config: EmbeddingConfig
+    ) -> None:
+        """Test adding an entry exceeding the maximum number of memories."""
+        first_entry = mock_chat_memory_list.entries[0].model_copy()
+        for i in range(mock_embedding_config.max_memories):
+            mock_chat_memory_list.add_entry(
+                text=f"Memory entry {i + 2}",
+                vector=[0.1 * (i + 2), 0.2 * (i + 2), 0.3 * (i + 2)],
+                max_memories=mock_embedding_config.max_memories,
+            )
+        assert len(mock_chat_memory_list.entries) == mock_embedding_config.max_memories
+        assert first_entry not in mock_chat_memory_list.entries
+
+    def test_retrieve_memories(
+        self, mock_chat_memory_list: ChatMemoryList, mock_embedding_config: EmbeddingConfig
+    ) -> None:
+        """Test retrieving similar memories from the ChatMemoryList."""
+        new_entry = mock_chat_memory_list.entries[0].model_copy()
+        new_entry.text = "Modified memory entry"
+        new_entry.vector = [component + 0.01 for component in new_entry.vector]
+
+        mock_chat_memory_list.add_entry(
+            text=new_entry.text, vector=new_entry.vector, max_memories=mock_embedding_config.max_memories
+        )
+        top_memories = mock_chat_memory_list.retrieve_memories(new_entry.vector, top_k=mock_embedding_config.top_k)
+        assert new_entry.text in top_memories
+
+    def test_clear_entries(self, mock_chat_memory_list: ChatMemoryList) -> None:
+        """Test clearing entries from the ChatMemoryList."""
+        mock_chat_memory_list.clear_entries()
+        assert mock_chat_memory_list.entries == []
+
+    def test_save_to_file(
+        self, mock_chat_memory_list: ChatMemoryList, mock_open_file: MagicMock, mock_json_dump: MagicMock
+    ) -> None:
+        """Test saving ChatMemoryList to a file."""
+        file_path = Path("chat_memory.json")
+        mock_chat_memory_list.save_to_file(file_path)
+        mock_open_file.assert_called_once_with("w")
+        mock_json_dump.assert_called_once_with(mock_chat_memory_list.model_dump(), mock_open_file(), indent=2)
+
+    def test_load_from_file(
+        self, mock_chat_memory_list: ChatMemoryList, mock_open_file: MagicMock, mock_json_load: MagicMock
+    ) -> None:
+        """Test loading ChatMemoryList from a file."""
+        file_path = Path("chat_memory.json")
+        mock_json_load.return_value = mock_chat_memory_list.model_dump()
+
+        loaded_memory_list = ChatMemoryList.load_from_file(file_path)
+        mock_open_file.assert_called_once_with()
+        mock_json_load.assert_called_once_with(mock_open_file())
+        assert loaded_memory_list.model_dump() == mock_chat_memory_list.model_dump()
+
+    def test_load_from_file_file_not_found(self, mock_open_file: MagicMock, mock_json_load: MagicMock) -> None:
+        """Test loading ChatMemoryList from a file."""
+        file_path = Path("chat_memory.json")
+        mock_open_file.side_effect = FileNotFoundError
+
+        loaded_memory_list = ChatMemoryList.load_from_file(file_path)
+        mock_open_file.assert_called_once_with()
+        mock_json_load.assert_not_called()
+        assert loaded_memory_list.entries == []
+
+
 # Chatbot Server Configuration Models
 class TestChatbotConfig:
     """Unit tests for the TestChatbotConfig class."""
@@ -91,6 +188,18 @@ class TestChatbotConfig:
     def test_model_dump(self, mock_chatbot_config_dict: dict, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the model_dump method."""
         assert mock_chatbot_config.model_dump() == mock_chatbot_config_dict
+
+    def test_get_memory_guidelines(self) -> None:
+        """Test the get_memory_guidelines method."""
+        assert "MEMORY GUIDELINES:" in ChatbotConfig.get_memory_guidelines()
+
+
+class TestEmbeddingConfig:
+    """Unit tests for the TestEmbeddingConfig class."""
+
+    def test_model_dump(self, mock_embedding_config_dict: dict, mock_embedding_config: EmbeddingConfig) -> None:
+        """Test the model_dump method."""
+        assert mock_embedding_config.model_dump() == mock_embedding_config_dict
 
 
 class TestChatbotServerConfig:
