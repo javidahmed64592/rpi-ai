@@ -93,7 +93,8 @@ class TestChatbot:
         initial_count = len(mock_chatbot._memory.entries)
         memory_text = "New memory"
 
-        mock_chatbot.create_memory(memory_text)
+        response = mock_chatbot.create_memory(memory_text)
+        assert response == f"Memory stored successfully: {memory_text}"
 
         assert len(mock_chatbot._memory.entries) == initial_count + 1
         assert mock_chatbot._memory.entries[-1].text == memory_text
