@@ -197,11 +197,30 @@ class ChatbotConfig(BaseModel):
 
     model: str = Field(default="gemini-2.0-flash", description="LLM to use for chatbot")
     system_instruction: str = Field(
-        default="You are a friendly AI assistant. You are designed to help the user with daily tasks.",
+        default=(
+            "You are a friendly AI assistant designed to help the user with daily tasks. "
+            "You have a persistent memory system that allows you to remember facts about the user across conversations."
+        ),
         description="System instruction for the chatbot",
     )
     max_output_tokens: int = Field(default=1000, description="Maximum number of output tokens")
     temperature: float = Field(default=1.0, description="Sampling temperature for response generation")
+
+    @staticmethod
+    def get_memory_guidelines() -> str:
+        """Get memory guidelines for the chatbot system instruction."""
+        return (
+            "MEMORY GUIDELINES:\n"
+            "- When the user shares personal information (preferences, likes, dislikes, facts about "
+            "their life, goals, etc.), call the `create_memory` function to store it for future reference.\n"
+            "- At the start of each conversation or when context about the user would be helpful, "
+            "call the `retrieve_memories` function with relevant keywords from the user's message "
+            "to recall what you know.\n"
+            "- Use retrieved memories naturally in your responses to provide personalized, context-aware assistance.\n"
+            "- Examples of facts to remember: favorite music/movies, dietary preferences, hobbies, work information, "
+            "family details, goals, past conversations, scheduled events.\n\n"
+            "Be proactive in using your memory to create a personalized experience for the user."
+        )
 
 
 class EmbeddingConfig(BaseModel):

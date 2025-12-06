@@ -167,6 +167,10 @@ class TestChatbotConfig:
         """Test the model_dump method."""
         assert mock_chatbot_config.model_dump() == mock_chatbot_config_dict
 
+    def test_get_memory_guidelines(self) -> None:
+        """Test the get_memory_guidelines method."""
+        assert "MEMORY GUIDELINES:" in ChatbotConfig.get_memory_guidelines()
+
 
 class TestEmbeddingConfig:
     """Unit tests for the TestEmbeddingConfig class."""
