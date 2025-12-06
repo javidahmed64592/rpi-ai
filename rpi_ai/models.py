@@ -151,15 +151,15 @@ class ChatMemoryList(BaseModel):
         """Clear all chat memory entries."""
         self.entries.clear()
 
-    def retrieve_memories(self, query_vector: list[float], top_k: int = 5) -> list[ChatMemoryEntry]:
+    def retrieve_memories(self, query_vector: list[float], top_k: int) -> list[str]:
         """Retrieve top-k similar chat memory entries based on cosine similarity.
 
         :param list[float] query_vector:
             Query vector for similarity comparison
         :param int top_k:
             Number of top similar entries to retrieve
-        :return list[ChatMemoryEntry]:
-            List of top-k similar chat memory entries
+        :return list[str]:
+            List of text from top-k similar chat memory entries
         """
         sims = [
             np.dot(query_vector, m.vector) / (np.linalg.norm(query_vector) * np.linalg.norm(m.vector))
