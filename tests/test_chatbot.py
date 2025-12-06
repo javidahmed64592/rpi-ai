@@ -120,6 +120,14 @@ class TestChatbot:
         assert len(memories) <= mock_chatbot._embedding_config.top_k
         mock_genai_client.return_value.models.embed_content.assert_called_once()
 
+    def test_clear_memories(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
+        """Test clearing all stored chat memories."""
+        assert len(mock_chatbot._memory.entries) > 0
+
+        mock_chatbot.clear_memories()
+
+        assert len(mock_chatbot._memory.entries) == 0
+
     def test_web_search(self, mock_chatbot: Chatbot, mock_genai_client: MagicMock) -> None:
         """Test the web search functionality of the Chatbot."""
         query = "test query"

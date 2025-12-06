@@ -83,6 +83,7 @@ class Chatbot:
             *functions,
             self.create_memory,
             self.retrieve_memories,
+            self.clear_memories,
             self.web_search,
         ]
 
@@ -173,6 +174,12 @@ class Chatbot:
         memories = self._memory.retrieve_memories(query_vector.tolist(), top_k=self._embedding_config.top_k)
         logger.info("Retrieved %d relevant memories for query: %s", len(memories), query)
         return memories
+
+    def clear_memories(self) -> None:
+        """Clear all stored chat memories."""
+        self._memory.clear_entries()
+        self._memory.save_to_file(self._config_dir / self._embedding_config.memory_filepath)
+        logger.info("Cleared all chat memories.")
 
     def web_search(self, query: str) -> str:
         """Search the web for the given query.
