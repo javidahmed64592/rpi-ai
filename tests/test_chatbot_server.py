@@ -111,7 +111,7 @@ class TestChatbotServerRoutes:
         routes = [route.path for route in api_routes]
         expected_endpoints = [
             "/health",
-            "/metrics",
+            "/login",
             "/config",
             "/chat/history",
             "/chat/restart",
