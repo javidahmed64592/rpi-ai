@@ -21,7 +21,7 @@ from rpi_ai.models import ChatbotMessage, ChatbotServerConfig, ChatbotSpeech
 
 
 @pytest.fixture(autouse=True)
-def mock_package_metadata() -> Generator[MagicMock, None, None]:
+def mock_package_metadata() -> Generator[MagicMock]:
     """Mock importlib.metadata.metadata to return a mock PackageMetadata."""
     with patch("python_template_server.template_server.metadata") as mock_metadata:
         mock_pkg_metadata = MagicMock(spec=PackageMetadata)
@@ -38,7 +38,7 @@ def mock_package_metadata() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_chatbot_server(
     mock_chatbot_server_config: ChatbotServerConfig, mock_chatbot: Chatbot
-) -> Generator[ChatbotServer, None, None]:
+) -> Generator[ChatbotServer]:
     """Provide a ChatbotServer instance for testing."""
 
     async def fake_verify_api_key(

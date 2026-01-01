@@ -12,7 +12,7 @@ from rpi_ai.function_calling.system_info import SystemInfo
 
 
 @pytest.fixture
-def mock_subprocess_run() -> Generator[MagicMock, None, None]:
+def mock_subprocess_run() -> Generator[MagicMock]:
     """Mock the subprocess.run method to simulate command execution."""
     with patch("rpi_ai.function_calling.system_info.subprocess.run") as mock:
         mock.return_value.stdout = "test_output"
@@ -20,7 +20,7 @@ def mock_subprocess_run() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_platform() -> Generator[MagicMock, None, None]:
+def mock_platform() -> Generator[MagicMock]:
     """Mock the platform module to simulate system information retrieval."""
     with (
         patch("rpi_ai.function_calling.system_info.platform.system") as mock_system,
@@ -47,7 +47,7 @@ def mock_platform() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_get_hostname() -> Generator[MagicMock, None, None]:
+def mock_get_hostname() -> Generator[MagicMock]:
     """Mock the socket.gethostname method to return a predefined hostname."""
     with patch("rpi_ai.function_calling.system_info.socket.gethostname") as mock:
         mock.return_value = "test_get_hostname"
@@ -55,7 +55,7 @@ def mock_get_hostname() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_boot_time() -> Generator[MagicMock, None, None]:
+def mock_boot_time() -> Generator[MagicMock]:
     """Mock the psutil.boot_time method to return a predefined boot time."""
     with patch("rpi_ai.function_calling.system_info.psutil.boot_time") as mock:
         mock.return_value = datetime.now().timestamp() - 3600  # 1 hour ago
@@ -63,7 +63,7 @@ def mock_boot_time() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_process_iter() -> Generator[MagicMock, None, None]:
+def mock_process_iter() -> Generator[MagicMock]:
     """Mock the psutil.process_iter method to return a list of mock processes."""
     with patch("rpi_ai.function_calling.system_info.psutil.process_iter") as mock:
         mock.return_value = [Mock(info={"pid": 1234, "name": "test_process", "username": "test_user"})]
@@ -71,7 +71,7 @@ def mock_process_iter() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_process() -> Generator[MagicMock, None, None]:
+def mock_process() -> Generator[MagicMock]:
     """Mock the psutil.Process method to return a mock process."""
     with patch("rpi_ai.function_calling.system_info.psutil.Process") as mock:
         mock.return_value.name.return_value = "test_process"
@@ -79,7 +79,7 @@ def mock_process() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_cpu_percent() -> Generator[MagicMock, None, None]:
+def mock_cpu_percent() -> Generator[MagicMock]:
     """Mock the psutil.cpu_percent method to return a predefined CPU usage percentage."""
     with patch("rpi_ai.function_calling.system_info.psutil.cpu_percent") as mock:
         mock.return_value = 50.0
@@ -87,7 +87,7 @@ def mock_cpu_percent() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_virtual_memory() -> Generator[MagicMock, None, None]:
+def mock_virtual_memory() -> Generator[MagicMock]:
     """Mock the psutil.virtual_memory method to return predefined memory usage statistics."""
     with patch("rpi_ai.function_calling.system_info.psutil.virtual_memory") as mock:
         mock.return_value.total = 100
@@ -98,7 +98,7 @@ def mock_virtual_memory() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_disk_usage() -> Generator[MagicMock, None, None]:
+def mock_disk_usage() -> Generator[MagicMock]:
     """Mock the psutil.disk_usage method to return predefined disk usage statistics."""
     with patch("rpi_ai.function_calling.system_info.psutil.disk_usage") as mock:
         mock.return_value.total = 100
@@ -109,7 +109,7 @@ def mock_disk_usage() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_psutil_temperature() -> Generator[MagicMock, None, None]:
+def mock_psutil_temperature() -> Generator[MagicMock]:
     """Mock the psutil.sensors_temperatures method to return predefined temperature data."""
     with patch("rpi_ai.function_calling.system_info.psutil") as mock:
         mock.sensors_temperatures.return_value = {"cpu_thermal": [Mock(current=45.0)]}
