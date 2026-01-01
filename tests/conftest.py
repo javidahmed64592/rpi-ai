@@ -6,7 +6,6 @@ from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
-from prometheus_client import REGISTRY
 
 from rpi_ai.chatbot import Chatbot
 from rpi_ai.models import (
@@ -22,71 +21,49 @@ from rpi_ai.models import (
 
 
 # General fixtures
-@pytest.fixture(autouse=True)
-def mock_here(tmp_path: str) -> Generator[MagicMock, None, None]:
-    """Mock the here() function to return a temporary directory."""
-    with patch("pyhere.here") as mock_here:
-        mock_here.return_value = tmp_path
-        yield mock_here
-
-
 @pytest.fixture
-def mock_json_dump() -> Generator[MagicMock, None, None]:
+def mock_json_dump() -> Generator[MagicMock]:
     """Mock the json.dump() method."""
     with patch("json.dump") as mock_dump:
         yield mock_dump
 
 
 @pytest.fixture
-def mock_json_load() -> Generator[MagicMock, None, None]:
+def mock_json_load() -> Generator[MagicMock]:
     """Mock the json.load() method."""
     with patch("json.load") as mock_load:
         yield mock_load
 
 
 @pytest.fixture
-def mock_exists() -> Generator[MagicMock, None, None]:
+def mock_exists() -> Generator[MagicMock]:
     """Mock the Path.exists() method."""
     with patch("pathlib.Path.exists") as mock_exists:
         yield mock_exists
 
 
 @pytest.fixture
-def mock_path_home() -> Generator[MagicMock, None, None]:
+def mock_path_home() -> Generator[MagicMock]:
     """Mock the Path.home() method."""
     with patch("pathlib.Path.home") as mock_home:
         yield mock_home
 
 
 @pytest.fixture(autouse=True)
-def mock_open_file() -> Generator[MagicMock, None, None]:
+def mock_open_file() -> Generator[MagicMock]:
     """Mock the Path.open() method."""
     with patch("pathlib.Path.open", mock_open()) as mock_file:
         yield mock_file
 
 
 @pytest.fixture(autouse=True)
-def mock_env_vars() -> Generator[MagicMock, None, None]:
+def mock_env_vars() -> Generator[MagicMock]:
     """Mock environment variables for testing."""
     env_vars = {
         "GEMINI_API_KEY": "test_api_key",
     }
     with patch.dict(os.environ, env_vars) as mock:
         yield mock
-
-
-@pytest.fixture(autouse=True)
-def clear_prometheus_registry() -> Generator[None, None, None]:
-    """Clear Prometheus registry before each test to avoid duplicate metric errors."""
-    # Clear all collectors from the registry
-    collectors = list(REGISTRY._collector_to_names.keys())
-    for collector in collectors:
-        REGISTRY.unregister(collector)
-    yield
-    # Clear again after the test
-    collectors = list(REGISTRY._collector_to_names.keys())
-    for collector in collectors:
-        REGISTRY.unregister(collector)
 
 
 # Chatbot Data Models
@@ -226,7 +203,7 @@ def mock_chatbot_server_config(
 
 # Chatbot fixtures
 @pytest.fixture
-def mock_genai_client() -> Generator[MagicMock, None, None]:
+def mock_genai_client() -> Generator[MagicMock]:
     """Mock the Client class from the rpi_ai.chatbot module."""
     with patch("rpi_ai.chatbot.Client") as mock:
         yield mock
@@ -263,14 +240,14 @@ def mock_chatbot(
 
 # Audiobot fixtures
 @pytest.fixture
-def mock_gtts() -> Generator[MagicMock, None, None]:
+def mock_gtts() -> Generator[MagicMock]:
     """Mock the gTTS class from the rpi_ai.audiobot module."""
     with patch("rpi_ai.audiobot.gTTS") as mock:
         yield mock
 
 
 @pytest.fixture
-def mock_get_audio_bytes_from_text() -> Generator[MagicMock, None, None]:
+def mock_get_audio_bytes_from_text() -> Generator[MagicMock]:
     """Mock the get_audio_bytes_from_text function in the rpi_ai.audiobot module."""
     with patch("rpi_ai.audiobot.get_audio_bytes_from_text") as mock:
         yield mock

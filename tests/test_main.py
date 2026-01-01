@@ -10,7 +10,7 @@ from rpi_ai.models import ChatbotServerConfig
 
 
 @pytest.fixture
-def mock_chatbot_server_class(mock_chatbot_server_config: ChatbotServerConfig) -> Generator[MagicMock, None, None]:
+def mock_chatbot_server_class(mock_chatbot_server_config: ChatbotServerConfig) -> Generator[MagicMock]:
     """Mock ChatbotServer class."""
     with patch("rpi_ai.main.ChatbotServer") as mock_server:
         mock_server.load_config.return_value = mock_chatbot_server_config

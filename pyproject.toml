@@ -7,36 +7,28 @@ name = "rpi-ai"
 version = "1.0.1"
 description = "A lightweight AI chatbot using Google Gemini."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 license = { file = "LICENSE" }
 authors = [
     { name = "Javid Ahmed", email = "javidahmed@icloud.com" }
 ]
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-    "flask",
-    "google-genai",
-    "gTTS",
-    "numpy>=2.3.5",
-    "psutil",
-    "pydantic",
-    "python-dotenv",
-    "python-multipart>=0.0.20",
+    "google-genai>=1.56.0",
+    "gtts>=2.5.4",
+    "numpy>=2.4.0",
+    "psutil>=7.2.1",
+    "python-multipart>=0.0.21",
     "python-template-server @ git+https://github.com/javidahmed64592/python-template-server.git",
-    "waitress",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "ruff",
-    "mypy",
-    "pytest",
-    "pytest-cov",
-    "validate-pyproject",
+    "python-template-server[dev] @ git+https://github.com/javidahmed64592/python-template-server.git",
 ]
 
 [project.urls]
@@ -65,8 +57,17 @@ addopts = [
     "term-missing",
 ]
 
+[tool.coverage.run]
+branch = true
+source = ["rpi_ai", "tests"]
+
+[tool.coverage.report]
+fail_under = 80
+skip_covered = false
+show_missing = true
+
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 line-length = 120
 indent-width = 4
 
@@ -151,6 +152,9 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.mypy]
 warn_unused_configs = true
