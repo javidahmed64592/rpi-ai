@@ -6,7 +6,6 @@ from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
-from prometheus_client import REGISTRY
 
 from rpi_ai.chatbot import Chatbot
 from rpi_ai.models import (
@@ -22,14 +21,6 @@ from rpi_ai.models import (
 
 
 # General fixtures
-@pytest.fixture(autouse=True)
-def mock_here(tmp_path: str) -> Generator[MagicMock, None, None]:
-    """Mock the here() function to return a temporary directory."""
-    with patch("pyhere.here") as mock_here:
-        mock_here.return_value = tmp_path
-        yield mock_here
-
-
 @pytest.fixture
 def mock_json_dump() -> Generator[MagicMock, None, None]:
     """Mock the json.dump() method."""
@@ -73,20 +64,6 @@ def mock_env_vars() -> Generator[MagicMock, None, None]:
     }
     with patch.dict(os.environ, env_vars) as mock:
         yield mock
-
-
-@pytest.fixture(autouse=True)
-def clear_prometheus_registry() -> Generator[None, None, None]:
-    """Clear Prometheus registry before each test to avoid duplicate metric errors."""
-    # Clear all collectors from the registry
-    collectors = list(REGISTRY._collector_to_names.keys())
-    for collector in collectors:
-        REGISTRY.unregister(collector)
-    yield
-    # Clear again after the test
-    collectors = list(REGISTRY._collector_to_names.keys())
-    for collector in collectors:
-        REGISTRY.unregister(collector)
 
 
 # Chatbot Data Models
