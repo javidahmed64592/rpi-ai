@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  PACKAGE_NAME: rpi_ai
+
 jobs:
   build_wheel:
     runs-on: ubuntu-latest
@@ -18,8 +21,8 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
-          name: rpi_ai_wheel
-          path: dist/rpi_ai-*-py3-none-any.whl
+          name: ${{ env.PACKAGE_NAME }}_wheel
+          path: dist/${{ env.PACKAGE_NAME }}-*-py3-none-any.whl
   create_installer:
     runs-on: ubuntu-latest
     needs: [build_wheel]
@@ -29,29 +32,27 @@ jobs:
       - name: Download backend artifact
         uses: actions/download-artifact@v4
         with:
-          name: rpi_ai_wheel
+          name: ${{ env.PACKAGE_NAME }}_wheel
       - name: Prepare release directory
         run: |
-          PACKAGE_NAME="rpi_ai"
-          WHEEL_FILE=$(find . -name "${PACKAGE_NAME}-*-py3-none-any.whl")
-          PACKAGE_VERSION=$(echo "$WHEEL_FILE" | sed -n "s/.*${PACKAGE_NAME}-\(.*\)-py3-none-any\.whl/\1/p")
+          WHEEL_FILE=$(find . -name "${{ env.PACKAGE_NAME }}-*-py3-none-any.whl")
+          PACKAGE_VERSION=$(echo "$WHEEL_FILE" | sed -n "s/.*${{ env.PACKAGE_NAME }}-\(.*\)-py3-none-any\.whl/\1/p")
 
           mv "$WHEEL_FILE" release/
           chmod +x release/install_rpi_ai.sh
-          mv release ${PACKAGE_NAME}_${PACKAGE_VERSION}
+          mv release ${{ env.PACKAGE_NAME }}_${PACKAGE_VERSION}
 
-          tree ${PACKAGE_NAME}_${PACKAGE_VERSION} --dirsfirst -F
+          tree ${{ env.PACKAGE_NAME }}_${PACKAGE_VERSION} --dirsfirst -F
       - name: Create release tarball
         run: |
-          PACKAGE_NAME="rpi_ai"
-          WHEEL_FILE=$(find . -name "${PACKAGE_NAME}-*-py3-none-any.whl")
-          PACKAGE_VERSION=$(echo "$WHEEL_FILE" | sed -n "s/.*${PACKAGE_NAME}-\(.*\)-py3-none-any\.whl/\1/p")
-          tar -czf ${PACKAGE_NAME}_${PACKAGE_VERSION}.tar.gz ${PACKAGE_NAME}_${PACKAGE_VERSION}
+          WHEEL_FILE=$(find . -name "${{ env.PACKAGE_NAME }}-*-py3-none-any.whl")
+          PACKAGE_VERSION=$(echo "$WHEEL_FILE" | sed -n "s/.*${{ env.PACKAGE_NAME }}-\(.*\)-py3-none-any\.whl/\1/p")
+          tar -czf ${{ env.PACKAGE_NAME }}_${PACKAGE_VERSION}.tar.gz ${{ env.PACKAGE_NAME }}_${PACKAGE_VERSION}
       - name: Upload release tarball
         uses: actions/upload-artifact@v4
         with:
-          name: rpi_ai_release
-          path: rpi_ai_*.tar.gz
+          name: ${{ env.PACKAGE_NAME }}_release
+          path: ${{ env.PACKAGE_NAME }}_*.tar.gz
   check_installer:
     runs-on: ubuntu-latest
     needs: create_installer
@@ -61,22 +62,21 @@ jobs:
       - name: Download artifact from create_installer job
         uses: actions/download-artifact@v4
         with:
-          name: rpi_ai_release
+          name: ${{ env.PACKAGE_NAME }}_release
       - name: Extract release tarball
         run: |
-          TAR_FILE=$(find . -name 'rpi_ai_*.tar.gz')
+          TAR_FILE=$(find . -name '${{ env.PACKAGE_NAME }}_*.tar.gz')
           tar -xzf $TAR_FILE
       - name: Verify pre-installation directory contents
         run: |
-          TAR_FILE=$(find . -name 'rpi_ai_*.tar.gz')
+          TAR_FILE=$(find . -name '${{ env.PACKAGE_NAME }}_*.tar.gz')
           DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
-          PACKAGE_NAME="rpi_ai"
 
           cd "$DIR_NAME"
           echo "$DIR_NAME/"
           tree --dirsfirst -F
 
-          WHEEL_FILE=$(find . -name "${PACKAGE_NAME}-*-py3-none-any.whl")
+          WHEEL_FILE=$(find . -name "${{ env.PACKAGE_NAME }}-*-py3-none-any.whl")
           files=("${WHEEL_FILE}")
           scripts=("install_rpi_ai.sh")
 
@@ -101,7 +101,7 @@ jobs:
         env:
           GEMINI_API_KEY: dummy
         run: |
-          TAR_FILE=$(find . -name 'rpi_ai_*.tar.gz')
+          TAR_FILE=$(find . -name '${{ env.PACKAGE_NAME }}_*.tar.gz')
           DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
 
           cd "$DIR_NAME"
@@ -110,7 +110,7 @@ jobs:
 
       - name: Verify post-installation directory contents
         run: |
-          TAR_FILE=$(find . -name 'rpi_ai_*.tar.gz')
+          TAR_FILE=$(find . -name '${{ env.PACKAGE_NAME }}_*.tar.gz')
           DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
 
           cd "$DIR_NAME"
@@ -122,14 +122,14 @@ jobs:
             exit 1
           fi
 
-          if [ -f "$(find . -name 'rpi_ai-*-py3-none-any.whl')" ]; then
+          if [ -f "$(find . -name '${{ env.PACKAGE_NAME }}-*-py3-none-any.whl')" ]; then
             echo "Wheel file not removed"
             exit 1
           fi
 
-          folders=(".venv" "certs" "logs" "service" "${HOME}/.config/rpi_ai")
-          files=(".here" "LICENSE" "README.md" "certs/cert.pem" "certs/key.pem" "service/rpi-ai.service" "${HOME}/.config/rpi_ai/config.json")
-          scripts=("rpi-ai" "uninstall_rpi_ai.sh" "service/start_service.sh" "service/stop_service.sh")
+          folders=(".venv" "logs" "service" "${HOME}/.config/${{ env.PACKAGE_NAME }}")
+          files=(".here" "LICENSE" "README.md" "service/rpi-ai.service" "${HOME}/.config/${{ env.PACKAGE_NAME }}/config.json")
+          scripts=("rpi-ai" "uninstall_${{ env.PACKAGE_NAME }}.sh" "service/start_service.sh" "service/stop_service.sh")
 
           for folder in "${folders[@]}"; do
             if [ ! -d "$folder" ]; then
