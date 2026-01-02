@@ -127,8 +127,8 @@ jobs:
             exit 1
           fi
 
-          folders=(".venv" "certs" "logs" "service" "${HOME}/.config/${{ env.PACKAGE_NAME }}")
-          files=(".here" "LICENSE" "README.md" "certs/cert.pem" "certs/key.pem" "service/rpi-ai.service" "${HOME}/.config/${{ env.PACKAGE_NAME }}/config.json")
+          folders=(".venv" "logs" "service" "${HOME}/.config/${{ env.PACKAGE_NAME }}")
+          files=(".here" "LICENSE" "README.md" "service/rpi-ai.service" "${HOME}/.config/${{ env.PACKAGE_NAME }}/config.json")
           scripts=("rpi-ai" "uninstall_${{ env.PACKAGE_NAME }}.sh" "service/start_service.sh" "service/stop_service.sh")
 
           for folder in "${folders[@]}"; do
