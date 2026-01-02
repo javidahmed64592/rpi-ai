@@ -170,10 +170,6 @@ EOF
 chmod +x "${UNINSTALL_PATH}"
 
 echo "${SEPARATOR}"
-echo "Generating self-signed SSL certificate..."
-${BIN_DIR}/generate-certificate --config="${CONFIG_DEST}"
-
-echo "${SEPARATOR}"
 echo "RPi-AI has been installed successfully."
 echo
 echo "Generate a new API key by running: 'uv run generate-new-token'"
