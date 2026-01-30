@@ -26,7 +26,7 @@ def mock_package_metadata() -> Generator[MagicMock]:
         metadata_dict = {
             "Name": "rpi-ai",
             "Version": "0.1.0",
-            "Summary": "A lightweight AI chatbot using Google Gemini.",
+            "Summary": "A lightweight AI chatbot using Google Gemini and FastAPI.",
         }
         mock_pkg_metadata.__getitem__.side_effect = lambda key: metadata_dict[key]
         mock_metadata.return_value = mock_pkg_metadata
