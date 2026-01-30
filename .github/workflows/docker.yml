@@ -20,6 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Patch docker-compose.yml config volume for CI
+        run: |
+          sed -i "s|~/.config/rpi_ai/|./configuration|g" docker-compose.yml
+
       - name: Build and start services with docker compose
         run: |
           mv .env.example .env
