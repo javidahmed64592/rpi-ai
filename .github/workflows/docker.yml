@@ -23,6 +23,8 @@ jobs:
       - name: Build and start services with docker compose
         run: |
           mv .env.example .env
+          # Update GEMINI_API_KEY in .env file
+          sed -i "s|GEMINI_API_KEY=|GEMINI_API_KEY='test'|g" .env
           docker compose up --build -d
           sleep 5  # Wait for services to start
 
@@ -144,9 +146,9 @@ jobs:
         id: release_notes
         run: |
           cat > release_notes.md << 'EOF'
-          ## Python Template Server v${{ steps.get_version.outputs.version }}
+          ## RPi AI v${{ steps.get_version.outputs.version }}
 
-          **A template FastAPI server with production-ready configuration.**
+          **AI written in Python to control a companion bot hosted on a Raspberry Pi.**
 
           ### Quick Start
 

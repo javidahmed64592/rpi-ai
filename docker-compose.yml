@@ -13,6 +13,7 @@ services:
       - PORT=${PORT:-443}
       # Load API token hash from .env file (optional - will be generated if missing)
       - API_TOKEN_HASH=${API_TOKEN_HASH:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
     volumes:
       - ./.env:/app/.env
       - certs:/app/certs
