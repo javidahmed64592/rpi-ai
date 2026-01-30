@@ -18,7 +18,7 @@ services:
       - ./.env:/app/.env
       - certs:/app/certs
       - logs:/app/logs
-      - ~/.config/rpi_ai/:/app/config
+      - ~/.config/rpi_ai/:/app/configuration
     restart: unless-stopped
     healthcheck:
       test:
@@ -36,3 +36,4 @@ services:
 volumes:
   certs:
   logs:
+  configuration:
