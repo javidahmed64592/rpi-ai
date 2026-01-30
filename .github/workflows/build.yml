@@ -1,0 +1,87 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  PACKAGE_NAME: rpi_ai
+
+jobs:
+  build-wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-dev
+      - name: Create wheel
+        run: |
+          uv build
+      - name: Inspect wheel contents
+        run: |
+          echo "Wheel contents:"
+          unzip -l dist/${{ env.PACKAGE_NAME }}-*-py3-none-any.whl
+      - name: Upload wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGE_NAME }}_wheel
+          path: dist/${{ env.PACKAGE_NAME }}-*-py3-none-any.whl
+
+  verify-structure:
+    runs-on: ubuntu-latest
+    needs: build-wheel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-core
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.PACKAGE_NAME }}_wheel
+
+      - name: Install wheel
+        run: |
+          WHEEL_FILE=$(find . -name "${{ env.PACKAGE_NAME }}-*-py3-none-any.whl")
+
+          if [ ! -f "$WHEEL_FILE" ]; then
+            echo "Wheel file not found"
+            exit 1
+          fi
+
+          echo "Installing wheel: $WHEEL_FILE"
+          uv pip install "$WHEEL_FILE"
+
+      - name: Verify installed package structure
+        run: |
+          # Find site-packages directory
+          SITE_PACKAGES=$(find . -name "site-packages" -type d | head -1)
+          echo "Site-packages directory: $SITE_PACKAGES"
+
+          # Check for required directories in site-packages
+          echo "Checking required directories in site-packages..."
+          REQUIRED_DIRS=(
+            "${SITE_PACKAGES}/${{ env.PACKAGE_NAME }}"
+          )
+
+          for dir in "${REQUIRED_DIRS[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "Required directory not found: $dir"
+              exit 1
+            fi
+          done
+
+          # Check for required files in site-packages
+          echo "Checking required files in site-packages..."
+          REQUIRED_FILES=(
+            "${SITE_PACKAGES}/.here"
+          )
+
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Required file not found: $file"
+              exit 1
+            fi
+          done
