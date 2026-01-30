@@ -23,8 +23,8 @@ jobs:
       - name: Build and start services with docker compose
         run: |
           mv .env.example .env
-          # Update GEMINI_API_KEY in .env file
           sed -i "s|GEMINI_API_KEY=|GEMINI_API_KEY='test'|g" .env
+          sed -i "s|~/.config/rpi_ai/:/app/configuration|configuration:/app/configuration|g" docker-compose.yml
           docker compose up --build -d
           sleep 5  # Wait for services to start
 
