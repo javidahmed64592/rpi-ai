@@ -42,11 +42,8 @@ allow-direct-references = true
 
 [tool.hatch.build]
 include = [
-  "configuration/**",
   "rpi_ai/**",
   ".here",
-  "LICENSE",
-  "README.md",
 ]
 
 [tool.pytest.ini_options]
@@ -173,6 +170,5 @@ module = [
     "psutil.*",
     "python_template_server.*",
     "rpi_ai.*",
-    "waitress.*",
 ]
 ignore_missing_imports = true
