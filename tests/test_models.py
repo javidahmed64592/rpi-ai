@@ -4,7 +4,6 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 from google.genai.types import Content, Part
-from python_template_server.models import ResponseCode
 
 from rpi_ai.models import (
     ChatbotConfig,
@@ -219,7 +218,6 @@ class TestGetConfigResponse:
     def test_model_dump(self, mock_chatbot_config: ChatbotConfig) -> None:
         """Test the model_dump method."""
         expected_dict = {
-            "code": ResponseCode.OK,
             "message": "Config retrieved successfully",
             "timestamp": "2023-01-01T00:00:00Z",
             "config": mock_chatbot_config.model_dump(),
@@ -234,7 +232,6 @@ class TestGetChatHistoryResponse:
     def test_model_dump(self, mock_chatbot_message_list: ChatbotMessageList) -> None:
         """Test the model_dump method."""
         expected_dict = {
-            "code": ResponseCode.OK,
             "message": "Chat history retrieved successfully",
             "timestamp": "2023-01-01T00:00:00Z",
             "chat_history": mock_chatbot_message_list.model_dump(),
@@ -249,7 +246,6 @@ class TestPostMessageResponse:
     def test_model_dump(self, mock_chatbot_message_model: ChatbotMessage) -> None:
         """Test the model_dump method."""
         expected_dict = {
-            "code": ResponseCode.OK,
             "message": "Message processed successfully",
             "timestamp": "2023-01-01T00:00:00Z",
             "reply": mock_chatbot_message_model.model_dump(),
@@ -264,7 +260,6 @@ class TestPostAudioResponse:
     def test_model_dump(self, mock_chatbot_speech: ChatbotSpeech) -> None:
         """Test the model_dump method."""
         expected_dict = {
-            "code": ResponseCode.OK,
             "message": "Audio processed successfully",
             "timestamp": "2023-01-01T00:00:00Z",
             "reply": mock_chatbot_speech.model_dump(),

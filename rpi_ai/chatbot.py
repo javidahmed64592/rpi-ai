@@ -132,7 +132,7 @@ class Chatbot:
             Current timestamp
         """
         timestamp_str = BaseResponse.current_timestamp()
-        return int(datetime.fromisoformat(timestamp_str.replace("Z", "+00:00")).timestamp())
+        return int(datetime.fromisoformat(timestamp_str.rstrip("Z")).timestamp())
 
     def _embed_text(self, text: str, task_type: str) -> np.ndarray:
         """Generate embedding for the given text.

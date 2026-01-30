@@ -4,15 +4,13 @@ import asyncio
 import json
 from collections.abc import Generator
 from importlib.metadata import PackageMetadata
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import Request, Security
+from fastapi import HTTPException, Request, Security
 from fastapi.routing import APIRoute
 from fastapi.security import APIKeyHeader
 from fastapi.testclient import TestClient
-from python_template_server.constants import CONFIG_DIR
 from python_template_server.models import ResponseCode
 
 from rpi_ai.chatbot import Chatbot
@@ -88,19 +86,6 @@ class TestChatbotServer:
         validated_config = mock_chatbot_server.validate_config(config_dict)
         assert validated_config == ChatbotServerConfig.model_validate({})
 
-    def test_config_dir_home(
-        self, mock_chatbot_server: ChatbotServer, mock_exists: MagicMock, mock_path_home: MagicMock
-    ) -> None:
-        """Test that config_dir returns the home config path when it exists."""
-        mock_exists.return_value = True
-        mock_path_home.return_value = Path("~")
-        assert mock_chatbot_server.config_dir == Path("~") / ".config" / "rpi_ai"
-
-    def test_config_dir_default(self, mock_chatbot_server: ChatbotServer, mock_exists: MagicMock) -> None:
-        """Test that config_dir returns the default CONFIG_DIR when home config path does not exist."""
-        mock_exists.return_value = False
-        assert mock_chatbot_server.config_dir == CONFIG_DIR
-
 
 class TestChatbotServerRoutes:
     """Integration tests for the routes in ChatbotServer."""
@@ -130,7 +115,6 @@ class TestConfigEndpoint:
         request = MagicMock(spec=Request)
         response = asyncio.run(mock_chatbot_server.get_config(request))
 
-        assert response.code == ResponseCode.OK
         assert response.message == "Successfully retrieved chatbot configuration."
         assert isinstance(response.timestamp, str)
         assert response.config == mock_chatbot_server.chatbot.get_config()
@@ -155,7 +139,6 @@ class TestConfigEndpoint:
         assert response.status_code == ResponseCode.OK
 
         response_body = response.json()
-        assert response_body["code"] == ResponseCode.OK
         assert response_body["message"] == "Successfully retrieved chatbot configuration."
         assert isinstance(response_body["timestamp"], str)
         assert response_body["config"] == mock_chatbot_server.chatbot.get_config().model_dump()
@@ -183,7 +166,6 @@ class TestChatHistoryEndpoint:
         request = MagicMock(spec=Request)
         response = asyncio.run(mock_chatbot_server.get_chat_history(request))
 
-        assert response.code == ResponseCode.OK
         assert response.message == "Successfully retrieved chatbot conversation history."
         assert isinstance(response.timestamp, str)
         assert response.chat_history == mock_chatbot_server.chatbot.chat_history
@@ -197,7 +179,6 @@ class TestChatHistoryEndpoint:
         assert response.status_code == ResponseCode.OK
 
         response_body = response.json()
-        assert response_body["code"] == ResponseCode.OK
         assert response_body["message"] == "Successfully retrieved chatbot conversation history."
         assert isinstance(response_body["timestamp"], str)
         assert response_body["chat_history"] == mock_chatbot_server.chatbot.chat_history.model_dump()
@@ -236,7 +217,6 @@ class TestPostMessageEndpoint:
         mock_chat_instance.send_message.return_value = MagicMock(text="Hi user!")
         response = asyncio.run(mock_chatbot_server.post_message_text(request))
 
-        assert response.code == ResponseCode.OK
         assert response.message == "Message sent successfully"
         assert isinstance(response.timestamp, str)
         assert isinstance(response.reply, ChatbotMessage)
@@ -245,19 +225,17 @@ class TestPostMessageEndpoint:
         """Test the /chat/message method handles invalid JSON."""
         request = MagicMock(spec=Request)
         request.json = AsyncMock(side_effect=json.JSONDecodeError("Expecting value", "", 0))
-        response = asyncio.run(mock_chatbot_server.post_message_text(request))
 
-        assert response.code == ResponseCode.BAD_REQUEST
-        assert "Invalid JSON" in response.message
+        with pytest.raises(HTTPException, match="Invalid JSON in request body"):
+            asyncio.run(mock_chatbot_server.post_message_text(request))
 
     def test_post_message_text_missing_message(self, mock_chatbot_server: ChatbotServer) -> None:
         """Test the /chat/message method handles missing message in JSON."""
         request = MagicMock(spec=Request)
         request.json = AsyncMock(return_value={})
-        response = asyncio.run(mock_chatbot_server.post_message_text(request))
 
-        assert response.code == ResponseCode.BAD_REQUEST
-        assert "No message provided" in response.message
+        with pytest.raises(HTTPException, match="No message provided in request body"):
+            asyncio.run(mock_chatbot_server.post_message_text(request))
 
     def test_post_message_text_endpoint(
         self, mock_chatbot_server: ChatbotServer, mock_chat_instance: MagicMock
@@ -271,7 +249,6 @@ class TestPostMessageEndpoint:
         assert response.status_code == ResponseCode.OK
 
         response_body = response.json()
-        assert response_body["code"] == ResponseCode.OK
         assert response_body["message"] == "Message sent successfully"
         assert isinstance(response_body["timestamp"], str)
         assert isinstance(response_body["reply"], dict)
@@ -296,7 +273,6 @@ class TestPostAudioEndpoint:
         mock_get_audio_bytes_from_text.return_value = "test_audio_response"
         response = asyncio.run(mock_chatbot_server.post_message_audio(request))
 
-        assert response.code == ResponseCode.OK
         assert response.message == "Audio processed successfully"
         assert isinstance(response.timestamp, str)
         assert isinstance(response.reply, ChatbotSpeech)
@@ -305,19 +281,17 @@ class TestPostAudioEndpoint:
         """Test the /chat/audio method handles invalid form data."""
         request = MagicMock(spec=Request)
         request.form = AsyncMock(side_effect=Exception("form parse failed"))
-        response = asyncio.run(mock_chatbot_server.post_message_audio(request))
 
-        assert response.code == ResponseCode.BAD_REQUEST
-        assert "Failed to parse form data" in response.message
+        with pytest.raises(HTTPException, match="Failed to parse form data"):
+            asyncio.run(mock_chatbot_server.post_message_audio(request))
 
     def test_post_message_audio_no_file(self, mock_chatbot_server: ChatbotServer) -> None:
         """Test the /chat/audio method handles missing audio file."""
         request = MagicMock(spec=Request)
         request.form = AsyncMock(return_value={})
-        response = asyncio.run(mock_chatbot_server.post_message_audio(request))
 
-        assert response.code == ResponseCode.BAD_REQUEST
-        assert "No audio file provided" in response.message
+        with pytest.raises(HTTPException, match="No audio file provided in request body"):
+            asyncio.run(mock_chatbot_server.post_message_audio(request))
 
     def test_post_message_audio_read_error(self, mock_chatbot_server: ChatbotServer) -> None:
         """Test the /chat/audio method handles audio read errors."""
@@ -325,10 +299,9 @@ class TestPostAudioEndpoint:
         file_mock = MagicMock()
         file_mock.read = AsyncMock(side_effect=Exception("read failed"))
         request.form = AsyncMock(return_value={"audio": file_mock})
-        response = asyncio.run(mock_chatbot_server.post_message_audio(request))
 
-        assert response.code == ResponseCode.BAD_REQUEST
-        assert "Failed to read audio file" in response.message
+        with pytest.raises(HTTPException, match="Failed to read audio file"):
+            asyncio.run(mock_chatbot_server.post_message_audio(request))
 
     def test_post_message_audio_endpoint(
         self,
@@ -348,7 +321,6 @@ class TestPostAudioEndpoint:
         assert response.status_code == ResponseCode.OK
 
         response_body = response.json()
-        assert response_body["code"] == ResponseCode.OK
         assert response_body["message"] == "Audio processed successfully"
         assert isinstance(response_body["timestamp"], str)
         assert isinstance(response_body["reply"], dict)
