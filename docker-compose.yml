@@ -1,7 +1,7 @@
 services:
   # RPi AI
   rpi-ai:
-    # image: ${IMAGE:-ghcr.io/javidahmed64592/rpi-ai:latest}
+    image: ${IMAGE:-ghcr.io/javidahmed64592/rpi-ai:latest}
     build:
       context: .
       dockerfile: Dockerfile
