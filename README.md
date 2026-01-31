@@ -30,7 +30,7 @@ Flutter is used to create a cross-platform application to interact with this API
 
 ### Installation
 
-Download the latest release from [GitHub Releases](https://github.com/javidahmed64592/pi-dashboard/releases).
+Download the latest release from [GitHub Releases](https://github.com/javidahmed64592/rpi-ai/releases).
 
 ### Configuration
 
@@ -54,7 +54,7 @@ docker compose down
 docker compose pull && docker compose up -d
 
 # View the logs
-docker compose logs -f pi-dashboard
+docker compose logs -f rpi-ai
 ```
 
 **Note:** You may need to add your user to the Docker group and log out/in for permission changes to take effect:
